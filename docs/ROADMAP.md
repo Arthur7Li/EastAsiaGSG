@@ -2,7 +2,7 @@
 
 ## Phase 1: Core Data Structures & GPU Map Renderer
 - [x] **Task 1.1:** Implement `ProvinceData`, `StateData`, `CountryState`, `StrategicRegionData`, and `SimulationWorld` in `EastAsiaGSG.Core`.
-- [ ] **Task 1.2:** Implement `JsonMapLoader` in `EastAsiaGSG.Data` and write an xUnit test verifying loading of a mock 120-province Korean Peninsula dataset.
+- [x] **Task 1.2:** Implement `JsonMapLoader` in `EastAsiaGSG.Data` and write an xUnit test verifying loading of a mock 120-province Korean Peninsula dataset.
 - [ ] **Task 1.3:** Write `MapShader.gdshader` and `MapRenderer.cs` in `EastAsiaGSG.GodotClient` supporting 16-bit RG `provinces.png` ID decoding, 1D `map_lut.png` dynamic coloring, and $O(1)$ mouse picking.
 - [ ] **Task 1.4:** Build `CameraController.cs` (smooth WASD/edge pan, cursor-centered zoom) and Map Mode toolbar (Political, Terrain, Supply, Industry).
 

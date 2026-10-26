@@ -1,0 +1,372 @@
+[
+  {
+    "stateId": 0,
+    "name": "Gyeonggi-Seoul Metropolitan Area",
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "coreTags": [
+      "ROK",
+      "PRK"
+    ],
+    "provinces": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "population": 15200000,
+    "civilianFactories": 12,
+    "militaryFactories": 6,
+    "navalDockyards": 2,
+    "airbaseLevel": 7,
+    "radarSamLevel": 4,
+    "infrastructureLevel": 8,
+    "resources": {
+      "oil": 0,
+      "steel": 10,
+      "aluminum": 4,
+      "semiconductors": 20
+    }
+  },
+  {
+    "stateId": 1,
+    "name": "Gangwon-South (Taebaek Frontier)",
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "coreTags": [
+      "ROK",
+      "PRK"
+    ],
+    "provinces": [
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "population": 1800000,
+    "civilianFactories": 2,
+    "militaryFactories": 3,
+    "navalDockyards": 0,
+    "airbaseLevel": 4,
+    "radarSamLevel": 4,
+    "infrastructureLevel": 4,
+    "resources": {
+      "oil": 0,
+      "steel": 6,
+      "aluminum": 2,
+      "semiconductors": 0
+    }
+  },
+  {
+    "stateId": 2,
+    "name": "Chungcheong Transit Hub",
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "coreTags": [
+      "ROK",
+      "PRK"
+    ],
+    "provinces": [
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35
+    ],
+    "population": 4200000,
+    "civilianFactories": 5,
+    "militaryFactories": 4,
+    "navalDockyards": 0,
+    "airbaseLevel": 5,
+    "radarSamLevel": 2,
+    "infrastructureLevel": 7,
+    "resources": {
+      "oil": 0,
+      "steel": 8,
+      "aluminum": 4,
+      "semiconductors": 8
+    }
+  },
+  {
+    "stateId": 3,
+    "name": "Jeolla Maritime South",
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "coreTags": [
+      "ROK",
+      "PRK"
+    ],
+    "provinces": [
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47
+    ],
+    "population": 3900000,
+    "civilianFactories": 4,
+    "militaryFactories": 2,
+    "navalDockyards": 2,
+    "airbaseLevel": 3,
+    "radarSamLevel": 2,
+    "infrastructureLevel": 5,
+    "resources": {
+      "oil": 12,
+      "steel": 4,
+      "aluminum": 2,
+      "semiconductors": 2
+    }
+  },
+  {
+    "stateId": 4,
+    "name": "Gyeongsang-Busan Industrial Titan",
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "coreTags": [
+      "ROK",
+      "PRK"
+    ],
+    "provinces": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59
+    ],
+    "population": 12500000,
+    "civilianFactories": 10,
+    "militaryFactories": 8,
+    "navalDockyards": 8,
+    "airbaseLevel": 6,
+    "radarSamLevel": 3,
+    "infrastructureLevel": 9,
+    "resources": {
+      "oil": 0,
+      "steel": 28,
+      "aluminum": 8,
+      "semiconductors": 14
+    }
+  },
+  {
+    "stateId": 5,
+    "name": "Pyongyang-South Pyongan Capital Zone",
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "coreTags": [
+      "PRK",
+      "ROK"
+    ],
+    "provinces": [
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71
+    ],
+    "population": 4800000,
+    "civilianFactories": 5,
+    "militaryFactories": 10,
+    "navalDockyards": 1,
+    "airbaseLevel": 6,
+    "radarSamLevel": 4,
+    "infrastructureLevel": 6,
+    "resources": {
+      "oil": 0,
+      "steel": 16,
+      "aluminum": 6,
+      "semiconductors": 1
+    }
+  },
+  {
+    "stateId": 6,
+    "name": "North Pyongan Border Artery",
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "coreTags": [
+      "PRK",
+      "ROK"
+    ],
+    "provinces": [
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83
+    ],
+    "population": 2700000,
+    "civilianFactories": 3,
+    "militaryFactories": 4,
+    "navalDockyards": 1,
+    "airbaseLevel": 4,
+    "radarSamLevel": 3,
+    "infrastructureLevel": 5,
+    "resources": {
+      "oil": 0,
+      "steel": 8,
+      "aluminum": 10,
+      "semiconductors": 0
+    }
+  },
+  {
+    "stateId": 7,
+    "name": "Hwanghae-Kaesong Redoubt Corridor",
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "coreTags": [
+      "PRK",
+      "ROK"
+    ],
+    "provinces": [
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95
+    ],
+    "population": 3100000,
+    "civilianFactories": 3,
+    "militaryFactories": 7,
+    "navalDockyards": 1,
+    "airbaseLevel": 4,
+    "radarSamLevel": 4,
+    "infrastructureLevel": 5,
+    "resources": {
+      "oil": 0,
+      "steel": 10,
+      "aluminum": 4,
+      "semiconductors": 0
+    }
+  },
+  {
+    "stateId": 8,
+    "name": "Gangwon-North Coastal Redoubt",
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "coreTags": [
+      "PRK",
+      "ROK"
+    ],
+    "provinces": [
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107
+    ],
+    "population": 1500000,
+    "civilianFactories": 2,
+    "militaryFactories": 5,
+    "navalDockyards": 4,
+    "airbaseLevel": 4,
+    "radarSamLevel": 4,
+    "infrastructureLevel": 4,
+    "resources": {
+      "oil": 0,
+      "steel": 8,
+      "aluminum": 4,
+      "semiconductors": 0
+    }
+  },
+  {
+    "stateId": 9,
+    "name": "Hamgyong Industrial Complex",
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "coreTags": [
+      "PRK",
+      "ROK"
+    ],
+    "provinces": [
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119
+    ],
+    "population": 4200000,
+    "civilianFactories": 4,
+    "militaryFactories": 8,
+    "navalDockyards": 4,
+    "airbaseLevel": 5,
+    "radarSamLevel": 3,
+    "infrastructureLevel": 5,
+    "resources": {
+      "oil": 0,
+      "steel": 24,
+      "aluminum": 12,
+      "semiconductors": 0
+    }
+  }
+]

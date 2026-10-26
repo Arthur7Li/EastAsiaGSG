@@ -1,0 +1,4042 @@
+[
+  {
+    "provinceId": 0,
+    "name": "Seoul Central",
+    "stateId": 0,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 4,
+    "portLevel": 0,
+    "infrastructureLevel": 9,
+    "centerX": 450,
+    "centerY": 600,
+    "adjacencies": [
+      {
+        "targetProvinceId": 1,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 2,
+        "flags": "Standard, River, Railway"
+      },
+      {
+        "targetProvinceId": 4,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 5,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 8,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 9,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 1,
+    "name": "Seoul North / Dobong",
+    "stateId": 0,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 8,
+    "centerX": 450,
+    "centerY": 580,
+    "adjacencies": [
+      {
+        "targetProvinceId": 0,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 5,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 8,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 2,
+    "name": "Seoul South / Gangnam",
+    "stateId": 0,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 2,
+    "portLevel": 0,
+    "infrastructureLevel": 9,
+    "centerX": 455,
+    "centerY": 620,
+    "adjacencies": [
+      {
+        "targetProvinceId": 0,
+        "flags": "Standard, River, Railway"
+      },
+      {
+        "targetProvinceId": 3,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 9,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 10,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 3,
+    "name": "Incheon Harbor",
+    "stateId": 0,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 3,
+    "portLevel": 6,
+    "infrastructureLevel": 8,
+    "centerX": 410,
+    "centerY": 610,
+    "adjacencies": [
+      {
+        "targetProvinceId": 2,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 4,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 10,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 4,
+    "name": "Gimpo / Han Estuary",
+    "stateId": 0,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 7,
+    "centerX": 425,
+    "centerY": 590,
+    "adjacencies": [
+      {
+        "targetProvinceId": 0,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 3,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 5,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 6,
+        "flags": "Standard, River"
+      }
+    ]
+  },
+  {
+    "provinceId": 5,
+    "name": "Goyang",
+    "stateId": 0,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 7,
+    "centerX": 435,
+    "centerY": 580,
+    "adjacencies": [
+      {
+        "targetProvinceId": 0,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 1,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 4,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 6,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 8,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 6,
+    "name": "Paju / Munsan",
+    "stateId": 0,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 6,
+    "centerX": 430,
+    "centerY": 550,
+    "adjacencies": [
+      {
+        "targetProvinceId": 4,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 5,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 7,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 92,
+        "flags": "Standard, River, Railway"
+      },
+      {
+        "targetProvinceId": 93,
+        "flags": "Standard, River"
+      }
+    ]
+  },
+  {
+    "provinceId": 7,
+    "name": "Yeoncheon",
+    "stateId": 0,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 460,
+    "centerY": 540,
+    "adjacencies": [
+      {
+        "targetProvinceId": 6,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 8,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 12,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 93,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 94,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 95,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 8,
+    "name": "Uijeongbu Corridor",
+    "stateId": 0,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 2,
+    "portLevel": 0,
+    "infrastructureLevel": 7,
+    "centerX": 460,
+    "centerY": 570,
+    "adjacencies": [
+      {
+        "targetProvinceId": 0,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 1,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 5,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 7,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 9,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 12,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 16,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 9,
+    "name": "Seongnam / Pangyo",
+    "stateId": 0,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 8,
+    "centerX": 470,
+    "centerY": 630,
+    "adjacencies": [
+      {
+        "targetProvinceId": 0,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 2,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 8,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 10,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 17,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 10,
+    "name": "Suwon",
+    "stateId": 0,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 3,
+    "portLevel": 0,
+    "infrastructureLevel": 8,
+    "centerX": 450,
+    "centerY": 650,
+    "adjacencies": [
+      {
+        "targetProvinceId": 2,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 3,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 9,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 11,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 19,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 11,
+    "name": "Pyeongtaek Port",
+    "stateId": 0,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 4,
+    "infrastructureLevel": 7,
+    "centerX": 440,
+    "centerY": 680,
+    "adjacencies": [
+      {
+        "targetProvinceId": 10,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 24,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 25,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 26,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 12,
+    "name": "Cheorwon South",
+    "stateId": 1,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 485,
+    "centerY": 540,
+    "adjacencies": [
+      {
+        "targetProvinceId": 7,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 8,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 13,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 16,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 95,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 96,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 97,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 13,
+    "name": "Hwacheon",
+    "stateId": 1,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Mountain",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 4,
+    "centerX": 515,
+    "centerY": 545,
+    "adjacencies": [
+      {
+        "targetProvinceId": 12,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 14,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 16,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 97,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 98,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 14,
+    "name": "Yanggu",
+    "stateId": 1,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Mountain",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 4,
+    "centerX": 545,
+    "centerY": 545,
+    "adjacencies": [
+      {
+        "targetProvinceId": 13,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 15,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 16,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 98,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 99,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 15,
+    "name": "Inje",
+    "stateId": 1,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Mountain",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 4,
+    "centerX": 565,
+    "centerY": 565,
+    "adjacencies": [
+      {
+        "targetProvinceId": 14,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 17,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 20,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 99,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 106,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 16,
+    "name": "Chuncheon",
+    "stateId": 1,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 2,
+    "portLevel": 0,
+    "infrastructureLevel": 6,
+    "centerX": 500,
+    "centerY": 580,
+    "adjacencies": [
+      {
+        "targetProvinceId": 8,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 12,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 13,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 14,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 17,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 19,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 17,
+    "name": "Hongcheon",
+    "stateId": 1,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 520,
+    "centerY": 600,
+    "adjacencies": [
+      {
+        "targetProvinceId": 9,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 15,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 16,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 18,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 21,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 18,
+    "name": "Hoengseong",
+    "stateId": 1,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 530,
+    "centerY": 630,
+    "adjacencies": [
+      {
+        "targetProvinceId": 17,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 19,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 21,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 19,
+    "name": "Wonju",
+    "stateId": 1,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 2,
+    "portLevel": 0,
+    "infrastructureLevel": 6,
+    "centerX": 510,
+    "centerY": 650,
+    "adjacencies": [
+      {
+        "targetProvinceId": 10,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 16,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 18,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 23,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 28,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 29,
+        "flags": "Standard, River"
+      }
+    ]
+  },
+  {
+    "provinceId": 20,
+    "name": "Sokcho Port",
+    "stateId": 1,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 4,
+    "infrastructureLevel": 5,
+    "centerX": 585,
+    "centerY": 540,
+    "adjacencies": [
+      {
+        "targetProvinceId": 15,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 21,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 106,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 21,
+    "name": "Gangneung Port",
+    "stateId": 1,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 2,
+    "portLevel": 5,
+    "infrastructureLevel": 6,
+    "centerX": 595,
+    "centerY": 590,
+    "adjacencies": [
+      {
+        "targetProvinceId": 17,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 18,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 20,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 22,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 22,
+    "name": "Donghae",
+    "stateId": 1,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 4,
+    "infrastructureLevel": 5,
+    "centerX": 605,
+    "centerY": 630,
+    "adjacencies": [
+      {
+        "targetProvinceId": 21,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 23,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 52,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 23,
+    "name": "Taebaek",
+    "stateId": 1,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Mountain",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 4,
+    "centerX": 580,
+    "centerY": 660,
+    "adjacencies": [
+      {
+        "targetProvinceId": 19,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 22,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 29,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 35,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 48,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 52,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 24,
+    "name": "Cheonan",
+    "stateId": 2,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 2,
+    "portLevel": 0,
+    "infrastructureLevel": 7,
+    "centerX": 450,
+    "centerY": 710,
+    "adjacencies": [
+      {
+        "targetProvinceId": 11,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 25,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 28,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 30,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 25,
+    "name": "Asan",
+    "stateId": 2,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 6,
+    "centerX": 430,
+    "centerY": 710,
+    "adjacencies": [
+      {
+        "targetProvinceId": 11,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 24,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 26,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 32,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 26,
+    "name": "Dangjin Port",
+    "stateId": 2,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 3,
+    "infrastructureLevel": 6,
+    "centerX": 410,
+    "centerY": 700,
+    "adjacencies": [
+      {
+        "targetProvinceId": 11,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 25,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 27,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 27,
+    "name": "Seosan",
+    "stateId": 2,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 2,
+    "infrastructureLevel": 5,
+    "centerX": 390,
+    "centerY": 720,
+    "adjacencies": [
+      {
+        "targetProvinceId": 26,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 33,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 28,
+    "name": "Cheongju",
+    "stateId": 2,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 2,
+    "portLevel": 0,
+    "infrastructureLevel": 7,
+    "centerX": 480,
+    "centerY": 720,
+    "adjacencies": [
+      {
+        "targetProvinceId": 19,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 24,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 29,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 30,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 31,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 29,
+    "name": "Chungju",
+    "stateId": 2,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 6,
+    "centerX": 510,
+    "centerY": 690,
+    "adjacencies": [
+      {
+        "targetProvinceId": 19,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 23,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 28,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 31,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 35,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 30,
+    "name": "Daejeon Central",
+    "stateId": 2,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 3,
+    "portLevel": 0,
+    "infrastructureLevel": 8,
+    "centerX": 470,
+    "centerY": 760,
+    "adjacencies": [
+      {
+        "targetProvinceId": 24,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 28,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 31,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 32,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 34,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 35,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 31,
+    "name": "Daejeon East",
+    "stateId": 2,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 6,
+    "centerX": 490,
+    "centerY": 760,
+    "adjacencies": [
+      {
+        "targetProvinceId": 28,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 29,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 30,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 35,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 32,
+    "name": "Gongju",
+    "stateId": 2,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 6,
+    "centerX": 440,
+    "centerY": 750,
+    "adjacencies": [
+      {
+        "targetProvinceId": 25,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 30,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 33,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 34,
+        "flags": "Standard, River"
+      }
+    ]
+  },
+  {
+    "provinceId": 33,
+    "name": "Boryeong",
+    "stateId": 2,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 3,
+    "infrastructureLevel": 5,
+    "centerX": 400,
+    "centerY": 760,
+    "adjacencies": [
+      {
+        "targetProvinceId": 27,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 32,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 34,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 36,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 34,
+    "name": "Nonsan",
+    "stateId": 2,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 6,
+    "centerX": 440,
+    "centerY": 780,
+    "adjacencies": [
+      {
+        "targetProvinceId": 30,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 32,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 33,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 36,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 37,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 38,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 35,
+    "name": "Yeongdong",
+    "stateId": 2,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Mountain",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 510,
+    "centerY": 770,
+    "adjacencies": [
+      {
+        "targetProvinceId": 23,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 29,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 30,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 31,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 48,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 49,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 36,
+    "name": "Gunsan Port",
+    "stateId": 3,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 4,
+    "infrastructureLevel": 6,
+    "centerX": 410,
+    "centerY": 800,
+    "adjacencies": [
+      {
+        "targetProvinceId": 33,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 34,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 37,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 37,
+    "name": "Iksan",
+    "stateId": 3,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 7,
+    "centerX": 430,
+    "centerY": 800,
+    "adjacencies": [
+      {
+        "targetProvinceId": 34,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 36,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 38,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 40,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 38,
+    "name": "Jeonju",
+    "stateId": 3,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 2,
+    "portLevel": 0,
+    "infrastructureLevel": 7,
+    "centerX": 450,
+    "centerY": 810,
+    "adjacencies": [
+      {
+        "targetProvinceId": 34,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 37,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 39,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 40,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 39,
+    "name": "Namwon",
+    "stateId": 3,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 475,
+    "centerY": 835,
+    "adjacencies": [
+      {
+        "targetProvinceId": 38,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 40,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 44,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 58,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 40,
+    "name": "Gwangju Central",
+    "stateId": 3,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 3,
+    "portLevel": 0,
+    "infrastructureLevel": 7,
+    "centerX": 420,
+    "centerY": 855,
+    "adjacencies": [
+      {
+        "targetProvinceId": 37,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 38,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 39,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 41,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 44,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 41,
+    "name": "Naju",
+    "stateId": 3,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 6,
+    "centerX": 410,
+    "centerY": 875,
+    "adjacencies": [
+      {
+        "targetProvinceId": 40,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 42,
+        "flags": "Standard, River, Railway"
+      },
+      {
+        "targetProvinceId": 43,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 42,
+    "name": "Mokpo Port",
+    "stateId": 3,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 2,
+    "portLevel": 5,
+    "infrastructureLevel": 6,
+    "centerX": 380,
+    "centerY": 895,
+    "adjacencies": [
+      {
+        "targetProvinceId": 41,
+        "flags": "Standard, River, Railway"
+      },
+      {
+        "targetProvinceId": 43,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 47,
+        "flags": "Strait"
+      }
+    ]
+  },
+  {
+    "provinceId": 43,
+    "name": "Haenam",
+    "stateId": 3,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 2,
+    "infrastructureLevel": 5,
+    "centerX": 395,
+    "centerY": 925,
+    "adjacencies": [
+      {
+        "targetProvinceId": 41,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 42,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 44,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 47,
+        "flags": "Strait"
+      }
+    ]
+  },
+  {
+    "provinceId": 44,
+    "name": "Suncheon",
+    "stateId": 3,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 6,
+    "centerX": 470,
+    "centerY": 880,
+    "adjacencies": [
+      {
+        "targetProvinceId": 39,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 40,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 43,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 45,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 46,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 58,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 45,
+    "name": "Yeosu Petrochemical Port",
+    "stateId": 3,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 6,
+    "infrastructureLevel": 7,
+    "centerX": 485,
+    "centerY": 915,
+    "adjacencies": [
+      {
+        "targetProvinceId": 44,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 46,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 46,
+    "name": "Gwangyang Harbor",
+    "stateId": 3,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 5,
+    "infrastructureLevel": 6,
+    "centerX": 490,
+    "centerY": 885,
+    "adjacencies": [
+      {
+        "targetProvinceId": 44,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 45,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 57,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 58,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 47,
+    "name": "Jindo Island",
+    "stateId": 3,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 2,
+    "infrastructureLevel": 4,
+    "centerX": 360,
+    "centerY": 930,
+    "adjacencies": [
+      {
+        "targetProvinceId": 42,
+        "flags": "Strait"
+      },
+      {
+        "targetProvinceId": 43,
+        "flags": "Strait"
+      }
+    ]
+  },
+  {
+    "provinceId": 48,
+    "name": "Gimcheon",
+    "stateId": 4,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 6,
+    "centerX": 530,
+    "centerY": 770,
+    "adjacencies": [
+      {
+        "targetProvinceId": 23,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 35,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 49,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 49,
+    "name": "Gumi Electronics",
+    "stateId": 4,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 2,
+    "portLevel": 0,
+    "infrastructureLevel": 7,
+    "centerX": 550,
+    "centerY": 775,
+    "adjacencies": [
+      {
+        "targetProvinceId": 35,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 48,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 50,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 50,
+    "name": "Daegu Central",
+    "stateId": 4,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 4,
+    "portLevel": 0,
+    "infrastructureLevel": 8,
+    "centerX": 565,
+    "centerY": 800,
+    "adjacencies": [
+      {
+        "targetProvinceId": 49,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 51,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 52,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 53,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 58,
+        "flags": "Standard, River"
+      }
+    ]
+  },
+  {
+    "provinceId": 51,
+    "name": "Gyeongsan",
+    "stateId": 4,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 7,
+    "centerX": 580,
+    "centerY": 815,
+    "adjacencies": [
+      {
+        "targetProvinceId": 50,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 53,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 55,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 57,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 52,
+    "name": "Pohang Steelworks",
+    "stateId": 4,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 2,
+    "portLevel": 6,
+    "infrastructureLevel": 8,
+    "centerX": 630,
+    "centerY": 790,
+    "adjacencies": [
+      {
+        "targetProvinceId": 22,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 23,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 50,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 53,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 53,
+    "name": "Gyeongju",
+    "stateId": 4,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 6,
+    "centerX": 615,
+    "centerY": 820,
+    "adjacencies": [
+      {
+        "targetProvinceId": 50,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 51,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 52,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 54,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 54,
+    "name": "Ulsan Shipyards",
+    "stateId": 4,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 2,
+    "portLevel": 7,
+    "infrastructureLevel": 8,
+    "centerX": 620,
+    "centerY": 850,
+    "adjacencies": [
+      {
+        "targetProvinceId": 53,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 55,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 56,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 55,
+    "name": "Busan North / Geumjeong",
+    "stateId": 4,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 8,
+    "centerX": 595,
+    "centerY": 870,
+    "adjacencies": [
+      {
+        "targetProvinceId": 51,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 54,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 56,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 57,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 56,
+    "name": "Busan Central / Harbor",
+    "stateId": 4,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 5,
+    "portLevel": 8,
+    "infrastructureLevel": 9,
+    "centerX": 600,
+    "centerY": 890,
+    "adjacencies": [
+      {
+        "targetProvinceId": 54,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 55,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 57,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 59,
+        "flags": "Strait"
+      }
+    ]
+  },
+  {
+    "provinceId": 57,
+    "name": "Changwon / Masan",
+    "stateId": 4,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 2,
+    "portLevel": 5,
+    "infrastructureLevel": 8,
+    "centerX": 560,
+    "centerY": 880,
+    "adjacencies": [
+      {
+        "targetProvinceId": 46,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 51,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 55,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 56,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 58,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 59,
+        "flags": "Strait"
+      }
+    ]
+  },
+  {
+    "provinceId": 58,
+    "name": "Jinju",
+    "stateId": 4,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 6,
+    "centerX": 520,
+    "centerY": 870,
+    "adjacencies": [
+      {
+        "targetProvinceId": 39,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 44,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 46,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 50,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 57,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 59,
+        "flags": "Strait"
+      }
+    ]
+  },
+  {
+    "provinceId": 59,
+    "name": "Geoje Island Shipyards",
+    "stateId": 4,
+    "ownerTag": "ROK",
+    "controllerTag": "ROK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 6,
+    "infrastructureLevel": 6,
+    "centerX": 570,
+    "centerY": 920,
+    "adjacencies": [
+      {
+        "targetProvinceId": 56,
+        "flags": "Strait"
+      },
+      {
+        "targetProvinceId": 57,
+        "flags": "Strait"
+      },
+      {
+        "targetProvinceId": 58,
+        "flags": "Strait"
+      }
+    ]
+  },
+  {
+    "provinceId": 60,
+    "name": "Pyongyang Central",
+    "stateId": 5,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 4,
+    "portLevel": 0,
+    "infrastructureLevel": 8,
+    "centerX": 380,
+    "centerY": 400,
+    "adjacencies": [
+      {
+        "targetProvinceId": 61,
+        "flags": "Standard, River, Railway"
+      },
+      {
+        "targetProvinceId": 62,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 63,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 68,
+        "flags": "Standard, River, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 61,
+    "name": "Pyongyang East / Taedong",
+    "stateId": 5,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 2,
+    "portLevel": 0,
+    "infrastructureLevel": 7,
+    "centerX": 395,
+    "centerY": 400,
+    "adjacencies": [
+      {
+        "targetProvinceId": 60,
+        "flags": "Standard, River, Railway"
+      },
+      {
+        "targetProvinceId": 62,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 64,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 84,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 86,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 62,
+    "name": "Pyongyang South / Mangyongdae",
+    "stateId": 5,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 7,
+    "centerX": 375,
+    "centerY": 415,
+    "adjacencies": [
+      {
+        "targetProvinceId": 60,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 61,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 68,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 70,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 85,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 63,
+    "name": "Pyongyang North / Sunan",
+    "stateId": 5,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 7,
+    "centerX": 375,
+    "centerY": 380,
+    "adjacencies": [
+      {
+        "targetProvinceId": 60,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 64,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 71,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 77,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 78,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 64,
+    "name": "Pyongsong",
+    "stateId": 5,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 6,
+    "centerX": 395,
+    "centerY": 375,
+    "adjacencies": [
+      {
+        "targetProvinceId": 61,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 63,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 65,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 66,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 100,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 65,
+    "name": "Sunchon",
+    "stateId": 5,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 2,
+    "portLevel": 0,
+    "infrastructureLevel": 6,
+    "centerX": 415,
+    "centerY": 360,
+    "adjacencies": [
+      {
+        "targetProvinceId": 64,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 66,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 67,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 100,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 66,
+    "name": "Kaechon",
+    "stateId": 5,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 420,
+    "centerY": 335,
+    "adjacencies": [
+      {
+        "targetProvinceId": 64,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 65,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 67,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 78,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 80,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 111,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 67,
+    "name": "Tokchon",
+    "stateId": 5,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Mountain",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 450,
+    "centerY": 335,
+    "adjacencies": [
+      {
+        "targetProvinceId": 65,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 66,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 81,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 110,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 112,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 68,
+    "name": "Nampo Harbor",
+    "stateId": 5,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 3,
+    "portLevel": 6,
+    "infrastructureLevel": 7,
+    "centerX": 345,
+    "centerY": 430,
+    "adjacencies": [
+      {
+        "targetProvinceId": 60,
+        "flags": "Standard, River, Railway"
+      },
+      {
+        "targetProvinceId": 62,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 69,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 70,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 85,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 88,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 69,
+    "name": "Onchon",
+    "stateId": 5,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 330,
+    "centerY": 415,
+    "adjacencies": [
+      {
+        "targetProvinceId": 68,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 70,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 71,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 70,
+    "name": "Ryonggang",
+    "stateId": 5,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 350,
+    "centerY": 410,
+    "adjacencies": [
+      {
+        "targetProvinceId": 62,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 68,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 69,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 71,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 71,
+    "name": "Chungsan",
+    "stateId": 5,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 345,
+    "centerY": 385,
+    "adjacencies": [
+      {
+        "targetProvinceId": 63,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 69,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 70,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 77,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 72,
+    "name": "Sinuiju Border Hub",
+    "stateId": 6,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 3,
+    "portLevel": 3,
+    "infrastructureLevel": 7,
+    "centerX": 280,
+    "centerY": 270,
+    "adjacencies": [
+      {
+        "targetProvinceId": 73,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 74,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 82,
+        "flags": "Standard, River"
+      }
+    ]
+  },
+  {
+    "provinceId": 73,
+    "name": "Uiju",
+    "stateId": 6,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 290,
+    "centerY": 250,
+    "adjacencies": [
+      {
+        "targetProvinceId": 72,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 74,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 82,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 74,
+    "name": "Ryongchon",
+    "stateId": 6,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 6,
+    "centerX": 295,
+    "centerY": 290,
+    "adjacencies": [
+      {
+        "targetProvinceId": 72,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 73,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 75,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 79,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 75,
+    "name": "Yomju",
+    "stateId": 6,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 310,
+    "centerY": 305,
+    "adjacencies": [
+      {
+        "targetProvinceId": 74,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 76,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 79,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 76,
+    "name": "Dongrim",
+    "stateId": 6,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 330,
+    "centerY": 300,
+    "adjacencies": [
+      {
+        "targetProvinceId": 75,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 77,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 79,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 80,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 77,
+    "name": "Chongju",
+    "stateId": 6,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 2,
+    "portLevel": 0,
+    "infrastructureLevel": 6,
+    "centerX": 360,
+    "centerY": 310,
+    "adjacencies": [
+      {
+        "targetProvinceId": 63,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 71,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 76,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 78,
+        "flags": "Standard, River, Railway"
+      },
+      {
+        "targetProvinceId": 80,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 78,
+    "name": "Pakchon",
+    "stateId": 6,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 385,
+    "centerY": 315,
+    "adjacencies": [
+      {
+        "targetProvinceId": 63,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 66,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 77,
+        "flags": "Standard, River, Railway"
+      },
+      {
+        "targetProvinceId": 80,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 81,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 79,
+    "name": "Kusong",
+    "stateId": 6,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 340,
+    "centerY": 270,
+    "adjacencies": [
+      {
+        "targetProvinceId": 74,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 75,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 76,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 80,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 82,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 80,
+    "name": "Taechon",
+    "stateId": 6,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 370,
+    "centerY": 275,
+    "adjacencies": [
+      {
+        "targetProvinceId": 66,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 76,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 77,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 78,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 79,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 81,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 83,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 81,
+    "name": "Unsan",
+    "stateId": 6,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Mountain",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 4,
+    "centerX": 400,
+    "centerY": 270,
+    "adjacencies": [
+      {
+        "targetProvinceId": 67,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 78,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 80,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 83,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 112,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 113,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 82,
+    "name": "Sakju",
+    "stateId": 6,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Mountain",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 4,
+    "centerX": 330,
+    "centerY": 230,
+    "adjacencies": [
+      {
+        "targetProvinceId": 72,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 73,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 79,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 83,
+        "flags": "Standard, River"
+      }
+    ]
+  },
+  {
+    "provinceId": 83,
+    "name": "Changsong",
+    "stateId": 6,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Mountain",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 4,
+    "centerX": 365,
+    "centerY": 230,
+    "adjacencies": [
+      {
+        "targetProvinceId": 80,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 81,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 82,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 113,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 84,
+    "name": "Sariwon",
+    "stateId": 7,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 3,
+    "portLevel": 0,
+    "infrastructureLevel": 6,
+    "centerX": 385,
+    "centerY": 470,
+    "adjacencies": [
+      {
+        "targetProvinceId": 61,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 85,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 86,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 87,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 94,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 85,
+    "name": "Hwangju",
+    "stateId": 7,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 6,
+    "centerX": 380,
+    "centerY": 440,
+    "adjacencies": [
+      {
+        "targetProvinceId": 62,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 68,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 84,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 86,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 86,
+    "name": "Pongsan",
+    "stateId": 7,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 400,
+    "centerY": 475,
+    "adjacencies": [
+      {
+        "targetProvinceId": 61,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 84,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 85,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 87,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 94,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 97,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 87,
+    "name": "Sinwon",
+    "stateId": 7,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 380,
+    "centerY": 505,
+    "adjacencies": [
+      {
+        "targetProvinceId": 84,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 86,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 88,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 90,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 88,
+    "name": "Haeju Port",
+    "stateId": 7,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 2,
+    "portLevel": 5,
+    "infrastructureLevel": 6,
+    "centerX": 365,
+    "centerY": 540,
+    "adjacencies": [
+      {
+        "targetProvinceId": 68,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 87,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 89,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 90,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 89,
+    "name": "Ongjin Peninsula",
+    "stateId": 7,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 2,
+    "infrastructureLevel": 4,
+    "centerX": 320,
+    "centerY": 545,
+    "adjacencies": [
+      {
+        "targetProvinceId": 88,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 90,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 90,
+    "name": "Yonan",
+    "stateId": 7,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 395,
+    "centerY": 550,
+    "adjacencies": [
+      {
+        "targetProvinceId": 87,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 88,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 89,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 91,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 91,
+    "name": "Paechon",
+    "stateId": 7,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 410,
+    "centerY": 545,
+    "adjacencies": [
+      {
+        "targetProvinceId": 90,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 92,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 93,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 92,
+    "name": "Kaesong City",
+    "stateId": 7,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 3,
+    "portLevel": 0,
+    "infrastructureLevel": 7,
+    "centerX": 420,
+    "centerY": 520,
+    "adjacencies": [
+      {
+        "targetProvinceId": 6,
+        "flags": "Standard, River, Railway"
+      },
+      {
+        "targetProvinceId": 91,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 93,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 94,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 93,
+    "name": "Panmunjom North",
+    "stateId": 7,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 6,
+    "centerX": 435,
+    "centerY": 530,
+    "adjacencies": [
+      {
+        "targetProvinceId": 6,
+        "flags": "Standard, River"
+      },
+      {
+        "targetProvinceId": 7,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 91,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 92,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 94,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 95,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 94,
+    "name": "Kumchon",
+    "stateId": 7,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 425,
+    "centerY": 490,
+    "adjacencies": [
+      {
+        "targetProvinceId": 7,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 84,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 86,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 92,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 93,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 95,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 97,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 95,
+    "name": "Tosan",
+    "stateId": 7,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 450,
+    "centerY": 505,
+    "adjacencies": [
+      {
+        "targetProvinceId": 7,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 12,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 93,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 94,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 96,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 97,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 96,
+    "name": "Cheorwon North",
+    "stateId": 8,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 480,
+    "centerY": 515,
+    "adjacencies": [
+      {
+        "targetProvinceId": 12,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 95,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 97,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 98,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 97,
+    "name": "Pyonggang",
+    "stateId": 8,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Mountain",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 485,
+    "centerY": 490,
+    "adjacencies": [
+      {
+        "targetProvinceId": 12,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 13,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 86,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 94,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 95,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 96,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 98,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 100,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 98,
+    "name": "Kimhwa",
+    "stateId": 8,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Mountain",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 4,
+    "centerX": 510,
+    "centerY": 515,
+    "adjacencies": [
+      {
+        "targetProvinceId": 13,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 14,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 96,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 97,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 99,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 100,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 99,
+    "name": "Changdo",
+    "stateId": 8,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Mountain",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 4,
+    "centerX": 535,
+    "centerY": 515,
+    "adjacencies": [
+      {
+        "targetProvinceId": 14,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 15,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 98,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 100,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 107,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 100,
+    "name": "Sepo",
+    "stateId": 8,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Mountain",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 505,
+    "centerY": 475,
+    "adjacencies": [
+      {
+        "targetProvinceId": 64,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 65,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 97,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 98,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 99,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 101,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 107,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 101,
+    "name": "Kosan",
+    "stateId": 8,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Mountain",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 4,
+    "centerX": 520,
+    "centerY": 450,
+    "adjacencies": [
+      {
+        "targetProvinceId": 100,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 102,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 104,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 107,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 111,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 102,
+    "name": "Wonsan Central / Port",
+    "stateId": 8,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 4,
+    "portLevel": 6,
+    "infrastructureLevel": 7,
+    "centerX": 540,
+    "centerY": 410,
+    "adjacencies": [
+      {
+        "targetProvinceId": 101,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 103,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 104,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 110,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 111,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 103,
+    "name": "Wonsan South / Kalma",
+    "stateId": 8,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 6,
+    "centerX": 555,
+    "centerY": 425,
+    "adjacencies": [
+      {
+        "targetProvinceId": 102,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 104,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 105,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 104,
+    "name": "Anbyon",
+    "stateId": 8,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 545,
+    "centerY": 445,
+    "adjacencies": [
+      {
+        "targetProvinceId": 101,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 102,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 103,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 105,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 105,
+    "name": "Tongchon",
+    "stateId": 8,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 3,
+    "infrastructureLevel": 5,
+    "centerX": 575,
+    "centerY": 465,
+    "adjacencies": [
+      {
+        "targetProvinceId": 103,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 104,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 106,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 106,
+    "name": "Goseong North / Kumgangsan",
+    "stateId": 8,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Mountain",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 4,
+    "centerX": 580,
+    "centerY": 510,
+    "adjacencies": [
+      {
+        "targetProvinceId": 15,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 20,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 105,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 107,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 107,
+    "name": "Hoeyang",
+    "stateId": 8,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Mountain",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 4,
+    "centerX": 530,
+    "centerY": 485,
+    "adjacencies": [
+      {
+        "targetProvinceId": 99,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 100,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 101,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 106,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 108,
+    "name": "Hamhung Central",
+    "stateId": 9,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 4,
+    "portLevel": 0,
+    "infrastructureLevel": 7,
+    "centerX": 530,
+    "centerY": 330,
+    "adjacencies": [
+      {
+        "targetProvinceId": 109,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 110,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 112,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 113,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 114,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 109,
+    "name": "Hungnam Chemical Port",
+    "stateId": 9,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 2,
+    "portLevel": 6,
+    "infrastructureLevel": 7,
+    "centerX": 545,
+    "centerY": 345,
+    "adjacencies": [
+      {
+        "targetProvinceId": 108,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 110,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 114,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 110,
+    "name": "Chongpyong",
+    "stateId": 9,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 510,
+    "centerY": 360,
+    "adjacencies": [
+      {
+        "targetProvinceId": 67,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 102,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 108,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 109,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 111,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 112,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 111,
+    "name": "Kowon",
+    "stateId": 9,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 515,
+    "centerY": 390,
+    "adjacencies": [
+      {
+        "targetProvinceId": 66,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 101,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 102,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 110,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 112,
+    "name": "Yonggwang",
+    "stateId": 9,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Mountain",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 4,
+    "centerX": 510,
+    "centerY": 310,
+    "adjacencies": [
+      {
+        "targetProvinceId": 67,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 81,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 108,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 110,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 113,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 113,
+    "name": "Sinhung",
+    "stateId": 9,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Mountain",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 4,
+    "centerX": 540,
+    "centerY": 290,
+    "adjacencies": [
+      {
+        "targetProvinceId": 81,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 83,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 108,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 112,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 114,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 114,
+    "name": "Sinpo Submarine Port",
+    "stateId": 9,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Plains",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 5,
+    "infrastructureLevel": 6,
+    "centerX": 585,
+    "centerY": 320,
+    "adjacencies": [
+      {
+        "targetProvinceId": 108,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 109,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 113,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 115,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 115,
+    "name": "Tanchon",
+    "stateId": 9,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 4,
+    "infrastructureLevel": 5,
+    "centerX": 630,
+    "centerY": 275,
+    "adjacencies": [
+      {
+        "targetProvinceId": 114,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 116,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 117,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 116,
+    "name": "Kimchaek / Songjin",
+    "stateId": 9,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 2,
+    "portLevel": 5,
+    "infrastructureLevel": 6,
+    "centerX": 665,
+    "centerY": 230,
+    "adjacencies": [
+      {
+        "targetProvinceId": 115,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 117,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 118,
+        "flags": "Standard"
+      }
+    ]
+  },
+  {
+    "provinceId": 117,
+    "name": "Kilju",
+    "stateId": 9,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 1,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 675,
+    "centerY": 190,
+    "adjacencies": [
+      {
+        "targetProvinceId": 115,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 116,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 118,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 119,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 118,
+    "name": "Myongcheon",
+    "stateId": 9,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Hills",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 0,
+    "portLevel": 0,
+    "infrastructureLevel": 5,
+    "centerX": 695,
+    "centerY": 160,
+    "adjacencies": [
+      {
+        "targetProvinceId": 116,
+        "flags": "Standard"
+      },
+      {
+        "targetProvinceId": 117,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 119,
+        "flags": "Standard, Railway"
+      }
+    ]
+  },
+  {
+    "provinceId": 119,
+    "name": "Chongjin Steel Titan",
+    "stateId": 9,
+    "ownerTag": "PRK",
+    "controllerTag": "PRK",
+    "terrain": "Urban",
+    "strategicRegionId": 0,
+    "supplyHubLevel": 4,
+    "portLevel": 7,
+    "infrastructureLevel": 7,
+    "centerX": 725,
+    "centerY": 120,
+    "adjacencies": [
+      {
+        "targetProvinceId": 117,
+        "flags": "Standard, Railway"
+      },
+      {
+        "targetProvinceId": 118,
+        "flags": "Standard, Railway"
+      }
+    ]
+  }
+]
