@@ -1,0 +1,16 @@
+<Project Sdk="Godot.NET.Sdk/4.7.2">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EastAsiaGSG.Core\EastAsiaGSG.Core.csproj" />
+    <ProjectReference Include="..\EastAsiaGSG.Data\EastAsiaGSG.Data.csproj" />
+  </ItemGroup>
+
+</Project>
