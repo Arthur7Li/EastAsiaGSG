@@ -4,6 +4,73 @@
     "/Users/arthurli/EastAsiaGSG/src/EastAsiaGSG.Data/EastAsiaGSG.Data.csproj": {}
   },
   "projects": {
+    "/Users/arthurli/EastAsiaGSG/src/EastAsiaGSG.Core/EastAsiaGSG.Core.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/arthurli/EastAsiaGSG/src/EastAsiaGSG.Core/EastAsiaGSG.Core.csproj",
+        "projectName": "EastAsiaGSG.Core",
+        "projectPath": "/Users/arthurli/EastAsiaGSG/src/EastAsiaGSG.Core/EastAsiaGSG.Core.csproj",
+        "packagesPath": "/Users/arthurli/.nuget/packages/",
+        "outputPath": "/Users/arthurli/EastAsiaGSG/src/EastAsiaGSG.Core/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/arthurli/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Arch": {
+              "target": "Package",
+              "version": "[2.1.0, )"
+            },
+            "CommunityToolkit.HighPerformance": {
+              "target": "Package",
+              "version": "[8.2.2, )"
+            },
+            "MemoryPack": {
+              "target": "Package",
+              "version": "[1.21.4, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/opt/homebrew/Cellar/dotnet@8/8.0.130/libexec/sdk/8.0.130/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
     "/Users/arthurli/EastAsiaGSG/src/EastAsiaGSG.Data/EastAsiaGSG.Data.csproj": {
       "version": "1.0.0",
       "restore": {
@@ -25,7 +92,11 @@
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
-            "projectReferences": {}
+            "projectReferences": {
+              "/Users/arthurli/EastAsiaGSG/src/EastAsiaGSG.Core/EastAsiaGSG.Core.csproj": {
+                "projectPath": "/Users/arthurli/EastAsiaGSG/src/EastAsiaGSG.Core/EastAsiaGSG.Core.csproj"
+              }
+            }
           }
         },
         "warningProperties": {

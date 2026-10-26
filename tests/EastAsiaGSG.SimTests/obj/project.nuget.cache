@@ -1,11 +1,19 @@
 {
   "version": 2,
-  "dgSpecHash": "FSwKnHNq0m9Qk8OYvDp6mHN8XiZmnuQk68n1A/Xr5X6p1MEnzknY6+dVjDfBgUtKOnKawVY3ZSAWulQy2m5hMw==",
+  "dgSpecHash": "VWZT7/Y+6vCMRaHSbsjRY5nk+8QmBEyOa5tEPGvJ8iQucxLUNgjTWW4bs8o/rdaFZt85fpCb5KfXLezp1KcTqQ==",
   "success": true,
   "projectFilePath": "/Users/arthurli/EastAsiaGSG/tests/EastAsiaGSG.SimTests/EastAsiaGSG.SimTests.csproj",
   "expectedPackageFiles": [
+    "/Users/arthurli/.nuget/packages/arch/2.1.0/arch.2.1.0.nupkg.sha512",
+    "/Users/arthurli/.nuget/packages/arch.lowlevel/1.1.5/arch.lowlevel.1.1.5.nupkg.sha512",
+    "/Users/arthurli/.nuget/packages/collections.pooled/2.0.0-preview.27/collections.pooled.2.0.0-preview.27.nupkg.sha512",
+    "/Users/arthurli/.nuget/packages/communitytoolkit.highperformance/8.2.2/communitytoolkit.highperformance.8.2.2.nupkg.sha512",
     "/Users/arthurli/.nuget/packages/coverlet.collector/6.0.0/coverlet.collector.6.0.0.nupkg.sha512",
+    "/Users/arthurli/.nuget/packages/memorypack/1.21.4/memorypack.1.21.4.nupkg.sha512",
+    "/Users/arthurli/.nuget/packages/memorypack.core/1.21.4/memorypack.core.1.21.4.nupkg.sha512",
+    "/Users/arthurli/.nuget/packages/memorypack.generator/1.21.4/memorypack.generator.1.21.4.nupkg.sha512",
     "/Users/arthurli/.nuget/packages/microsoft.codecoverage/17.6.0/microsoft.codecoverage.17.6.0.nupkg.sha512",
+    "/Users/arthurli/.nuget/packages/microsoft.extensions.objectpool/7.0.0/microsoft.extensions.objectpool.7.0.0.nupkg.sha512",
     "/Users/arthurli/.nuget/packages/microsoft.net.test.sdk/17.6.0/microsoft.net.test.sdk.17.6.0.nupkg.sha512",
     "/Users/arthurli/.nuget/packages/microsoft.netcore.platforms/1.1.0/microsoft.netcore.platforms.1.1.0.nupkg.sha512",
     "/Users/arthurli/.nuget/packages/microsoft.netcore.targets/1.1.0/microsoft.netcore.targets.1.1.0.nupkg.sha512",
@@ -64,6 +72,7 @@
     "/Users/arthurli/.nuget/packages/system.reflection.typeextensions/4.3.0/system.reflection.typeextensions.4.3.0.nupkg.sha512",
     "/Users/arthurli/.nuget/packages/system.resources.resourcemanager/4.3.0/system.resources.resourcemanager.4.3.0.nupkg.sha512",
     "/Users/arthurli/.nuget/packages/system.runtime/4.3.0/system.runtime.4.3.0.nupkg.sha512",
+    "/Users/arthurli/.nuget/packages/system.runtime.compilerservices.unsafe/6.0.0/system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
     "/Users/arthurli/.nuget/packages/system.runtime.extensions/4.3.0/system.runtime.extensions.4.3.0.nupkg.sha512",
     "/Users/arthurli/.nuget/packages/system.runtime.handles/4.3.0/system.runtime.handles.4.3.0.nupkg.sha512",
     "/Users/arthurli/.nuget/packages/system.runtime.interopservices/4.3.0/system.runtime.interopservices.4.3.0.nupkg.sha512",
@@ -92,7 +101,8 @@
     "/Users/arthurli/.nuget/packages/xunit.core/2.4.2/xunit.core.2.4.2.nupkg.sha512",
     "/Users/arthurli/.nuget/packages/xunit.extensibility.core/2.4.2/xunit.extensibility.core.2.4.2.nupkg.sha512",
     "/Users/arthurli/.nuget/packages/xunit.extensibility.execution/2.4.2/xunit.extensibility.execution.2.4.2.nupkg.sha512",
-    "/Users/arthurli/.nuget/packages/xunit.runner.visualstudio/2.4.5/xunit.runner.visualstudio.2.4.5.nupkg.sha512"
+    "/Users/arthurli/.nuget/packages/xunit.runner.visualstudio/2.4.5/xunit.runner.visualstudio.2.4.5.nupkg.sha512",
+    "/Users/arthurli/.nuget/packages/zeroallocjobscheduler/1.1.2/zeroallocjobscheduler.1.1.2.nupkg.sha512"
   ],
   "logs": []
 }

@@ -1,8 +1,19 @@
 {
   "version": 2,
-  "dgSpecHash": "VzfsZVP2tZK0InwahsRp7T3Oyy21pVEkG0twseoelmVhIqF91erjoTPpcFTDhJhWLAU/Jh4Kwh2SrPJimEXUvQ==",
+  "dgSpecHash": "7At/gQ4wrsS4Om/9NkGKoWSkcRBjxbrDlwcY30n8/T/XLuRnwH2LxkEq+iHBm32p5nGz7uI591KgJB5Fx1k4yw==",
   "success": true,
   "projectFilePath": "/Users/arthurli/EastAsiaGSG/src/EastAsiaGSG.Data/EastAsiaGSG.Data.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "/Users/arthurli/.nuget/packages/arch/2.1.0/arch.2.1.0.nupkg.sha512",
+    "/Users/arthurli/.nuget/packages/arch.lowlevel/1.1.5/arch.lowlevel.1.1.5.nupkg.sha512",
+    "/Users/arthurli/.nuget/packages/collections.pooled/2.0.0-preview.27/collections.pooled.2.0.0-preview.27.nupkg.sha512",
+    "/Users/arthurli/.nuget/packages/communitytoolkit.highperformance/8.2.2/communitytoolkit.highperformance.8.2.2.nupkg.sha512",
+    "/Users/arthurli/.nuget/packages/memorypack/1.21.4/memorypack.1.21.4.nupkg.sha512",
+    "/Users/arthurli/.nuget/packages/memorypack.core/1.21.4/memorypack.core.1.21.4.nupkg.sha512",
+    "/Users/arthurli/.nuget/packages/memorypack.generator/1.21.4/memorypack.generator.1.21.4.nupkg.sha512",
+    "/Users/arthurli/.nuget/packages/microsoft.extensions.objectpool/7.0.0/microsoft.extensions.objectpool.7.0.0.nupkg.sha512",
+    "/Users/arthurli/.nuget/packages/system.runtime.compilerservices.unsafe/6.0.0/system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
+    "/Users/arthurli/.nuget/packages/zeroallocjobscheduler/1.1.2/zeroallocjobscheduler.1.1.2.nupkg.sha512"
+  ],
   "logs": []
 }

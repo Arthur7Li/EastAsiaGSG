@@ -1,0 +1,20 @@
+## .NET / C#
+[Bb]in/
+[Oo]bj/
+*.user
+*.userosscache
+*.sln.docstates
+
+## Visual Studio / VS Code / Rider
+.vs/
+.idea/
+*.suo
+*.userprefs
+
+## Godot
+.godot/
+*.translation
+
+## OS Specific
+.DS_Store
+Thumbs.db
