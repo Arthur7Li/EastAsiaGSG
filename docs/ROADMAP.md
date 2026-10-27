@@ -10,7 +10,7 @@
 - [x] **Task 2.1:** Implement CSR Adjacency Graph & zero-allocation A* pathfinder in `EastAsiaGSG.Core/Math/ProvincePathfinder.cs`.
 - [x] **Task 2.2:** Implement `DivisionComponent`, `ActiveCombatComponent`, `DivisionMovementSystem`, and `CombatResolutionSystem` (6-hour tick math with Hardness, Piercing, and PGM multipliers).
 - [x] **Task 2.3:** Write headless xUnit combat balance tests (`SimTests/CombatSystemTests.cs`) simulating a 1985 ROK vs. PRK division battle over 72 hours.
-- [ ] **Task 2.4:** Build Godot Division On-Map Counters, movement arrows, and HOI4-style green/red 0–100 Battle Bubbles.
+- [x] **Task 2.4:** Build Godot Division On-Map Counters, movement arrows, and HOI4-style green/red 0–100 Battle Bubbles.
 
 ## Phase 3: Industrial Economy, Equipment Stockpiles & Reinforcements
 - [ ] **Task 3.1:** Implement `ProductionLineComponent`, `ProductionSystem` (hyperbolic efficiency growth), and `ConstructionSystem` (State building queue).

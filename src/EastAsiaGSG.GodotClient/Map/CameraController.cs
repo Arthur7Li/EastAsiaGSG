@@ -81,8 +81,8 @@ public partial class CameraController : Camera2D
                 }
             }
 
-            // Middle mouse or Right mouse button drag-panning
-            if (mouseBtn.ButtonIndex is MouseButton.Middle or MouseButton.Right)
+            // Middle mouse button drag-panning (Right mouse reserved for tactical unit orders)
+            if (mouseBtn.ButtonIndex == MouseButton.Middle)
             {
                 _isDragging = mouseBtn.Pressed;
                 if (_isDragging)
