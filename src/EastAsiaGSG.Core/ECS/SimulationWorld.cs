@@ -34,6 +34,9 @@ public sealed class SimulationWorld : IDisposable
     public ushort[] AdjacencyTargets => Graph.AdjacencyTargets;
     public byte[] AdjacencyEdgeFlags => Graph.AdjacencyEdgeFlags;
 
+    // High-Performance Zero-Allocation A* Pathfinder
+    public readonly ProvincePathfinder Pathfinder = new();
+
     // Allocation-Free Deterministic Command Queue
     public readonly CommandRingBuffer CommandQueue = new(4096);
 
@@ -101,6 +104,25 @@ public sealed class SimulationWorld : IDisposable
     public bool EnqueueCommand(in SimulationCommand command)
     {
         return CommandQueue.TryEnqueue(in command);
+    }
+
+    /// <summary>
+    /// Computes the optimal path between two provinces using the built-in zero-allocation pathfinder.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public PathResult FindPath(in PathQuery query, Span<ushort> destinationPath)
+    {
+        return Pathfinder.FindPath(this, in query, destinationPath);
+    }
+
+    /// <summary>
+    /// Computes the optimal path between two provinces using thread-local zero-allocation pathfinder buffers.
+    /// Safe for concurrent calls from rendering UI and background simulation threads.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public PathResult FindPathThreadSafe(in PathQuery query, Span<ushort> destinationPath)
+    {
+        return ProvincePathfinder.FindPathThreadSafe(this, in query, destinationPath);
     }
 
     /// <summary>

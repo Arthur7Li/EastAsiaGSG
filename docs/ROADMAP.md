@@ -7,7 +7,7 @@
 - [x] **Task 1.4:** Build `CameraController.cs` (smooth WASD/edge pan, cursor-centered zoom) and Map Mode toolbar (Political, Terrain, Supply, Industry).
 
 ## Phase 2: Korean Peninsula Tactical Sandbox (Movement & Combat)
-- [ ] **Task 2.1:** Implement CSR Adjacency Graph & zero-allocation A* pathfinder in `EastAsiaGSG.Core/Math/ProvincePathfinder.cs`.
+- [x] **Task 2.1:** Implement CSR Adjacency Graph & zero-allocation A* pathfinder in `EastAsiaGSG.Core/Math/ProvincePathfinder.cs`.
 - [ ] **Task 2.2:** Implement `DivisionComponent`, `ActiveCombatComponent`, `DivisionMovementSystem`, and `CombatResolutionSystem` (6-hour tick math with Hardness, Piercing, and PGM multipliers).
 - [ ] **Task 2.3:** Write headless xUnit combat balance tests (`SimTests/CombatSystemTests.cs`) simulating a 1985 ROK vs. PRK division battle over 72 hours.
 - [ ] **Task 2.4:** Build Godot Division On-Map Counters, movement arrows, and HOI4-style green/red 0–100 Battle Bubbles.
