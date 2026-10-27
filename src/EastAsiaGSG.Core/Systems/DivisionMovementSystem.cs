@@ -60,7 +60,7 @@ public static class DivisionMovementSystem
             return false;
         }
 
-        Span<ushort> pathBuffer = stackalloc ushort[64];
+        Span<ushort> pathBuffer = stackalloc ushort[128];
         PathQuery query = new(
             FromProvinceId: div.CurrentProvinceId,
             ToProvinceId: destinationProvinceId,
@@ -235,8 +235,20 @@ public static class DivisionMovementSystem
             }
             else
             {
-                div.ClearWaypoints();
-                div.State = DivisionState.Idle;
+                if (div.DestinationProvinceId != div.CurrentProvinceId
+                    && div.DestinationProvinceId != DivisionComponent.NoProvince)
+                {
+                    if (!IssueMoveOrder(world, ref div, div.DestinationProvinceId))
+                    {
+                        div.ClearWaypoints();
+                        div.State = DivisionState.Idle;
+                    }
+                }
+                else
+                {
+                    div.ClearWaypoints();
+                    div.State = DivisionState.Idle;
+                }
             }
         }
     }

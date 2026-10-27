@@ -264,7 +264,7 @@ public partial class CombatTelemetryPopup : PanelContainer
         if (_damageStatsLabel != null)
         {
             _damageStatsLabel.Text = $"Recent Org Loss: Def -{foundCombat.LastTickAttackerOrgDamage:F1} | Att -{foundCombat.LastTickDefenderOrgDamage:F1}\n" +
-                                     $"Recent Str Loss: Def -{foundCombat.LastTickAttackerStrengthDamage * 100f:F2}% | Att -{foundCombat.LastTickDefenderStrengthDamage * 100f:F2}%";
+                                     $"Recent Str Loss: Def -{foundCombat.LastTickAttackerStrengthDamage:F2}% | Att -{foundCombat.LastTickDefenderStrengthDamage:F2}%";
         }
 
         if (_pgmStatusLabel != null)

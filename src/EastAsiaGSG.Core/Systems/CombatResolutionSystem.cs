@@ -241,12 +241,13 @@ public static class CombatResolutionSystem
             byte width = att.CombatWidth == 0 ? (byte)20 : att.CombatWidth;
             if (engagedAttackerCount == 0 || usedAttackerWidth + width <= maxCombatWidth)
             {
+                (attackers[engagedAttackerCount], attackers[i]) = (attackers[i], attackers[engagedAttackerCount]);
                 usedAttackerWidth += width;
                 engagedAttackerCount++;
             }
             else
             {
-                break;
+                continue;
             }
         }
 
@@ -256,12 +257,13 @@ public static class CombatResolutionSystem
             byte width = def.CombatWidth == 0 ? (byte)20 : def.CombatWidth;
             if (engagedDefenderCount == 0 || usedDefenderWidth + width <= maxCombatWidth)
             {
+                (defenders[engagedDefenderCount], defenders[i]) = (defenders[i], defenders[engagedDefenderCount]);
                 usedDefenderWidth += width;
                 engagedDefenderCount++;
             }
             else
             {
-                break;
+                continue;
             }
         }
 
@@ -507,12 +509,11 @@ public static class CombatResolutionSystem
         {
             // Immediate tactical withdrawal to adjacent friendly province
             defender.CurrentProvinceId = bestRetreatProvince;
-            defender.RetreatProvinceId = DivisionComponent.NoProvince;
-            defender.State = DivisionState.Retreating;
-            defender.TargetProvinceId = bestRetreatProvince;
-            defender.MovementProgress = 1.0f;
-            defender.State = DivisionState.Idle;
             defender.TargetProvinceId = DivisionComponent.NoProvince;
+            defender.RetreatProvinceId = DivisionComponent.NoProvince;
+            defender.MovementProgress = 0.0f;
+            defender.ClearWaypoints();
+            defender.State = DivisionState.Idle;
         }
         else
         {
@@ -580,8 +581,20 @@ public static class CombatResolutionSystem
             }
             else
             {
-                att.ClearWaypoints();
-                att.State = DivisionState.Idle;
+                if (att.DestinationProvinceId != att.CurrentProvinceId
+                    && att.DestinationProvinceId != DivisionComponent.NoProvince)
+                {
+                    if (!DivisionMovementSystem.IssueMoveOrder(world, ref att, att.DestinationProvinceId))
+                    {
+                        att.ClearWaypoints();
+                        att.State = DivisionState.Idle;
+                    }
+                }
+                else
+                {
+                    att.ClearWaypoints();
+                    att.State = DivisionState.Idle;
+                }
             }
         }
     }

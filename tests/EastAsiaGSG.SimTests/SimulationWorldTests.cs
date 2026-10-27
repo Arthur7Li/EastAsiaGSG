@@ -371,6 +371,66 @@ public sealed class SimulationWorldTests
             $"Expected 1,460 ticks (1 year) to complete in < 5.0 ms, but took {elapsedMs:F3} ms.");
     }
 
+    [Fact]
+    public void TryFindDivisionById_PrioritizesDivisionId_WhenCollidingWithAnotherEntityId()
+    {
+        using SimulationWorld world = new();
+
+        // Spawn Division A with an arbitrary non-colliding DivisionId
+        DivisionComponent divA = DivisionComponent.Create(
+            divisionId: 9999,
+            countryTag: CountryTag.ROK,
+            startingProvinceId: 0,
+            combatWidth: 20,
+            speed: 4.0f,
+            maxOrganization: 50.0f,
+            softAttack: 20.0f,
+            hardAttack: 5.0f,
+            defense: 25.0f,
+            breakthrough: 10.0f,
+            armor: 5.0f,
+            piercing: 10.0f,
+            hardness: 0.1f);
+        Entity entityA = world.SpawnDivision(divA);
+
+        int collisionId = entityA.Id;
+
+        // Spawn Division B with DivisionId equal to entityA.Id
+        DivisionComponent divB = DivisionComponent.Create(
+            divisionId: collisionId,
+            countryTag: CountryTag.PRK,
+            startingProvinceId: 1,
+            combatWidth: 20,
+            speed: 4.0f,
+            maxOrganization: 50.0f,
+            softAttack: 20.0f,
+            hardAttack: 5.0f,
+            defense: 25.0f,
+            breakthrough: 10.0f,
+            armor: 5.0f,
+            piercing: 10.0f,
+            hardness: 0.1f);
+        Entity entityB = world.SpawnDivision(divB);
+
+        Assert.NotEqual(entityA.Id, entityB.Id);
+
+        // When querying for collisionId, TryFindDivisionById must prioritize Division B (whose DivisionId matches)
+        // over Division A (whose internal Entity.Id matches).
+        bool found = world.TryFindDivisionById(collisionId, out Entity resolvedEntity);
+
+        Assert.True(found);
+        Assert.Equal(entityB, resolvedEntity);
+        ref readonly DivisionComponent resolvedDiv = ref world.EcsWorld.Get<DivisionComponent>(resolvedEntity);
+        Assert.Equal(collisionId, resolvedDiv.DivisionId);
+        Assert.Equal(CountryTag.PRK, resolvedDiv.CountryTag);
+
+        // Fallback: when querying for an ID not matching any DivisionId, it resolves by Entity.Id
+        int fallbackEntityId = entityB.Id;
+        bool foundFallback = world.TryFindDivisionById(fallbackEntityId, out Entity fallbackEntity);
+        Assert.True(foundFallback);
+        Assert.Equal(entityB, fallbackEntity);
+    }
+
     private static void PopulateMockEastAsiaGraph(SimulationWorld world)
     {
         const int mockProvinceCount = 120;

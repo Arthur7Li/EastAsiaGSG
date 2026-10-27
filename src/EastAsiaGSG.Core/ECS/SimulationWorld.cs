@@ -118,12 +118,13 @@ public sealed class SimulationWorld : IDisposable
     }
 
     /// <summary>
-    /// Finds a division entity by its DivisionId or ECS Entity.Id with zero heap allocations.
+    /// Finds a division entity by prioritizing DivisionId first, falling back to ECS Entity.Id with zero heap allocations.
     /// </summary>
     public bool TryFindDivisionById(int divisionOrEntityId, out Entity foundEntity)
     {
-        Query query = EcsWorld.Query(in DivisionQuery);
-        foreach (ref Chunk chunk in query)
+        // Phase 1: Search by domain DivisionId across all chunks
+        Query query1 = EcsWorld.Query(in DivisionQuery);
+        foreach (ref Chunk chunk in query1)
         {
             Span<DivisionComponent> divisions = chunk.GetSpan<DivisionComponent>();
             ReadOnlySpan<Entity> entities = chunk.Entities;
@@ -131,7 +132,24 @@ public sealed class SimulationWorld : IDisposable
 
             for (int i = 0; i < chunkSize; i++)
             {
-                if (divisions[i].DivisionId == divisionOrEntityId || entities[i].Id == divisionOrEntityId)
+                if (divisions[i].DivisionId == divisionOrEntityId)
+                {
+                    foundEntity = entities[i];
+                    return true;
+                }
+            }
+        }
+
+        // Phase 2: Fallback search by internal ECS Entity.Id across all chunks
+        Query query2 = EcsWorld.Query(in DivisionQuery);
+        foreach (ref Chunk chunk in query2)
+        {
+            ReadOnlySpan<Entity> entities = chunk.Entities;
+            int chunkSize = chunk.Count;
+
+            for (int i = 0; i < chunkSize; i++)
+            {
+                if (entities[i].Id == divisionOrEntityId)
                 {
                     foundEntity = entities[i];
                     return true;

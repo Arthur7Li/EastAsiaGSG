@@ -744,5 +744,196 @@ public sealed class CombatSystemTests
         Assert.True(elapsedMs < 100.0, $"1,000 combat ticks completed in {elapsedMs:F2} ms (budget: < 100 ms)");
     }
 
+    [Fact]
+    public void CombatSystem_CombatWidthReserveFilling_SkipsLargeExceedingDivisionAndCommitsSmallerDivision()
+    {
+        using SimulationWorld world = new();
+
+        world.Provinces[0].OwnerTag = CountryTag.ROK;
+        world.Provinces[0].ControllerTag = CountryTag.ROK;
+        world.Provinces[1].OwnerTag = CountryTag.PRK;
+        world.Provinces[1].ControllerTag = CountryTag.PRK;
+
+        ReadOnlySpan<DirectedEdge> edges =
+        [
+            new DirectedEdge(0, 1, AdjacencyEdgeFlags.Standard),
+            new DirectedEdge(1, 0, AdjacencyEdgeFlags.Standard)
+        ];
+        world.Graph.BuildCsr(world.Provinces, edges);
+
+        // Attacker 1: Width 60 (Fits into 80 max width -> remaining 20)
+        DivisionComponent att1Comp = CreateRokInfantryDivision(101, 0);
+        att1Comp.CombatWidth = 60;
+        Entity att1 = world.SpawnDivision(att1Comp);
+
+        // Attacker 2: Width 40 (60 + 40 = 100 > 80 -> exceeds remaining width, must be skipped to reserve)
+        DivisionComponent att2Comp = CreateRokInfantryDivision(102, 0);
+        att2Comp.CombatWidth = 40;
+        Entity att2 = world.SpawnDivision(att2Comp);
+
+        // Attacker 3: Width 20 (60 + 20 = 80 <= 80 -> fits into remaining width, must be committed!)
+        DivisionComponent att3Comp = CreateRokInfantryDivision(103, 0);
+        att3Comp.CombatWidth = 20;
+        Entity att3 = world.SpawnDivision(att3Comp);
+
+        // Defender: High-org unit so combat continues
+        DivisionComponent defComp = CreatePrkInfantryDivision(201, 1);
+        defComp.MaxOrganization = 100f;
+        defComp.Organization = 100f;
+        Entity def = world.SpawnDivision(defComp);
+
+        for (int id = 101; id <= 103; id++)
+        {
+            world.EnqueueCommand(SimulationCommand.CreateMoveDivision(CountryTag.ROK, divisionEntityId: id, targetProvinceId: 1));
+        }
+
+        // Tick 1: Combat engages
+        world.StepSixHours();
+
+        Assert.True(world.TryFindActiveCombatAtProvince(1, out Entity combatEntity));
+        ref readonly ActiveCombatComponent combat = ref world.EcsWorld.Get<ActiveCombatComponent>(combatEntity);
+
+        Assert.Equal(80, combat.TotalCombatWidth);
+        Assert.Equal(80, combat.UsedAttackerWidth);
+        Assert.Equal(2, combat.EngagedAttackerCount);
+
+        // Verify Attacker 2 (width 40) remained in reserve with pristine stats
+        ref readonly DivisionComponent div2 = ref world.EcsWorld.Get<DivisionComponent>(att2);
+        Assert.Equal(55.0f, div2.Organization);
+        Assert.Equal(1.0f, div2.Strength);
+
+        // Verify Attacker 1 (width 60) and Attacker 3 (width 20) were engaged
+        ref readonly DivisionComponent div1 = ref world.EcsWorld.Get<DivisionComponent>(att1);
+        ref readonly DivisionComponent div3 = ref world.EcsWorld.Get<DivisionComponent>(att3);
+        Assert.NotEqual(DivisionComponent.NoCombat, div1.ActiveCombatId);
+        Assert.NotEqual(DivisionComponent.NoCombat, div3.ActiveCombatId);
+    }
+
+    [Fact]
+    public void CombatSystem_MultiHopWaypointContinuation_ContinuesPastSixteenHopsUntilDestination()
+    {
+        using SimulationWorld world = new();
+        const int totalProvinces = 25;
+        DirectedEdge[] edges = new DirectedEdge[(totalProvinces - 1) * 2];
+        int edgeIdx = 0;
+
+        for (ushort i = 0; i < totalProvinces; i++)
+        {
+            world.Provinces[i].OwnerTag = CountryTag.ROK;
+            world.Provinces[i].ControllerTag = CountryTag.ROK;
+            world.Provinces[i].Terrain = TerrainType.Plains;
+            world.Provinces[i].InfrastructureLevel = 5;
+            world.Provinces[i].SupplyRatio = 1.0f;
+            world.Provinces[i].CenterX = (short)(i * 10);
+            world.Provinces[i].CenterY = 0;
+
+            if (i < totalProvinces - 1)
+            {
+                edges[edgeIdx++] = new DirectedEdge(i, (ushort)(i + 1), AdjacencyEdgeFlags.Standard);
+                edges[edgeIdx++] = new DirectedEdge((ushort)(i + 1), i, AdjacencyEdgeFlags.Standard);
+            }
+        }
+        world.Graph.BuildCsr(world.Provinces, edges);
+
+        DivisionComponent divComp = DivisionComponent.Create(
+            divisionId: 301,
+            countryTag: CountryTag.ROK,
+            startingProvinceId: 0,
+            combatWidth: 20,
+            speed: 25.0f, // Fast speed so division traverses 1 hop per tick
+            maxOrganization: 50.0f,
+            softAttack: 20.0f,
+            hardAttack: 5.0f,
+            defense: 25.0f,
+            breakthrough: 10.0f,
+            armor: 5.0f,
+            piercing: 10.0f,
+            hardness: 0.1f);
+        Entity divEntity = world.SpawnDivision(divComp);
+
+        // Issue move order targeting province 20 (> 16 hops)
+        world.EnqueueCommand(SimulationCommand.CreateMoveDivision(CountryTag.ROK, divisionEntityId: 301, targetProvinceId: 20));
+
+        // Tick 1: Drains command queue, creates first 16 waypoints
+        world.StepSixHours();
+
+        ref DivisionComponent initialDiv = ref world.EcsWorld.Get<DivisionComponent>(divEntity);
+        Assert.Equal(DivisionState.Moving, initialDiv.State);
+        Assert.Equal(20, initialDiv.DestinationProvinceId);
+        Assert.Equal(16, initialDiv.WaypointCount);
+
+        // Step simulation enough ticks (e.g. 35 ticks) for full traversal of 20 hops with re-pathing
+        for (int step = 0; step < 35; step++)
+        {
+            world.StepSixHours();
+            ref readonly DivisionComponent current = ref world.EcsWorld.Get<DivisionComponent>(divEntity);
+            if (current.CurrentProvinceId == 20 && current.State == DivisionState.Idle)
+            {
+                break;
+            }
+        }
+
+        ref readonly DivisionComponent finalDiv = ref world.EcsWorld.Get<DivisionComponent>(divEntity);
+        Assert.Equal((ushort)20, finalDiv.CurrentProvinceId);
+        Assert.Equal(DivisionState.Idle, finalDiv.State);
+        Assert.Equal(0, finalDiv.WaypointCount);
+        Assert.Equal(0.0f, finalDiv.MovementProgress);
+    }
+
+    [Fact]
+    public void CombatSystem_RetreatStateConsistency_ResetsProgressAndWaypointsCleanly()
+    {
+        using SimulationWorld world = new();
+
+        // Province 0 (Attacker ROK) -> Province 1 (Contested PRK) -> Province 2 (Friendly PRK retreat rear)
+        world.Provinces[0].OwnerTag = CountryTag.ROK;
+        world.Provinces[0].ControllerTag = CountryTag.ROK;
+        world.Provinces[1].OwnerTag = CountryTag.PRK;
+        world.Provinces[1].ControllerTag = CountryTag.PRK;
+        world.Provinces[2].OwnerTag = CountryTag.PRK;
+        world.Provinces[2].ControllerTag = CountryTag.PRK;
+
+        ReadOnlySpan<DirectedEdge> edges =
+        [
+            new DirectedEdge(0, 1, AdjacencyEdgeFlags.Standard),
+            new DirectedEdge(1, 0, AdjacencyEdgeFlags.Standard),
+            new DirectedEdge(1, 2, AdjacencyEdgeFlags.Standard),
+            new DirectedEdge(2, 1, AdjacencyEdgeFlags.Standard)
+        ];
+        world.Graph.BuildCsr(world.Provinces, edges);
+
+        Entity att = world.SpawnDivision(CreateRokMechanizedDivision(101, 0, pgm: false));
+
+        // PRK defender starts with very low org (2.0f) so it breaks immediately on the first tick of combat
+        DivisionComponent prkDef = CreatePrkInfantryDivision(201, 1);
+        prkDef.Organization = 2.0f;
+        Entity def = world.SpawnDivision(prkDef);
+
+        world.EnqueueCommand(SimulationCommand.CreateMoveDivision(CountryTag.ROK, divisionEntityId: 101, targetProvinceId: 1));
+
+        // Step ticks to initiate combat and force defender retreat
+        for (int i = 0; i < 4; i++)
+        {
+            world.StepSixHours();
+            ref readonly DivisionComponent d = ref world.EcsWorld.Get<DivisionComponent>(def);
+            if (d.CurrentProvinceId == 2)
+            {
+                break;
+            }
+        }
+
+        ref readonly DivisionComponent finalDef = ref world.EcsWorld.Get<DivisionComponent>(def);
+
+        // Verify clean retreat state consistency (no dirty progress or intermediate states)
+        Assert.Equal((ushort)2, finalDef.CurrentProvinceId);
+        Assert.Equal(DivisionComponent.NoProvince, finalDef.TargetProvinceId);
+        Assert.Equal(DivisionComponent.NoProvince, finalDef.RetreatProvinceId);
+        Assert.Equal(0.0f, finalDef.MovementProgress);
+        Assert.Equal(DivisionState.Idle, finalDef.State);
+        Assert.Equal(0, finalDef.WaypointCount);
+        Assert.Equal(DivisionComponent.NoCombat, finalDef.ActiveCombatId);
+        Assert.True(finalDef.Strength > 0.0f);
+    }
+
     #endregion
 }
