@@ -1,7 +1,9 @@
 using System.Runtime.CompilerServices;
+using Arch.Core;
 using EastAsiaGSG.Core.Commands;
 using EastAsiaGSG.Core.Components;
 using EastAsiaGSG.Core.Math;
+using EastAsiaGSG.Core.Systems;
 
 namespace EastAsiaGSG.Core.ECS;
 
@@ -22,6 +24,8 @@ public sealed class SimulationWorld : IDisposable
     public const int StartHour = 0;
 
     private static ReadOnlySpan<byte> DaysPerMonthStandard => [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    private static readonly QueryDescription DivisionQuery = new QueryDescription().WithAll<DivisionComponent>();
+    private static readonly QueryDescription CombatQuery = new QueryDescription().WithAll<ActiveCombatComponent>();
 
     // Flat Contiguous State Arrays (Index == ID)
     public readonly ProvinceData[] Provinces = new ProvinceData[MaxProvinces];
@@ -41,7 +45,7 @@ public sealed class SimulationWorld : IDisposable
     public readonly CommandRingBuffer CommandQueue = new(4096);
 
     // Arch ECS World for Dynamic Entities (Divisions, ActiveCombats, ProductionLines)
-    public readonly Arch.Core.World EcsWorld = Arch.Core.World.Create();
+    public readonly World EcsWorld = World.Create();
 
     // Timestamp & Stratified Tick Telemetry (Starts 1985-01-01 00:00)
     public int TotalSixHourTicks { get; private set; }
@@ -54,6 +58,7 @@ public sealed class SimulationWorld : IDisposable
     public int CurrentDay { get; private set; } = StartDay;
     public int CurrentHour { get; private set; } = StartHour;
 
+    private int _nextCombatId = 1;
     private bool _disposed;
 
     public SimulationWorld()
@@ -95,6 +100,73 @@ public sealed class SimulationWorld : IDisposable
             Regions[i].RegionId = i;
             Regions[i].WeatherEfficiencyModifier = 1.0f;
         }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal int AllocateNextCombatId()
+    {
+        return _nextCombatId++;
+    }
+
+    /// <summary>
+    /// Spawns a DivisionComponent entity in EcsWorld.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Entity SpawnDivision(in DivisionComponent division)
+    {
+        return EcsWorld.Create(division);
+    }
+
+    /// <summary>
+    /// Finds a division entity by its DivisionId or ECS Entity.Id with zero heap allocations.
+    /// </summary>
+    public bool TryFindDivisionById(int divisionOrEntityId, out Entity foundEntity)
+    {
+        Query query = EcsWorld.Query(in DivisionQuery);
+        foreach (ref Chunk chunk in query)
+        {
+            Span<DivisionComponent> divisions = chunk.GetSpan<DivisionComponent>();
+            ReadOnlySpan<Entity> entities = chunk.Entities;
+            int chunkSize = chunk.Count;
+
+            for (int i = 0; i < chunkSize; i++)
+            {
+                if (divisions[i].DivisionId == divisionOrEntityId || entities[i].Id == divisionOrEntityId)
+                {
+                    foundEntity = entities[i];
+                    return true;
+                }
+            }
+        }
+
+        foundEntity = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Finds an active combat entity at the specified contested province.
+    /// </summary>
+    public bool TryFindActiveCombatAtProvince(ushort targetProvinceId, out Entity combatEntity)
+    {
+        Query query = EcsWorld.Query(in CombatQuery);
+        foreach (ref Chunk chunk in query)
+        {
+            Span<ActiveCombatComponent> combats = chunk.GetSpan<ActiveCombatComponent>();
+            ReadOnlySpan<Entity> entities = chunk.Entities;
+            int chunkSize = chunk.Count;
+
+            for (int i = 0; i < chunkSize; i++)
+            {
+                if (combats[i].TargetProvinceId == targetProvinceId)
+                {
+                    combatEntity = entities[i];
+                    return true;
+                }
+            }
+        }
+
+        combatEntity = default;
+        return false;
     }
 
     /// <summary>
@@ -156,8 +228,12 @@ public sealed class SimulationWorld : IDisposable
         // 1. CommandProcessorSystem: Drain player and AI queued commands
         DrainCommandQueue();
 
-        // 2. DivisionMovementSystem hook (Phase 2.2)
-        // 3. CombatResolutionSystem hook (Phase 2.2)
+        // 2. DivisionMovementSystem: Advance movement along CSR edges & trigger combats
+        DivisionMovementSystem.Execute(this);
+
+        // 3. CombatResolutionSystem: Resolve 6-hour HOI4 land combat math
+        CombatResolutionSystem.Execute(this);
+
         // 4. AirAndNavalRegionSystem hook (Phase 4.2)
     }
 
@@ -202,7 +278,29 @@ public sealed class SimulationWorld : IDisposable
                     break;
                 }
                 case CommandType.MoveDivision:
+                {
+                    if (TryFindDivisionById(cmd.EntityId, out Entity divEntity))
+                    {
+                        ref DivisionComponent div = ref EcsWorld.Get<DivisionComponent>(divEntity);
+                        if (div.CountryTag == cmd.CountryTag)
+                        {
+                            DivisionMovementSystem.IssueMoveOrder(this, ref div, cmd.TargetId);
+                        }
+                    }
+                    break;
+                }
                 case CommandType.TogglePgm:
+                {
+                    if (TryFindDivisionById(cmd.EntityId, out Entity divEntity))
+                    {
+                        ref DivisionComponent div = ref EcsWorld.Get<DivisionComponent>(divEntity);
+                        if (div.CountryTag == cmd.CountryTag)
+                        {
+                            div.PgmAuthorized = cmd.IntParam0 != 0 ? (byte)1 : (byte)0;
+                        }
+                    }
+                    break;
+                }
                 case CommandType.None:
                 default:
                     break;
@@ -217,7 +315,9 @@ public sealed class SimulationWorld : IDisposable
 
         // 1. SupplyGraphSystem hook (Phase 4.1)
         // 2. ProductionSystem hook (Phase 3.1)
-        // 3. ReinforcementSystem hook (Phase 3.2)
+        // 3. ReinforcementSystem hook (Phase 3.2) & baseline daily Organization recovery:
+        RecoverDivisionOrganizationDaily();
+
         // 4. FocusAndResearchSystem baseline daily progress:
         Span<CountryState> countries = Countries.AsSpan();
         for (int i = 0; i < countries.Length; i++)
@@ -237,6 +337,30 @@ public sealed class SimulationWorld : IDisposable
         }
 
         // 5. TacticalFrontlineAISystem hook (Phase 6.1)
+    }
+
+    private void RecoverDivisionOrganizationDaily()
+    {
+        Query query = EcsWorld.Query(in DivisionQuery);
+        foreach (ref Chunk chunk in query)
+        {
+            Span<DivisionComponent> divisions = chunk.GetSpan<DivisionComponent>();
+            int chunkSize = chunk.Count;
+
+            for (int i = 0; i < chunkSize; i++)
+            {
+                ref DivisionComponent div = ref divisions[i];
+                if (div.State == DivisionState.Idle
+                    && div.Organization < div.MaxOrganization
+                    && div.Strength > 0.0f
+                    && div.CurrentProvinceId < MaxProvinces)
+                {
+                    float supplyRatio = System.Math.Clamp(Provinces[div.CurrentProvinceId].SupplyRatio, 0.1f, 1.0f);
+                    float dailyOrgRegen = 4.0f * supplyRatio;
+                    div.Organization = System.MathF.Min(div.MaxOrganization, div.Organization + dailyOrgRegen);
+                }
+            }
+        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -299,7 +423,7 @@ public sealed class SimulationWorld : IDisposable
     {
         if (!_disposed)
         {
-            Arch.Core.World.Destroy(EcsWorld);
+            World.Destroy(EcsWorld);
             _disposed = true;
         }
     }

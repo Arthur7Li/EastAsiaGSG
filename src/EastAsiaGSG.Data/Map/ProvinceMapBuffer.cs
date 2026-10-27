@@ -156,12 +156,32 @@ public sealed class ProvinceMapBuffer
 
         int count = System.Math.Min(activeProvinceCount, SimulationWorld.MaxProvinces);
         float maxDistSq = maxCoastalRadius * maxCoastalRadius;
+        int radiusInt = (int)System.MathF.Ceiling(maxCoastalRadius);
 
         ReadOnlySpan<ProvinceData> provinces = world.Provinces.AsSpan(0, count);
 
-        for (int y = 0; y < height; y++)
+        int minX = width, maxX = 0, minY = height, maxY = 0;
+        for (int i = 0; i < count; i++)
         {
-            for (int x = 0; x < width; x++)
+            ref readonly ProvinceData prov = ref provinces[i];
+            if (prov.OwnerTag == CountryTag.None)
+            {
+                continue;
+            }
+            if (prov.CenterX < minX) minX = prov.CenterX;
+            if (prov.CenterX > maxX) maxX = prov.CenterX;
+            if (prov.CenterY < minY) minY = prov.CenterY;
+            if (prov.CenterY > maxY) maxY = prov.CenterY;
+        }
+
+        int startX = System.Math.Max(0, minX - radiusInt);
+        int endX = System.Math.Min(width - 1, maxX + radiusInt);
+        int startY = System.Math.Max(0, minY - radiusInt);
+        int endY = System.Math.Min(height - 1, maxY + radiusInt);
+
+        for (int y = startY; y <= endY; y++)
+        {
+            for (int x = startX; x <= endX; x++)
             {
                 float bestDistSq = maxDistSq;
                 ushort bestProvinceId = OceanProvinceId;
@@ -174,10 +194,19 @@ public sealed class ProvinceMapBuffer
                         continue;
                     }
 
-                    float dx = x - prov.CenterX;
-                    float dy = y - prov.CenterY;
-                    float distSq = dx * dx + dy * dy;
+                    int dx = x - prov.CenterX;
+                    if (dx <= -radiusInt || dx >= radiusInt)
+                    {
+                        continue;
+                    }
 
+                    int dy = y - prov.CenterY;
+                    if (dy <= -radiusInt || dy >= radiusInt)
+                    {
+                        continue;
+                    }
+
+                    float distSq = dx * dx + dy * dy;
                     if (distSq < bestDistSq)
                     {
                         bestDistSq = distSq;

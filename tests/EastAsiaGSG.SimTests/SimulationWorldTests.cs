@@ -1,9 +1,11 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using Arch.Core;
 using EastAsiaGSG.Core.Commands;
 using EastAsiaGSG.Core.Components;
 using EastAsiaGSG.Core.ECS;
 using EastAsiaGSG.Core.Math;
+using EastAsiaGSG.Core.Systems;
 
 namespace EastAsiaGSG.SimTests;
 
@@ -17,12 +19,16 @@ public sealed class SimulationWorldTests
         Assert.Equal(184, sizeof(CountryState));
         Assert.Equal(40, sizeof(StrategicRegionData));
         Assert.Equal(16, sizeof(SimulationCommand));
+        Assert.Equal(128, sizeof(DivisionComponent));
+        Assert.Equal(64, sizeof(ActiveCombatComponent));
 
         Assert.True(RuntimeHelpers.IsReferenceOrContainsReferences<ProvinceData>() == false);
         Assert.True(RuntimeHelpers.IsReferenceOrContainsReferences<StateData>() == false);
         Assert.True(RuntimeHelpers.IsReferenceOrContainsReferences<CountryState>() == false);
         Assert.True(RuntimeHelpers.IsReferenceOrContainsReferences<StrategicRegionData>() == false);
         Assert.True(RuntimeHelpers.IsReferenceOrContainsReferences<SimulationCommand>() == false);
+        Assert.True(RuntimeHelpers.IsReferenceOrContainsReferences<DivisionComponent>() == false);
+        Assert.True(RuntimeHelpers.IsReferenceOrContainsReferences<ActiveCombatComponent>() == false);
 
         // Verify CountryTag roster (7 majors + 8 regional minors)
         Assert.Equal(0, CountryTag.PRC);
@@ -154,6 +160,163 @@ public sealed class SimulationWorldTests
         Assert.Equal(-1, world.Countries[CountryTag.JPN].ActiveFocusId);
         Assert.Equal(0, world.Countries[CountryTag.JPN].FocusDaysRemaining);
         Assert.True(world.Countries[CountryTag.JPN].HasCompletedFocus(7));
+    }
+
+    [Fact]
+    public void CombatResolutionSystem_CalculateExchange_MatchesGameDesignSpecFormulas()
+    {
+        // Attacker: SoftAttack=60, HardAttack=40, Piercing=55, Armor=60
+        // Target: Hardness=0.50, Armor=45, Piercing=40, Defense=40
+        // PGM Active for Attacker (+35% attack), Attacker Armor (60) > Target Piercing (40) (+40% OrgDamage)
+        CombatExchangeResult result = CombatResolutionSystem.CalculateExchange(
+            softAttack: 60.0f,
+            hardAttack: 40.0f,
+            attackerPiercing: 55.0f,
+            attackerArmor: 60.0f,
+            targetHardness: 0.50f,
+            targetArmor: 45.0f,
+            targetPiercing: 40.0f,
+            targetDefenseOrBreakthrough: 40.0f,
+            terrainModifier: 1.0f,
+            supplyModifier: 1.0f,
+            airModifier: 1.0f,
+            pgmActiveForAttacker: true,
+            pgmActiveForTarget: false,
+            targetIsAttackingSide: false);
+
+        // 1. A_base = 60 * 0.5 + 40 * 0.5 = 50.0
+        Assert.Equal(50.0f, result.BaseAttack, precision: 3);
+
+        // 2. A_eff = 50.0 * 1.35 (PGM) * 1.0 (Pierced: 55 >= 45) = 67.5
+        Assert.Equal(67.5f, result.EffectiveAttack, precision: 3);
+        Assert.True(result.AttackerPiercedTarget);
+        Assert.True(result.AttackerArmorUnpiercedByTarget);
+
+        // 3. ExpectedHits = 0.10 * min(67.5, 40.0) + 0.40 * max(0, 67.5 - 40.0) = 4.0 + 11.0 = 15.0
+        Assert.Equal(15.0f, result.ExpectedHits, precision: 3);
+
+        // 4. OrgDamage = 15.0 * 0.18 * 1.40 = 3.78; StrengthDamage = 15.0 * 0.04 = 0.60
+        Assert.Equal(3.78f, result.OrgDamage, precision: 3);
+        Assert.Equal(0.60f, result.StrengthDamage, precision: 3);
+    }
+
+    [Fact]
+    public void DivisionMovementAndCombat_ResolvesMultiDirectionAttackPgmAndRetreat()
+    {
+        using SimulationWorld world = new();
+
+        // Setup 4 provinces:
+        // 0 (ROK Paju) & 1 (ROK Yeoncheon) -> attack 2 (PRK Kaesong), which can retreat to 3 (PRK Sariwon)
+        world.Provinces[0].OwnerTag = CountryTag.ROK;
+        world.Provinces[0].ControllerTag = CountryTag.ROK;
+        world.Provinces[0].CenterX = 430;
+        world.Provinces[0].CenterY = 550;
+
+        world.Provinces[1].OwnerTag = CountryTag.ROK;
+        world.Provinces[1].ControllerTag = CountryTag.ROK;
+        world.Provinces[1].CenterX = 460;
+        world.Provinces[1].CenterY = 540;
+
+        world.Provinces[2].OwnerTag = CountryTag.PRK;
+        world.Provinces[2].ControllerTag = CountryTag.PRK;
+        world.Provinces[2].CenterX = 420;
+        world.Provinces[2].CenterY = 520;
+
+        world.Provinces[3].OwnerTag = CountryTag.PRK;
+        world.Provinces[3].ControllerTag = CountryTag.PRK;
+        world.Provinces[3].CenterX = 405;
+        world.Provinces[3].CenterY = 470;
+
+        ReadOnlySpan<DirectedEdge> edges =
+        [
+            new DirectedEdge(0, 2, AdjacencyEdgeFlags.Standard),
+            new DirectedEdge(2, 0, AdjacencyEdgeFlags.Standard),
+            new DirectedEdge(1, 2, AdjacencyEdgeFlags.Standard),
+            new DirectedEdge(2, 1, AdjacencyEdgeFlags.Standard),
+            new DirectedEdge(2, 3, AdjacencyEdgeFlags.Standard),
+            new DirectedEdge(3, 2, AdjacencyEdgeFlags.Standard)
+        ];
+        world.Graph.BuildCsr(world.Provinces, edges);
+
+        // Give ROK PGM stockpile
+        world.Countries[CountryTag.ROK].SetStockpile(EquipmentType.PGM, TechGeneration.Gen2_1988LateColdWar, 100);
+
+        // Spawn 2 ROK mechanized divisions in provinces 0 and 1, and 1 PRK infantry division in province 2
+        Entity rokDiv1 = world.SpawnDivision(DivisionComponent.Create(
+            divisionId: 101,
+            countryTag: CountryTag.ROK,
+            startingProvinceId: 0,
+            softAttack: 65f,
+            hardAttack: 45f,
+            defense: 55f,
+            breakthrough: 50f,
+            armor: 50f,
+            piercing: 55f,
+            hardness: 0.60f,
+            maxOrganization: 60f));
+
+        Entity rokDiv2 = world.SpawnDivision(DivisionComponent.Create(
+            divisionId: 102,
+            countryTag: CountryTag.ROK,
+            startingProvinceId: 1,
+            softAttack: 60f,
+            hardAttack: 40f,
+            defense: 50f,
+            breakthrough: 45f,
+            armor: 45f,
+            piercing: 50f,
+            hardness: 0.55f,
+            maxOrganization: 60f));
+
+        Entity prkDef = world.SpawnDivision(DivisionComponent.Create(
+            divisionId: 201,
+            countryTag: CountryTag.PRK,
+            startingProvinceId: 2,
+            softAttack: 35f,
+            hardAttack: 15f,
+            defense: 40f,
+            breakthrough: 25f,
+            armor: 15f,
+            piercing: 25f,
+            hardness: 0.15f,
+            maxOrganization: 30f));
+
+        // Authorize PGM on ROK Division 101 and order both ROK divisions to attack Province 2
+        world.EnqueueCommand(SimulationCommand.CreateTogglePgm(CountryTag.ROK, divisionEntityId: 101, authorized: true));
+        world.EnqueueCommand(SimulationCommand.CreateMoveDivision(CountryTag.ROK, divisionEntityId: 101, targetProvinceId: 2));
+        world.EnqueueCommand(SimulationCommand.CreateMoveDivision(CountryTag.ROK, divisionEntityId: 102, targetProvinceId: 2));
+
+        // First 6-hour tick: commands drain, combat spawns from 2 directions (width = 80 + 20 = 100), and first exchange resolves
+        world.StepSixHours();
+
+        Assert.True(world.TryFindActiveCombatAtProvince(2, out Entity combatEntity));
+        ref ActiveCombatComponent combat = ref world.EcsWorld.Get<ActiveCombatComponent>(combatEntity);
+        Assert.Equal(2, combat.AttackDirectionCount);
+        Assert.Equal(100, combat.TotalCombatWidth);
+        Assert.Equal(40, combat.UsedAttackerWidth);
+        Assert.Equal(20, combat.UsedDefenderWidth);
+
+        // Verify PGM stockpile was consumed by ROK Division 101
+        int remainingPgm = world.Countries[CountryTag.ROK].GetStockpile(EquipmentType.PGM, TechGeneration.Gen2_1988LateColdWar);
+        Assert.Equal(100 - CombatResolutionSystem.PgmUnitsConsumedPerSixHourTick, remainingPgm);
+
+        // Advance ticks until PRK defender's organization drops to 0 and it retreats to Province 3
+        for (int t = 0; t < 15; t++)
+        {
+            ref DivisionComponent defState = ref world.EcsWorld.Get<DivisionComponent>(prkDef);
+            if (defState.CurrentProvinceId == 3)
+            {
+                break;
+            }
+            world.StepSixHours();
+        }
+
+        ref DivisionComponent finalDef = ref world.EcsWorld.Get<DivisionComponent>(prkDef);
+        ref DivisionComponent finalAtt1 = ref world.EcsWorld.Get<DivisionComponent>(rokDiv1);
+        Assert.Equal((ushort)3, finalDef.CurrentProvinceId);
+        Assert.True(finalDef.Strength > 0.50f);
+        Assert.Equal((ushort)2, finalAtt1.CurrentProvinceId);
+        Assert.Equal(CountryTag.ROK, world.Provinces[2].ControllerTag);
     }
 
     [Fact]

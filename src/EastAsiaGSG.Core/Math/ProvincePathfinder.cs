@@ -105,9 +105,15 @@ public sealed class ProvincePathfinder
             return PathResult.Failed;
         }
 
-        ReadOnlySpan<ProvinceData> provinces = world.Provinces;
-        ReadOnlySpan<CountryState> countries = world.Countries;
-        ProvinceGraph graph = world.Graph;
+        ProvinceData[] provinces = world.Provinces;
+        CountryState[] countries = world.Countries;
+        ushort[] adjTargets = world.Graph.AdjacencyTargets;
+        byte[] adjFlags = world.Graph.AdjacencyEdgeFlags;
+        float[] gScores = _gScores;
+        float[] fScores = _fScores;
+        ushort[] cameFrom = _cameFrom;
+        uint[] visitedTokens = _visitedTokens;
+        uint[] heapTokens = _heapTokens;
 
         // Check if goal is ocean and straits are not allowed
         ref readonly ProvinceData goalProv = ref provinces[goal];
@@ -132,23 +138,23 @@ public sealed class ProvincePathfinder
         }
 
         // Advance search token for O(1) state reset
-        _searchToken++;
-        if (_searchToken == 0)
+        uint token = ++_searchToken;
+        if (token == 0)
         {
-            Array.Clear(_visitedTokens, 0, _visitedTokens.Length);
-            Array.Clear(_heapTokens, 0, _heapTokens.Length);
-            _searchToken = 1;
+            Array.Clear(visitedTokens, 0, visitedTokens.Length);
+            Array.Clear(heapTokens, 0, heapTokens.Length);
+            token = _searchToken = 1;
         }
 
         // Reset heap
         _heapCount = 0;
 
         // Initialize start node
-        _visitedTokens[start] = _searchToken;
-        _gScores[start] = 0f;
+        visitedTokens[start] = token;
+        gScores[start] = 0f;
         float startH = ComputeHeuristic(in provinces[start], in goalProv, query.Flags);
-        _fScores[start] = startH;
-        _cameFrom[start] = start;
+        fScores[start] = startH;
+        cameFrom[start] = start;
 
         HeapPush(start, startH);
 
@@ -164,26 +170,26 @@ public sealed class ProvincePathfinder
                 break;
             }
 
-            float currentG = _gScores[current];
-            if (currentG >= query.MaxCost || _fScores[current] > query.MaxCost)
+            float currentG = gScores[current];
+            if (currentG >= query.MaxCost || fScores[current] > query.MaxCost)
             {
                 continue;
             }
 
             ref readonly ProvinceData currentProv = ref provinces[current];
-            ReadOnlySpan<ushort> neighbors = graph.GetNeighbors(in currentProv);
-            ReadOnlySpan<byte> edgeFlags = graph.GetEdgeFlags(in currentProv);
+            int adjStart = currentProv.AdjacencyOffset;
+            int adjEnd = adjStart + currentProv.AdjacencyCount;
 
-            for (int i = 0; i < neighbors.Length; i++)
+            for (int i = adjStart; i < adjEnd; i++)
             {
-                ushort neighbor = neighbors[i];
+                ushort neighbor = adjTargets[i];
                 if (neighbor >= MaxNodes)
                 {
                     continue;
                 }
 
                 ref readonly ProvinceData neighborProv = ref provinces[neighbor];
-                AdjacencyEdgeFlags flags = (AdjacencyEdgeFlags)edgeFlags[i];
+                AdjacencyEdgeFlags flags = (AdjacencyEdgeFlags)adjFlags[i];
 
                 float stepCost = CalculateStepCost(
                     in currentProv,
@@ -203,20 +209,19 @@ public sealed class ProvincePathfinder
                     continue;
                 }
 
-                bool visited = _visitedTokens[neighbor] == _searchToken;
+                bool visited = visitedTokens[neighbor] == token;
 
-                if (!visited || tentativeG < _gScores[neighbor])
+                if (!visited || tentativeG < gScores[neighbor])
                 {
-                    _visitedTokens[neighbor] = _searchToken;
-                    _cameFrom[neighbor] = current;
-                    _gScores[neighbor] = tentativeG;
+                    visitedTokens[neighbor] = token;
+                    cameFrom[neighbor] = current;
+                    gScores[neighbor] = tentativeG;
 
                     float h = ComputeHeuristic(in neighborProv, in goalProv, query.Flags);
                     float f = tentativeG + h;
-                    _fScores[neighbor] = f;
+                    fScores[neighbor] = f;
 
-                    bool inHeap = _heapTokens[neighbor] == _searchToken;
-                    if (!inHeap)
+                    if (heapTokens[neighbor] != token)
                     {
                         HeapPush(neighbor, f);
                     }
