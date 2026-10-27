@@ -158,13 +158,29 @@ public static class CombatResolutionSystem
             for (int i = 0; i < chunkSize; i++)
             {
                 ref DivisionComponent div = ref divisions[i];
-                if (!div.IsCombatCapable || div.State == DivisionState.Retreating)
+                if (div.State == DivisionState.Retreating || div.State == DivisionState.Shattered)
                 {
                     continue;
                 }
 
                 if (div.State == DivisionState.Attacking && div.TargetProvinceId == targetProvinceId)
                 {
+                    if (div.Strength <= 0.0f)
+                    {
+                        div.State = DivisionState.Shattered;
+                        div.ActiveCombatId = DivisionComponent.NoCombat;
+                        div.ClearWaypoints();
+                        continue;
+                    }
+
+                    if (div.Organization <= 0.0f)
+                    {
+                        div.State = DivisionState.Idle;
+                        div.ActiveCombatId = DivisionComponent.NoCombat;
+                        div.ClearWaypoints();
+                        continue;
+                    }
+
                     if (attackerTotal < attackers.Length)
                     {
                         attackers[attackerTotal++] = entities[i];
@@ -175,6 +191,20 @@ public static class CombatResolutionSystem
                 else if (div.CurrentProvinceId == targetProvinceId
                          && !DivisionMovementSystem.IsFriendlyOrAllied(world, combat.AttackerTag, div.CountryTag))
                 {
+                    if (div.Strength <= 0.0f)
+                    {
+                        div.State = DivisionState.Shattered;
+                        div.ActiveCombatId = DivisionComponent.NoCombat;
+                        div.ClearWaypoints();
+                        continue;
+                    }
+
+                    if (div.Organization <= 0.0f)
+                    {
+                        RetreatOrShatterDefender(world, ref div, targetProvinceId);
+                        continue;
+                    }
+
                     if (defenderTotal < defenders.Length)
                     {
                         div.State = DivisionState.Defending;
