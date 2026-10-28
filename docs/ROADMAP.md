@@ -15,7 +15,7 @@
 ## Phase 3: Industrial Economy, Equipment Stockpiles & Reinforcements
 - [x] **Task 3.1:** Implement `ProductionLineComponent`, `ProductionSystem` (hyperbolic efficiency growth), and `ConstructionSystem` (State building queue).
 - [x] **Task 3.2:** Implement `ReinforcementSystem` connecting field division strength/PGM consumption to `CountryState.EquipmentStockpile`.
-- [ ] **Task 3.3:** Build the Godot Production Line UI, Construction Queue UI, and National Stockpile TopBar.
+- [x] **Task 3.3:** Build the Godot Production Line UI, Construction Queue UI, and National Stockpile TopBar.
 
 ## Phase 4: Supply Graph, Air/Naval Regions & Off-Map Superpowers
 - [ ] **Task 4.1:** Implement `SupplyGraphSystem` (Hub/Rail/Port Dijkstra + Trans-Siberian Artery bottleneck logic).

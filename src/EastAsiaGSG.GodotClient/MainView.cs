@@ -25,6 +25,9 @@ public partial class MainView : Node2D
     private ProvinceInfoPanel? _infoPanel;
     private TimeControlsToolbar? _timeToolbar;
     private CombatTelemetryPopup? _combatPopup;
+    private NationalStockpileTopBar? _stockpileTopBar;
+    private ConstructionQueuePanel? _constructionPanel;
+    private ProductionLinePanel? _productionPanel;
 
     public override void _Ready()
     {
@@ -79,6 +82,9 @@ public partial class MainView : Node2D
         }
         _tacticalOverlay.Initialize(_world, _mapRenderer, _camera);
 
+        // 4.5. Seed Starting 1985 Historical Divisions, Stockpiles & Production Lines
+        SpawnStartingSandboxDivisions();
+
         // 5. Setup HUD CanvasLayer
         var hudLayer = GetNodeOrNull<CanvasLayer>("HUD");
         if (hudLayer == null)
@@ -86,6 +92,22 @@ public partial class MainView : Node2D
             hudLayer = new CanvasLayer { Name = "HUD" };
             AddChild(hudLayer);
         }
+
+        // Setup NationalStockpileTopBar at top-left
+        _stockpileTopBar = hudLayer.GetNodeOrNull<NationalStockpileTopBar>("NationalStockpileTopBar");
+        if (_stockpileTopBar == null)
+        {
+            _stockpileTopBar = new NationalStockpileTopBar { Name = "NationalStockpileTopBar" };
+            hudLayer.AddChild(_stockpileTopBar);
+        }
+        _stockpileTopBar.SetAnchorsPreset(Control.LayoutPreset.TopLeft);
+        _stockpileTopBar.GrowHorizontal = Control.GrowDirection.End;
+        _stockpileTopBar.GrowVertical = Control.GrowDirection.End;
+        _stockpileTopBar.OffsetLeft = 20;
+        _stockpileTopBar.OffsetTop = 16;
+        _stockpileTopBar.OffsetRight = 760;
+        _stockpileTopBar.OffsetBottom = 66;
+        _stockpileTopBar.Initialize(_world, CountryTag.ROK);
 
         // Setup MapModeToolbar at bottom-right
         _toolbar = hudLayer.GetNodeOrNull<MapModeToolbar>("MapModeToolbar");
@@ -103,7 +125,7 @@ public partial class MainView : Node2D
         _toolbar.OffsetBottom = -15;
         _toolbar.ModeSelected += mode => _mapRenderer.SetMapMode(mode);
 
-        // Setup ProvinceInfoPanel at top-left
+        // Setup ProvinceInfoPanel at top-left below NationalStockpileTopBar
         _infoPanel = hudLayer.GetNodeOrNull<ProvinceInfoPanel>("ProvinceInfoPanel");
         if (_infoPanel == null)
         {
@@ -114,9 +136,9 @@ public partial class MainView : Node2D
         _infoPanel.GrowHorizontal = Control.GrowDirection.End;
         _infoPanel.GrowVertical = Control.GrowDirection.End;
         _infoPanel.OffsetLeft = 20;
-        _infoPanel.OffsetTop = 20;
+        _infoPanel.OffsetTop = 74;
         _infoPanel.OffsetRight = 360;
-        _infoPanel.OffsetBottom = 280;
+        _infoPanel.OffsetBottom = 334;
         _infoPanel.Initialize(_world);
 
         // Setup TimeControlsToolbar at top-right
@@ -130,10 +152,42 @@ public partial class MainView : Node2D
         _timeToolbar.GrowHorizontal = Control.GrowDirection.Begin;
         _timeToolbar.GrowVertical = Control.GrowDirection.End;
         _timeToolbar.OffsetLeft = -620;
-        _timeToolbar.OffsetTop = 20;
+        _timeToolbar.OffsetTop = 16;
         _timeToolbar.OffsetRight = -20;
-        _timeToolbar.OffsetBottom = 68;
+        _timeToolbar.OffsetBottom = 64;
         _timeToolbar.Initialize(_world);
+
+        // Setup ConstructionQueuePanel at bottom-left
+        _constructionPanel = hudLayer.GetNodeOrNull<ConstructionQueuePanel>("ConstructionQueuePanel");
+        if (_constructionPanel == null)
+        {
+            _constructionPanel = new ConstructionQueuePanel { Name = "ConstructionQueuePanel" };
+            hudLayer.AddChild(_constructionPanel);
+        }
+        _constructionPanel.SetAnchorsPreset(Control.LayoutPreset.BottomLeft);
+        _constructionPanel.GrowHorizontal = Control.GrowDirection.End;
+        _constructionPanel.GrowVertical = Control.GrowDirection.Begin;
+        _constructionPanel.OffsetLeft = 20;
+        _constructionPanel.OffsetTop = -345;
+        _constructionPanel.OffsetRight = 445;
+        _constructionPanel.OffsetBottom = -15;
+        _constructionPanel.Initialize(_world, CountryTag.ROK);
+
+        // Setup ProductionLinePanel at bottom-center-left
+        _productionPanel = hudLayer.GetNodeOrNull<ProductionLinePanel>("ProductionLinePanel");
+        if (_productionPanel == null)
+        {
+            _productionPanel = new ProductionLinePanel { Name = "ProductionLinePanel" };
+            hudLayer.AddChild(_productionPanel);
+        }
+        _productionPanel.SetAnchorsPreset(Control.LayoutPreset.BottomLeft);
+        _productionPanel.GrowHorizontal = Control.GrowDirection.End;
+        _productionPanel.GrowVertical = Control.GrowDirection.Begin;
+        _productionPanel.OffsetLeft = 458;
+        _productionPanel.OffsetTop = -345;
+        _productionPanel.OffsetRight = 895;
+        _productionPanel.OffsetBottom = -15;
+        _productionPanel.Initialize(_world, CountryTag.ROK);
 
         // Setup CombatTelemetryPopup at center-right
         _combatPopup = hudLayer.GetNodeOrNull<CombatTelemetryPopup>("CombatTelemetryPopup");
@@ -150,6 +204,25 @@ public partial class MainView : Node2D
         _combatPopup.OffsetRight = -20;
         _combatPopup.OffsetBottom = 140;
 
+        // Wire TopBar drawer toggles & country switching
+        _stockpileTopBar.ActiveCountryChanged += tag =>
+        {
+            _constructionPanel.SetActiveCountry(tag);
+            _productionPanel.SetActiveCountry(tag);
+        };
+        _stockpileTopBar.ToggleConstructionRequested += () =>
+        {
+            _constructionPanel.Visible = !_constructionPanel.Visible;
+            _stockpileTopBar.SetDrawerStates(_constructionPanel.Visible, _productionPanel.Visible);
+        };
+        _stockpileTopBar.ToggleProductionRequested += () =>
+        {
+            _productionPanel.Visible = !_productionPanel.Visible;
+            _stockpileTopBar.SetDrawerStates(_constructionPanel.Visible, _productionPanel.Visible);
+        };
+        _constructionPanel.CommandEnqueued += () => _stockpileTopBar.Refresh();
+        _productionPanel.CommandEnqueued += () => _stockpileTopBar.Refresh();
+
         // Wire map interactions to info panel
         _mapRenderer.ProvinceHovered += id => _infoPanel.DisplayProvince(id);
         _mapRenderer.ProvinceSelected += id => _infoPanel.DisplayProvince(id);
@@ -159,16 +232,18 @@ public partial class MainView : Node2D
         _tacticalOverlay.DivisionDeselected += () => _infoPanel.DisplaySelectedDivision(null);
         _tacticalOverlay.CombatSelected += combat => _combatPopup.DisplayCombat(_world, combat.CombatId);
 
-        // Wire time controls tick event to refresh map colors, tactical overlay, and combat telemetry
+        // Wire time controls tick event to refresh map colors, tactical overlay, combat telemetry, and industrial HUD
         _timeToolbar.Ticked += () =>
         {
             _mapRenderer.RefreshMapLut();
             _combatPopup?.RefreshIfActive();
             _tacticalOverlay?.QueueRedraw();
+            _constructionPanel?.ClearPendingPreviews();
+            _productionPanel?.ClearPendingPreviews();
+            _stockpileTopBar?.Refresh();
+            _constructionPanel?.Refresh();
+            _productionPanel?.Refresh();
         };
-
-        // 6. Spawn Starting 1985 Historical Sandbox Divisions
-        SpawnStartingSandboxDivisions();
     }
 
     private void SpawnStartingSandboxDivisions()
@@ -178,8 +253,112 @@ public partial class MainView : Node2D
             return;
         }
 
-        // Grant ROK national PGM stockpile
-        _world.Countries[CountryTag.ROK].SetStockpile(EquipmentType.PGM, TechGeneration.Gen2_1988LateColdWar, 120);
+        // Grant ROK & PRK starting 1985 equipment stockpiles and manpower
+        ref CountryState rok = ref _world.Countries[CountryTag.ROK];
+        rok.Manpower = 420_000;
+        rok.SetStockpile(EquipmentType.InfantryKit, TechGeneration.Gen1_1980Baseline, 2_400);
+        rok.SetStockpile(EquipmentType.SupportVehicles, TechGeneration.Gen1_1980Baseline, 450);
+        rok.SetStockpile(EquipmentType.IFV, TechGeneration.Gen1_1980Baseline, 320);
+        rok.SetStockpile(EquipmentType.MBT, TechGeneration.Gen1_1980Baseline, 180);
+        rok.SetStockpile(EquipmentType.Artillery, TechGeneration.Gen1_1980Baseline, 260);
+        rok.SetStockpile(EquipmentType.AttackHeli, TechGeneration.Gen1_1980Baseline, 45);
+        rok.SetStockpile(EquipmentType.TacticalAir, TechGeneration.Gen1_1980Baseline, 90);
+        rok.SetStockpile(EquipmentType.PGM, TechGeneration.Gen2_1988LateColdWar, 120);
+
+        ref CountryState prk = ref _world.Countries[CountryTag.PRK];
+        prk.Manpower = 580_000;
+        prk.SetStockpile(EquipmentType.InfantryKit, TechGeneration.Gen1_1980Baseline, 3_800);
+        prk.SetStockpile(EquipmentType.SupportVehicles, TechGeneration.Gen1_1980Baseline, 380);
+        prk.SetStockpile(EquipmentType.IFV, TechGeneration.Gen1_1980Baseline, 240);
+        prk.SetStockpile(EquipmentType.MBT, TechGeneration.Gen1_1980Baseline, 290);
+        prk.SetStockpile(EquipmentType.Artillery, TechGeneration.Gen1_1980Baseline, 520);
+        prk.SetStockpile(EquipmentType.TacticalAir, TechGeneration.Gen1_1980Baseline, 110);
+        prk.SetStockpile(EquipmentType.PGM, TechGeneration.Gen1_1980Baseline, 40);
+
+        // Spawn 1985 ROK Military Production Lines (23 Military Factories across States 0..4)
+        _world.SpawnProductionLine(ProductionLineComponent.Create(
+            lineId: 101,
+            countryTag: CountryTag.ROK,
+            archetype: EquipmentType.InfantryKit,
+            generation: TechGeneration.Gen1_1980Baseline,
+            assignedMilitaryFactories: 6,
+            priority: 200,
+            initialEfficiency: 0.65f,
+            efficiencyCap: 0.85f));
+        _world.SpawnProductionLine(ProductionLineComponent.Create(
+            lineId: 102,
+            countryTag: CountryTag.ROK,
+            archetype: EquipmentType.IFV,
+            generation: TechGeneration.Gen1_1980Baseline,
+            assignedMilitaryFactories: 5,
+            priority: 180,
+            initialEfficiency: 0.55f,
+            efficiencyCap: 0.85f));
+        _world.SpawnProductionLine(ProductionLineComponent.Create(
+            lineId: 103,
+            countryTag: CountryTag.ROK,
+            archetype: EquipmentType.MBT,
+            generation: TechGeneration.Gen2_1988LateColdWar,
+            assignedMilitaryFactories: 5,
+            priority: 160,
+            initialEfficiency: 0.45f,
+            efficiencyCap: 0.85f));
+        _world.SpawnProductionLine(ProductionLineComponent.Create(
+            lineId: 104,
+            countryTag: CountryTag.ROK,
+            archetype: EquipmentType.Artillery,
+            generation: TechGeneration.Gen1_1980Baseline,
+            assignedMilitaryFactories: 4,
+            priority: 140,
+            initialEfficiency: 0.60f,
+            efficiencyCap: 0.85f));
+        _world.SpawnProductionLine(ProductionLineComponent.Create(
+            lineId: 105,
+            countryTag: CountryTag.ROK,
+            archetype: EquipmentType.PGM,
+            generation: TechGeneration.Gen2_1988LateColdWar,
+            assignedMilitaryFactories: 3,
+            priority: 120,
+            initialEfficiency: 0.50f,
+            efficiencyCap: 0.85f));
+
+        // Spawn 1985 PRK Military Production Lines (34 Military Factories across States 5..9)
+        _world.SpawnProductionLine(ProductionLineComponent.Create(
+            lineId: 201,
+            countryTag: CountryTag.PRK,
+            archetype: EquipmentType.InfantryKit,
+            generation: TechGeneration.Gen1_1980Baseline,
+            assignedMilitaryFactories: 10,
+            priority: 200,
+            initialEfficiency: 0.70f,
+            efficiencyCap: 0.80f));
+        _world.SpawnProductionLine(ProductionLineComponent.Create(
+            lineId: 202,
+            countryTag: CountryTag.PRK,
+            archetype: EquipmentType.Artillery,
+            generation: TechGeneration.Gen1_1980Baseline,
+            assignedMilitaryFactories: 10,
+            priority: 180,
+            initialEfficiency: 0.70f,
+            efficiencyCap: 0.80f));
+        _world.SpawnProductionLine(ProductionLineComponent.Create(
+            lineId: 203,
+            countryTag: CountryTag.PRK,
+            archetype: EquipmentType.MBT,
+            generation: TechGeneration.Gen1_1980Baseline,
+            assignedMilitaryFactories: 8,
+            priority: 160,
+            initialEfficiency: 0.60f,
+            efficiencyCap: 0.80f));
+        _world.SpawnProductionLine(ProductionLineComponent.Create(
+            lineId: 204,
+            countryTag: CountryTag.PRK,
+            archetype: EquipmentType.IFV,
+            generation: TechGeneration.Gen1_1980Baseline,
+            assignedMilitaryFactories: 6,
+            priority: 140,
+            initialEfficiency: 0.55f,
+            efficiencyCap: 0.80f));
 
         // 1. ROK Capital Mechanized Infantry Division ('Tiger') at Paju / Munsan (Province 6)
         _world.SpawnDivision(DivisionComponent.Create(
