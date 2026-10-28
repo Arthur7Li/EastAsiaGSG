@@ -17,6 +17,8 @@ public sealed class SimulationWorld : IDisposable
     public const int MaxStates = 140;
     public const int MaxCountries = 16;
     public const int MaxStrategicRegions = 18;
+    public const int MaxDivisionTemplates = 64;
+    public const int DefaultStartingManpower = 250_000;
 
     public const int StartYear = 1985;
     public const int StartMonth = 1;
@@ -33,6 +35,7 @@ public sealed class SimulationWorld : IDisposable
     public readonly StateData[] States = new StateData[MaxStates];
     public readonly CountryState[] Countries = new CountryState[MaxCountries];
     public readonly StrategicRegionData[] Regions = new StrategicRegionData[MaxStrategicRegions];
+    public readonly DivisionTemplateRecord[] Templates = new DivisionTemplateRecord[MaxDivisionTemplates];
 
     // Global CSR Adjacency Graph for Provinces
     public readonly ProvinceGraph Graph = new();
@@ -92,8 +95,16 @@ public sealed class SimulationWorld : IDisposable
             Countries[i].Stability = 0.70f;
             Countries[i].WarSupport = 0.50f;
             Countries[i].ConsumerGoodsRatio = 0.25f;
+            Countries[i].Manpower = DefaultStartingManpower;
             Countries[i].ActiveFocusId = -1;
             Countries[i].FocusDaysRemaining = 0;
+        }
+
+        for (ushort i = 0; i < MaxDivisionTemplates; i++)
+        {
+            Templates[i].TemplateId = i;
+            Templates[i].CombatWidth = 20;
+            Templates[i].IsConfigured = 0;
         }
 
         for (byte i = 0; i < MaxStrategicRegions; i++)
@@ -107,6 +118,19 @@ public sealed class SimulationWorld : IDisposable
     internal int AllocateNextCombatId()
     {
         return _nextCombatId++;
+    }
+
+    /// <summary>
+    /// Registers or updates a DivisionTemplateRecord in the flat Templates table.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void RegisterDivisionTemplate(in DivisionTemplateRecord template)
+    {
+        if (template.TemplateId < MaxDivisionTemplates)
+        {
+            Templates[template.TemplateId] = template;
+            Templates[template.TemplateId].IsConfigured = 1;
+        }
     }
 
     /// <summary>
@@ -418,8 +442,8 @@ public sealed class SimulationWorld : IDisposable
         ConstructionSystem.Execute(this);
         ProductionSystem.Execute(this);
 
-        // 3. ReinforcementSystem hook (Phase 3.2) & baseline daily Organization recovery:
-        RecoverDivisionOrganizationDaily();
+        // 3. ReinforcementSystem (Phase 3.2 - field division equipment/manpower reinforcement & daily Org recovery):
+        ReinforcementSystem.Execute(this);
 
         // 4. FocusAndResearchSystem baseline daily progress:
         Span<CountryState> countries = Countries.AsSpan();
@@ -440,30 +464,6 @@ public sealed class SimulationWorld : IDisposable
         }
 
         // 5. TacticalFrontlineAISystem hook (Phase 6.1)
-    }
-
-    private void RecoverDivisionOrganizationDaily()
-    {
-        Query query = EcsWorld.Query(in DivisionQuery);
-        foreach (ref Chunk chunk in query)
-        {
-            Span<DivisionComponent> divisions = chunk.GetSpan<DivisionComponent>();
-            int chunkSize = chunk.Count;
-
-            for (int i = 0; i < chunkSize; i++)
-            {
-                ref DivisionComponent div = ref divisions[i];
-                if (div.State == DivisionState.Idle
-                    && div.Organization < div.MaxOrganization
-                    && div.Strength > 0.0f
-                    && div.CurrentProvinceId < MaxProvinces)
-                {
-                    float supplyRatio = System.Math.Clamp(Provinces[div.CurrentProvinceId].SupplyRatio, 0.1f, 1.0f);
-                    float dailyOrgRegen = 4.0f * supplyRatio;
-                    div.Organization = System.MathF.Min(div.MaxOrganization, div.Organization + dailyOrgRegen);
-                }
-            }
-        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
