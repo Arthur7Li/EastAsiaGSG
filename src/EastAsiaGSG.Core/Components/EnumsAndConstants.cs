@@ -38,6 +38,20 @@ public enum ResourceType : byte
 }
 
 /// <summary>
+/// State-level constructible building types queued in ConstructionSystem.
+/// </summary>
+public enum BuildingType : byte
+{
+    None = 0,
+    CivilianFactory = 1,
+    MilitaryFactory = 2,
+    NavalDockyard = 3,
+    Infrastructure = 4,
+    Airbase = 5,
+    RadarSam = 6
+}
+
+/// <summary>
 /// Province terrain classification governing movement cost and combat modifiers.
 /// </summary>
 public enum TerrainType : byte

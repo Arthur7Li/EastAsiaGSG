@@ -25,7 +25,8 @@ public unsafe struct StateData
     [FieldOffset(16)] public fixed ushort Resources[ResourceCount];
     [FieldOffset(24)] public float ConstructionProgress;
     [FieldOffset(28)] public ushort AssignedCivFactories;
-    [FieldOffset(30)] public ushort ReservedPadding;
+    [FieldOffset(30)] public BuildingType ActiveBuildingType;
+    [FieldOffset(31)] public byte QueuedBuildingLevels;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly ushort GetResource(ResourceType type)

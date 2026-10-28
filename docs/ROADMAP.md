@@ -13,7 +13,7 @@
 - [x] **Task 2.4:** Build Godot Division On-Map Counters, movement arrows, and HOI4-style green/red 0–100 Battle Bubbles.
 
 ## Phase 3: Industrial Economy, Equipment Stockpiles & Reinforcements
-- [ ] **Task 3.1:** Implement `ProductionLineComponent`, `ProductionSystem` (hyperbolic efficiency growth), and `ConstructionSystem` (State building queue).
+- [x] **Task 3.1:** Implement `ProductionLineComponent`, `ProductionSystem` (hyperbolic efficiency growth), and `ConstructionSystem` (State building queue).
 - [ ] **Task 3.2:** Implement `ReinforcementSystem` connecting field division strength/PGM consumption to `CountryState.EquipmentStockpile`.
 - [ ] **Task 3.3:** Build the Godot Production Line UI, Construction Queue UI, and National Stockpile TopBar.
 

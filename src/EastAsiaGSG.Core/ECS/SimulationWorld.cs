@@ -26,6 +26,7 @@ public sealed class SimulationWorld : IDisposable
     private static ReadOnlySpan<byte> DaysPerMonthStandard => [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     private static readonly QueryDescription DivisionQuery = new QueryDescription().WithAll<DivisionComponent>();
     private static readonly QueryDescription CombatQuery = new QueryDescription().WithAll<ActiveCombatComponent>();
+    private static readonly QueryDescription ProductionLineQuery = new QueryDescription().WithAll<ProductionLineComponent>();
 
     // Flat Contiguous State Arrays (Index == ID)
     public readonly ProvinceData[] Provinces = new ProvinceData[MaxProvinces];
@@ -188,6 +189,59 @@ public sealed class SimulationWorld : IDisposable
     }
 
     /// <summary>
+    /// Spawns a ProductionLineComponent entity in EcsWorld.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Entity SpawnProductionLine(in ProductionLineComponent line)
+    {
+        return EcsWorld.Create(line);
+    }
+
+    /// <summary>
+    /// Finds a production line entity by prioritizing LineId first, falling back to ECS Entity.Id with zero heap allocations.
+    /// </summary>
+    public bool TryFindProductionLineById(int lineOrEntityId, out Entity foundEntity)
+    {
+        // Phase 1: Search by domain LineId across all chunks
+        Query query1 = EcsWorld.Query(in ProductionLineQuery);
+        foreach (ref Chunk chunk in query1)
+        {
+            Span<ProductionLineComponent> lines = chunk.GetSpan<ProductionLineComponent>();
+            ReadOnlySpan<Entity> entities = chunk.Entities;
+            int chunkSize = chunk.Count;
+
+            for (int i = 0; i < chunkSize; i++)
+            {
+                if (lines[i].LineId == lineOrEntityId)
+                {
+                    foundEntity = entities[i];
+                    return true;
+                }
+            }
+        }
+
+        // Phase 2: Fallback search by internal ECS Entity.Id across all chunks
+        Query query2 = EcsWorld.Query(in ProductionLineQuery);
+        foreach (ref Chunk chunk in query2)
+        {
+            ReadOnlySpan<Entity> entities = chunk.Entities;
+            int chunkSize = chunk.Count;
+
+            for (int i = 0; i < chunkSize; i++)
+            {
+                if (entities[i].Id == lineOrEntityId)
+                {
+                    foundEntity = entities[i];
+                    return true;
+                }
+            }
+        }
+
+        foundEntity = default;
+        return false;
+    }
+
+    /// <summary>
     /// Enqueues a deterministic command to be executed at the start of the next 6-hour tick.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -319,6 +373,34 @@ public sealed class SimulationWorld : IDisposable
                     }
                     break;
                 }
+                case CommandType.QueueConstruction:
+                {
+                    if (cmd.TargetId < MaxStates)
+                    {
+                        ref StateData state = ref States[cmd.TargetId];
+                        if (state.ControllerTag == cmd.CountryTag || state.ControllerTag == CountryTag.None)
+                        {
+                            BuildingType buildingType = (BuildingType)(cmd.IntParam0 & 0xFF);
+                            byte levels = (byte)((cmd.IntParam0 >> 8) & 0xFF);
+                            ushort requestedCiv = (ushort)System.Math.Clamp(cmd.IntParam1, 0, ConstructionSystem.MaxCivFactoriesPerState);
+                            ConstructionSystem.QueueConstruction(ref state, buildingType, levels, requestedCiv);
+                        }
+                    }
+                    break;
+                }
+                case CommandType.AssignProductionFactories:
+                {
+                    if (TryFindProductionLineById(cmd.EntityId, out Entity lineEntity))
+                    {
+                        ref ProductionLineComponent line = ref EcsWorld.Get<ProductionLineComponent>(lineEntity);
+                        if (line.CountryTag == cmd.CountryTag)
+                        {
+                            int clamped = System.Math.Clamp(cmd.IntParam0, 0, ProductionLineComponent.MaxFactoriesPerLine);
+                            line.AssignedMilitaryFactories = (ushort)clamped;
+                        }
+                    }
+                    break;
+                }
                 case CommandType.None:
                 default:
                     break;
@@ -332,7 +414,10 @@ public sealed class SimulationWorld : IDisposable
         DailyTicksExecuted++;
 
         // 1. SupplyGraphSystem hook (Phase 4.1)
-        // 2. ProductionSystem hook (Phase 3.1)
+        // 2. ConstructionSystem & ProductionSystem (Phase 3.1):
+        ConstructionSystem.Execute(this);
+        ProductionSystem.Execute(this);
+
         // 3. ReinforcementSystem hook (Phase 3.2) & baseline daily Organization recovery:
         RecoverDivisionOrganizationDaily();
 

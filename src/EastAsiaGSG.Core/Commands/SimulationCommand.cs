@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using EastAsiaGSG.Core.Components;
 
 namespace EastAsiaGSG.Core.Commands;
 
@@ -13,7 +14,9 @@ public enum CommandType : byte
     TogglePgm = 2,
     AssignFactory = 3,
     SelectFocus = 4,
-    ShiftDefcon = 5
+    ShiftDefcon = 5,
+    QueueConstruction = 6,
+    AssignProductionFactories = 7
 }
 
 /// <summary>
@@ -71,5 +74,32 @@ public struct SimulationCommand
         Type = CommandType.ShiftDefcon,
         CountryTag = countryTag,
         TargetId = targetDefcon
+    };
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static SimulationCommand CreateQueueConstruction(
+        byte countryTag,
+        ushort stateId,
+        BuildingType buildingType,
+        byte levels = 1,
+        ushort assignedCivFactories = 15) => new()
+    {
+        Type = CommandType.QueueConstruction,
+        CountryTag = countryTag,
+        TargetId = stateId,
+        IntParam0 = ((int)buildingType & 0xFF) | ((levels & 0xFF) << 8),
+        IntParam1 = assignedCivFactories
+    };
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static SimulationCommand CreateAssignProductionFactories(
+        byte countryTag,
+        int lineId,
+        ushort militaryFactories) => new()
+    {
+        Type = CommandType.AssignProductionFactories,
+        CountryTag = countryTag,
+        EntityId = lineId,
+        IntParam0 = militaryFactories
     };
 }
