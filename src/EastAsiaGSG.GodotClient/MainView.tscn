@@ -40,18 +40,18 @@ script = ExtResource("4_toolbar")
 [node name="ProvinceInfoPanel" type="PanelContainer" parent="HUD"]
 offset_left = 20.0
 offset_top = 20.0
-offset_right = 320.0
-offset_bottom = 200.0
+offset_right = 360.0
+offset_bottom = 280.0
 script = ExtResource("5_infopanel")
 
 [node name="TimeControlsToolbar" type="PanelContainer" parent="HUD"]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -440.0
+offset_left = -620.0
 offset_top = 20.0
 offset_right = -20.0
-offset_bottom = 60.0
+offset_bottom = 68.0
 grow_horizontal = 0
 script = ExtResource("7_timetoolbar")
 

@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+using Arch.Core;
 using EastAsiaGSG.Core.Components;
 using EastAsiaGSG.Core.ECS;
 using EastAsiaGSG.Data.Map;
@@ -7,10 +9,12 @@ namespace EastAsiaGSG.GodotClient.UI;
 
 /// <summary>
 /// Reactive HUD overlay displaying detailed geopolitical, military, and infrastructure statistics
-/// for the currently hovered or selected province and its parent state.
+/// for the currently hovered or selected province and its parent state, as well as selected unit orders.
 /// </summary>
 public partial class ProvinceInfoPanel : PanelContainer
 {
+    private static readonly QueryDescription DivisionQuery = new QueryDescription().WithAll<DivisionComponent>();
+
     private SimulationWorld? _world;
 
     private Label? _headerLabel;
@@ -20,6 +24,9 @@ public partial class ProvinceInfoPanel : PanelContainer
     private Label? _infraLabel;
     private Label? _economyLabel;
     private Label? _resourcesLabel;
+    private Label? _stationedDivLabel;
+    private PanelContainer? _selectedDivPanel;
+    private Label? _selectedDivLabel;
 
     public override void _Ready()
     {
@@ -35,8 +42,8 @@ public partial class ProvinceInfoPanel : PanelContainer
     {
         var styleBox = new StyleBoxFlat
         {
-            BgColor = new Color(0.08f, 0.10f, 0.12f, 0.90f),
-            BorderColor = new Color(0.25f, 0.32f, 0.40f, 0.80f),
+            BgColor = new Color(0.08f, 0.10f, 0.12f, 0.92f),
+            BorderColor = new Color(0.25f, 0.32f, 0.40f, 0.85f),
             BorderWidthBottom = 1,
             BorderWidthTop = 1,
             BorderWidthLeft = 1,
@@ -45,8 +52,8 @@ public partial class ProvinceInfoPanel : PanelContainer
             CornerRadiusBottomRight = 6,
             CornerRadiusTopLeft = 6,
             CornerRadiusTopRight = 6,
-            ContentMarginLeft = 12,
-            ContentMarginRight = 12,
+            ContentMarginLeft = 14,
+            ContentMarginRight = 14,
             ContentMarginTop = 10,
             ContentMarginBottom = 10
         };
@@ -89,6 +96,80 @@ public partial class ProvinceInfoPanel : PanelContainer
         _resourcesLabel.AddThemeFontSizeOverride("font_size", 13);
         _resourcesLabel.AddThemeColorOverride("font_color", new Color(0.6f, 0.8f, 0.95f));
         vbox.AddChild(_resourcesLabel);
+
+        _stationedDivLabel = new Label { Text = "Units: None" };
+        _stationedDivLabel.AddThemeFontSizeOverride("font_size", 13);
+        _stationedDivLabel.AddThemeColorOverride("font_color", new Color(0.45f, 0.95f, 0.65f));
+        vbox.AddChild(_stationedDivLabel);
+
+        // Separator for Selected Division Order Banner
+        vbox.AddChild(new HSeparator());
+
+        _selectedDivPanel = new PanelContainer();
+        var selStyle = new StyleBoxFlat
+        {
+            BgColor = new Color(0.12f, 0.16f, 0.22f, 0.95f),
+            BorderColor = new Color(0.95f, 0.80f, 0.25f, 0.90f),
+            BorderWidthLeft = 2,
+            BorderWidthTop = 1,
+            BorderWidthRight = 1,
+            BorderWidthBottom = 1,
+            CornerRadiusBottomLeft = 4,
+            CornerRadiusBottomRight = 4,
+            CornerRadiusTopLeft = 4,
+            CornerRadiusTopRight = 4,
+            ContentMarginLeft = 8,
+            ContentMarginRight = 8,
+            ContentMarginTop = 6,
+            ContentMarginBottom = 6
+        };
+        _selectedDivPanel.AddThemeStyleboxOverride("panel", selStyle);
+
+        _selectedDivLabel = new Label
+        {
+            Text = "👉 Click a division counter or province to select\n👉 Right-click any province to Move or Attack",
+            AutowrapMode = TextServer.AutowrapMode.Word
+        };
+        _selectedDivLabel.AddThemeFontSizeOverride("font_size", 12);
+        _selectedDivLabel.AddThemeColorOverride("font_color", new Color(0.85f, 0.90f, 0.95f));
+        _selectedDivPanel.AddChild(_selectedDivLabel);
+
+        vbox.AddChild(_selectedDivPanel);
+    }
+
+    /// <summary>
+    /// Updates the selected division banner with active orders guidance.
+    /// </summary>
+    public void DisplaySelectedDivision(DivisionComponent? div)
+    {
+        if (_selectedDivLabel == null)
+        {
+            return;
+        }
+
+        if (div.HasValue)
+        {
+            DivisionComponent d = div.Value;
+            string tag = CountryTag.GetCode(d.CountryTag);
+            string stateStr = d.State switch
+            {
+                DivisionState.Attacking => "⚔ ATTACKING",
+                DivisionState.Moving => "➔ MOVING",
+                DivisionState.Retreating => "◀ RETREATING",
+                DivisionState.Defending => "🛡 DEFENDING",
+                _ => "● IDLE"
+            };
+
+            _selectedDivLabel.Text = $"★ [{tag}] Division #{d.DivisionId} ({stateStr})\n" +
+                                     $"Org: {d.Organization:F0}/{d.MaxOrganization:F0} | Str: {d.Strength:P0} | Speed: {d.Speed:F0}km/h\n" +
+                                     $"👉 Right-Click map to Move or Attack!";
+            _selectedDivLabel.AddThemeColorOverride("font_color", new Color(1.0f, 0.90f, 0.40f));
+        }
+        else
+        {
+            _selectedDivLabel.Text = "👉 Click a division counter or province to select\n👉 Right-click any province to Move or Attack";
+            _selectedDivLabel.AddThemeColorOverride("font_color", new Color(0.80f, 0.85f, 0.90f));
+        }
     }
 
     /// <summary>
@@ -110,6 +191,7 @@ public partial class ProvinceInfoPanel : PanelContainer
             _infraLabel!.Text = "Supply Hub: 0 | Port: 0 | Infra: 0";
             _economyLabel!.Text = "Civ: 0 | Mil: 0 | Dock: 0 | Pop: 0";
             _resourcesLabel!.Text = "Steel: 0 | Semi: 0 | Oil: 0 | Alum: 0";
+            _stationedDivLabel!.Text = "Units: None";
             return;
         }
 
@@ -133,5 +215,23 @@ public partial class ProvinceInfoPanel : PanelContainer
         _infraLabel!.Text = $"Hub: Lv.{prov.SupplyHubLevel} | Port: Lv.{prov.PortLevel} | Infra: Lv.{prov.InfrastructureLevel}";
         _economyLabel!.Text = $"Civ: {state.CivilianFactories} | Mil: {state.MilitaryFactories} | Dock: {state.NavalDockyards} | Pop: {state.Population:N0}";
         _resourcesLabel!.Text = $"Steel: {state.GetResource(ResourceType.Steel)} | Semi: {state.GetResource(ResourceType.Semiconductors)} | Oil: {state.GetResource(ResourceType.Oil)} | Alum: {state.GetResource(ResourceType.Aluminum)}";
+
+        // Query stationed divisions in this province
+        string stationedText = "";
+        Query divQuery = _world.EcsWorld.Query(in DivisionQuery);
+        foreach (ref Chunk chunk in divQuery)
+        {
+            Span<DivisionComponent> divs = chunk.GetSpan<DivisionComponent>();
+            int count = chunk.Count;
+            for (int i = 0; i < count; i++)
+            {
+                if (divs[i].CurrentProvinceId == provinceId && divs[i].State != DivisionState.Shattered)
+                {
+                    string tag = CountryTag.GetCode(divs[i].CountryTag);
+                    stationedText += (stationedText.Length > 0 ? ", " : "") + $"[{tag}] #{divs[i].DivisionId} ({divs[i].State})";
+                }
+            }
+        }
+        _stationedDivLabel!.Text = stationedText.Length > 0 ? $"Units: {stationedText}" : "Units: None";
     }
 }

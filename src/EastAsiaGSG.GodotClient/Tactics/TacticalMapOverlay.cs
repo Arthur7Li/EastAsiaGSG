@@ -30,12 +30,14 @@ public partial class TacticalMapOverlay : Node2D
 
     // Events
     public event Action<DivisionComponent>? DivisionSelected;
+    public event Action? DivisionDeselected;
     public event Action<ActiveCombatComponent>? CombatSelected;
     public event Action<ushort>? MoveOrderIssued;
 
     private readonly List<(Vector2 visualPos, DivisionComponent div, Entity entity)> _activeDivisions = [];
     private readonly List<(Vector2 center, ActiveCombatComponent combat)> _activeCombats = [];
     private readonly Dictionary<ushort, List<int>> _provincesToDivisions = [];
+    private readonly Dictionary<int, ushort> _pendingOrders = [];
 
     // Pre-allocated click targets for hit-testing
     private readonly List<(Rect2 rect, DivisionComponent div, Entity entity)> _counterClickTargets = [];
@@ -193,7 +195,30 @@ public partial class TacticalMapOverlay : Node2D
 
             if (!isMoving && !isAttacking && div.WaypointCount == 0)
             {
+                // Immediate preview arrow for queued move/attack orders before tick executes
+                if (_pendingOrders.TryGetValue(div.DivisionId, out ushort pendingTargetId)
+                    && pendingTargetId < SimulationWorld.MaxProvinces
+                    && pendingTargetId != div.CurrentProvinceId)
+                {
+                    ref readonly ProvinceData pendingProv = ref _world.Provinces[pendingTargetId];
+                    Vector2 pendingCenter = new(pendingProv.CenterX, pendingProv.CenterY);
+                    bool isHostile = pendingProv.ControllerTag != div.CountryTag
+                        && pendingProv.ControllerTag != CountryTag.None;
+
+                    Color previewColor = isHostile
+                        ? new Color(0.95f, 0.28f, 0.28f, 0.90f) // Bright red attack preview
+                        : new Color(0.20f, 0.92f, 0.50f, 0.90f); // Bright green move preview
+
+                    float pLineWidth = 3.5f * lineScale;
+                    DrawLine(visualPos, pendingCenter, new Color(0, 0, 0, 0.5f), pLineWidth + 2.0f);
+                    DrawLine(visualPos, pendingCenter, previewColor, pLineWidth);
+                    DrawArrowHead(visualPos, pendingCenter, previewColor, 10.0f * lineScale);
+                }
                 continue;
+            }
+            else
+            {
+                _pendingOrders.Remove(div.DivisionId);
             }
 
             if (div.TargetProvinceId >= SimulationWorld.MaxProvinces)
@@ -319,8 +344,15 @@ public partial class TacticalMapOverlay : Node2D
                 // 2. Selection / Hover Border
                 if (isSelected)
                 {
-                    // Gold selected border
-                    DrawRect(counterRect, new Color(1.0f, 0.84f, 0.0f), filled: false, width: 2.5f * counterScale);
+                    // Gold selected border + glowing outline
+                    DrawRect(counterRect.Grow(1.5f * counterScale), new Color(1.0f, 0.88f, 0.2f, 0.6f), filled: false, width: 2.0f * counterScale);
+                    DrawRect(counterRect, new Color(1.0f, 0.84f, 0.0f), filled: false, width: 2.8f * counterScale);
+
+                    // Downward gold selection indicator triangle above counter
+                    Vector2 tip = new(counterCenter.X, counterRect.Position.Y - 2.0f * counterScale);
+                    Vector2 b1 = new(counterCenter.X - 5.0f * counterScale, counterRect.Position.Y - 9.0f * counterScale);
+                    Vector2 b2 = new(counterCenter.X + 5.0f * counterScale, counterRect.Position.Y - 9.0f * counterScale);
+                    DrawColoredPolygon([tip, b1, b2], new Color(1.0f, 0.84f, 0.0f));
                 }
                 else if (isHovered)
                 {
@@ -498,25 +530,46 @@ public partial class TacticalMapOverlay : Node2D
                     }
                 }
 
-                // Priority 2: Check Division Counter click
+                // Priority 2: Check Division Counter click (with generous padding)
                 for (int i = 0; i < _counterClickTargets.Count; i++)
                 {
                     var (rect, div, entity) = _counterClickTargets[i];
-                    if (rect.HasPoint(mouseGlobal))
+                    Rect2 hitRect = rect.Grow(14.0f);
+                    if (hitRect.HasPoint(mouseGlobal))
                     {
                         SelectedDivisionId = div.DivisionId;
                         SelectedDivisionEntity = entity;
                         DivisionSelected?.Invoke(div);
                         GetViewport().SetInputAsHandled();
+                        QueueRedraw();
                         return;
                     }
                 }
 
-                // If clicked outside counters and bubbles, deselect division
+                // Priority 3: Check if clicked province has stationed divisions
+                ushort clickedProvince = _mapRenderer.PickProvinceAtGlobalPosition(mouseGlobal);
+                if (clickedProvince < SimulationWorld.MaxProvinces)
+                {
+                    if (_provincesToDivisions.TryGetValue(clickedProvince, out List<int>? divIndices) && divIndices.Count > 0)
+                    {
+                        int divIndex = divIndices[0];
+                        var (_, div, entity) = _activeDivisions[divIndex];
+                        SelectedDivisionId = div.DivisionId;
+                        SelectedDivisionEntity = entity;
+                        DivisionSelected?.Invoke(div);
+                        GetViewport().SetInputAsHandled();
+                        QueueRedraw();
+                        return;
+                    }
+                }
+
+                // If clicked outside counters, bubbles, and division provinces, deselect division
                 if (SelectedDivisionId != -1)
                 {
                     SelectedDivisionId = -1;
                     SelectedDivisionEntity = null;
+                    DivisionDeselected?.Invoke();
+                    QueueRedraw();
                 }
             }
             else if (mouseBtn.ButtonIndex == MouseButton.Right)
@@ -528,10 +581,15 @@ public partial class TacticalMapOverlay : Node2D
                     if (targetProvinceId < SimulationWorld.MaxProvinces)
                     {
                         ref DivisionComponent div = ref _world.EcsWorld.Get<DivisionComponent>(SelectedDivisionEntity.Value);
-                        _world.EnqueueCommand(SimulationCommand.CreateMoveDivision(div.CountryTag, div.DivisionId, targetProvinceId));
-                        MoveOrderIssued?.Invoke(targetProvinceId);
-                        GetViewport().SetInputAsHandled();
-                        return;
+                        if (targetProvinceId != div.CurrentProvinceId)
+                        {
+                            _pendingOrders[div.DivisionId] = targetProvinceId;
+                            _world.EnqueueCommand(SimulationCommand.CreateMoveDivision(div.CountryTag, div.DivisionId, targetProvinceId));
+                            MoveOrderIssued?.Invoke(targetProvinceId);
+                            GetViewport().SetInputAsHandled();
+                            QueueRedraw();
+                            return;
+                        }
                     }
                 }
             }
@@ -546,7 +604,8 @@ public partial class TacticalMapOverlay : Node2D
         for (int i = 0; i < _counterClickTargets.Count; i++)
         {
             var (rect, div, _) = _counterClickTargets[i];
-            if (rect.HasPoint(mouseGlobal))
+            Rect2 hitRect = rect.Grow(8.0f);
+            if (hitRect.HasPoint(mouseGlobal))
             {
                 HoveredDivisionId = div.DivisionId;
                 break;

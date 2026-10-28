@@ -10,6 +10,7 @@ namespace EastAsiaGSG.GodotClient.UI;
 public partial class TimeControlsToolbar : PanelContainer
 {
     private Label? _dateLabel;
+    private Label? _statusBadge;
     private Button? _playPauseButton;
     private Button? _stepButton;
     private Button? _speed1Button;
@@ -17,7 +18,7 @@ public partial class TimeControlsToolbar : PanelContainer
     private Button? _speed5Button;
 
     private SimulationWorld? _world;
-    private bool _isPaused = true;
+    private bool _isPaused = false;
     private int _speedMultiplier = 1;
     private double _tickAccumulator;
 
@@ -36,10 +37,12 @@ public partial class TimeControlsToolbar : PanelContainer
 
     public override void _Ready()
     {
+        CustomMinimumSize = new Vector2(580, 44);
+
         var style = new StyleBoxFlat
         {
-            BgColor = new Color(0.10f, 0.12f, 0.16f, 0.92f),
-            BorderColor = new Color(0.28f, 0.32f, 0.40f, 0.90f),
+            BgColor = new Color(0.10f, 0.12f, 0.16f, 0.94f),
+            BorderColor = new Color(0.35f, 0.42f, 0.52f, 0.95f),
             BorderWidthLeft = 1,
             BorderWidthTop = 1,
             BorderWidthRight = 1,
@@ -52,8 +55,8 @@ public partial class TimeControlsToolbar : PanelContainer
         AddThemeStyleboxOverride("panel", style);
 
         var margin = new MarginContainer();
-        margin.AddThemeConstantOverride("margin_left", 12);
-        margin.AddThemeConstantOverride("margin_right", 12);
+        margin.AddThemeConstantOverride("margin_left", 14);
+        margin.AddThemeConstantOverride("margin_right", 14);
         margin.AddThemeConstantOverride("margin_top", 6);
         margin.AddThemeConstantOverride("margin_bottom", 6);
         AddChild(margin);
@@ -72,14 +75,24 @@ public partial class TimeControlsToolbar : PanelContainer
         _dateLabel.AddThemeColorOverride("font_color", new Color(1.0f, 0.88f, 0.45f));
         hbox.AddChild(_dateLabel);
 
+        // Status Badge (PAUSED vs RUNNING)
+        _statusBadge = new Label
+        {
+            Text = _isPaused ? "⏸ PAUSED" : "▶ RUNNING",
+            VerticalAlignment = VerticalAlignment.Center
+        };
+        _statusBadge.AddThemeFontSizeOverride("font_size", 12);
+        _statusBadge.AddThemeColorOverride("font_color", _isPaused ? new Color(1.0f, 0.45f, 0.45f) : new Color(0.35f, 1.0f, 0.55f));
+        hbox.AddChild(_statusBadge);
+
         // Separator
         hbox.AddChild(new VSeparator());
 
         // Play/Pause Button
         _playPauseButton = new Button
         {
-            Text = "▶ Play (Space)",
-            CustomMinimumSize = new Vector2(100, 28)
+            Text = _isPaused ? "▶ Play (Space)" : "⏸ Pause (Space)",
+            CustomMinimumSize = new Vector2(110, 30)
         };
         _playPauseButton.Pressed += TogglePlayPause;
         hbox.AddChild(_playPauseButton);
@@ -88,7 +101,7 @@ public partial class TimeControlsToolbar : PanelContainer
         _stepButton = new Button
         {
             Text = "Step 6h (>|)",
-            CustomMinimumSize = new Vector2(80, 28)
+            CustomMinimumSize = new Vector2(85, 30)
         };
         _stepButton.Pressed += ExecuteManualStep;
         hbox.AddChild(_stepButton);
@@ -97,9 +110,9 @@ public partial class TimeControlsToolbar : PanelContainer
         hbox.AddChild(new VSeparator());
 
         // Speed Buttons
-        _speed1Button = new Button { Text = "1x (1)", ToggleMode = true, ButtonPressed = true };
-        _speed2Button = new Button { Text = "2x (2)", ToggleMode = true, ButtonPressed = false };
-        _speed5Button = new Button { Text = "5x (3)", ToggleMode = true, ButtonPressed = false };
+        _speed1Button = new Button { Text = "1x (1)", ToggleMode = true, ButtonPressed = true, CustomMinimumSize = new Vector2(50, 30) };
+        _speed2Button = new Button { Text = "2x (2)", ToggleMode = true, ButtonPressed = false, CustomMinimumSize = new Vector2(50, 30) };
+        _speed5Button = new Button { Text = "5x (3)", ToggleMode = true, ButtonPressed = false, CustomMinimumSize = new Vector2(50, 30) };
 
         _speed1Button.Pressed += () => SetSpeed(1);
         _speed2Button.Pressed += () => SetSpeed(2);
@@ -174,6 +187,12 @@ public partial class TimeControlsToolbar : PanelContainer
         if (_playPauseButton != null)
         {
             _playPauseButton.Text = _isPaused ? "▶ Play (Space)" : "⏸ Pause (Space)";
+        }
+
+        if (_statusBadge != null)
+        {
+            _statusBadge.Text = _isPaused ? "⏸ PAUSED" : "▶ RUNNING";
+            _statusBadge.AddThemeColorOverride("font_color", _isPaused ? new Color(1.0f, 0.45f, 0.45f) : new Color(0.35f, 1.0f, 0.55f));
         }
 
         PauseStateChanged?.Invoke(_isPaused);

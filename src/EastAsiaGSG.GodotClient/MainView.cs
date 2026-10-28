@@ -33,6 +33,7 @@ public partial class MainView : Node2D
 
         string? statesPath = ResolvePath("data/map/states.json");
         string? provincesPath = ResolvePath("data/map/provinces.json");
+        string? provincesPngPath = ResolvePath("data/map/provinces.png");
 
         if (statesPath != null && provincesPath != null)
         {
@@ -51,7 +52,7 @@ public partial class MainView : Node2D
             _mapRenderer = new MapRenderer { Name = "MapRenderer" };
             AddChild(_mapRenderer);
         }
-        _mapRenderer.Initialize(_world);
+        _mapRenderer.Initialize(_world, provincesPngPath);
 
         // 3. Setup CameraController
         _camera = GetNodeOrNull<CameraController>("CameraController");
@@ -94,7 +95,12 @@ public partial class MainView : Node2D
             hudLayer.AddChild(_toolbar);
         }
         _toolbar.SetAnchorsPreset(Control.LayoutPreset.BottomRight);
-        _toolbar.Position = new Vector2(-600, -50);
+        _toolbar.GrowHorizontal = Control.GrowDirection.Begin;
+        _toolbar.GrowVertical = Control.GrowDirection.Begin;
+        _toolbar.OffsetLeft = -620;
+        _toolbar.OffsetTop = -60;
+        _toolbar.OffsetRight = -20;
+        _toolbar.OffsetBottom = -15;
         _toolbar.ModeSelected += mode => _mapRenderer.SetMapMode(mode);
 
         // Setup ProvinceInfoPanel at top-left
@@ -105,7 +111,12 @@ public partial class MainView : Node2D
             hudLayer.AddChild(_infoPanel);
         }
         _infoPanel.SetAnchorsPreset(Control.LayoutPreset.TopLeft);
-        _infoPanel.Position = new Vector2(20, 20);
+        _infoPanel.GrowHorizontal = Control.GrowDirection.End;
+        _infoPanel.GrowVertical = Control.GrowDirection.End;
+        _infoPanel.OffsetLeft = 20;
+        _infoPanel.OffsetTop = 20;
+        _infoPanel.OffsetRight = 360;
+        _infoPanel.OffsetBottom = 280;
         _infoPanel.Initialize(_world);
 
         // Setup TimeControlsToolbar at top-right
@@ -116,7 +127,12 @@ public partial class MainView : Node2D
             hudLayer.AddChild(_timeToolbar);
         }
         _timeToolbar.SetAnchorsPreset(Control.LayoutPreset.TopRight);
-        _timeToolbar.Position = new Vector2(-440, 20);
+        _timeToolbar.GrowHorizontal = Control.GrowDirection.Begin;
+        _timeToolbar.GrowVertical = Control.GrowDirection.End;
+        _timeToolbar.OffsetLeft = -620;
+        _timeToolbar.OffsetTop = 20;
+        _timeToolbar.OffsetRight = -20;
+        _timeToolbar.OffsetBottom = 68;
         _timeToolbar.Initialize(_world);
 
         // Setup CombatTelemetryPopup at center-right
@@ -127,13 +143,20 @@ public partial class MainView : Node2D
             hudLayer.AddChild(_combatPopup);
         }
         _combatPopup.SetAnchorsPreset(Control.LayoutPreset.CenterRight);
-        _combatPopup.Position = new Vector2(-360, -130);
+        _combatPopup.GrowHorizontal = Control.GrowDirection.Begin;
+        _combatPopup.GrowVertical = Control.GrowDirection.Both;
+        _combatPopup.OffsetLeft = -360;
+        _combatPopup.OffsetTop = -140;
+        _combatPopup.OffsetRight = -20;
+        _combatPopup.OffsetBottom = 140;
 
         // Wire map interactions to info panel
         _mapRenderer.ProvinceHovered += id => _infoPanel.DisplayProvince(id);
         _mapRenderer.ProvinceSelected += id => _infoPanel.DisplayProvince(id);
 
-        // Wire tactical overlay interactions
+        // Wire tactical overlay interactions to HUD
+        _tacticalOverlay.DivisionSelected += div => _infoPanel.DisplaySelectedDivision(div);
+        _tacticalOverlay.DivisionDeselected += () => _infoPanel.DisplaySelectedDivision(null);
         _tacticalOverlay.CombatSelected += combat => _combatPopup.DisplayCombat(_world, combat.CombatId);
 
         // Wire time controls tick event to refresh map colors, tactical overlay, and combat telemetry
