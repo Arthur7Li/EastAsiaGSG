@@ -42,9 +42,10 @@ EastAsiaGSG/
 │       └── provinces.png            # Lossless 1024x1024 16-bit RG encoded province ID map
 ├── src/
 │   ├── EastAsiaGSG.Core/            # Headless Data-Oriented simulation kernel (zero engine deps)
-│   │   ├── Components/              # Blittable fixed-size structs & domain enums
-│   │   ├── Math/                    # Compressed Sparse Row (CSR) ProvinceGraph
+│   │   ├── Components/              # Blittable fixed-size structs & domain enums (DivisionComponent, ActiveCombatComponent, etc.)
+│   │   ├── Math/                    # Compressed Sparse Row (CSR) ProvinceGraph & zero-allocation A* ProvincePathfinder
 │   │   ├── Commands/                # Unmanaged SimulationCommand & CommandRingBuffer
+│   │   ├── Systems/                 # Pure simulation systems (DivisionMovementSystem, CombatResolutionSystem)
 │   │   └── ECS/                     # SimulationWorld & stratified StepSixHours() pipeline
 │   ├── EastAsiaGSG.Data/            # Source-generated JSON loaders & CPU map/LUT buffers
 │   │   ├── Schemas/                 # System.Text.Json DTOs & MapJsonContext
@@ -52,11 +53,17 @@ EastAsiaGSG/
 │   │   └── Map/                     # ProvinceMapBuffer (O(1) picking) & MapLutBuffer (2048x1 RGBA8)
 │   └── EastAsiaGSG.GodotClient/     # Godot 4.x (.NET 8) reactive presentation client
 │       ├── Map/                     # MapShader.gdshader, MapRenderer.cs, CameraController.cs
-│       ├── UI/                      # MapModeToolbar.cs & ProvinceInfoPanel.cs
-│       ├── MainView.cs              # Root scene controller wiring world, map, camera & HUD
+│       ├── Tactics/                 # TacticalMapOverlay.cs (NATO counters, movement arrows, HOI4 Battle Bubbles)
+│       ├── UI/                      # MapModeToolbar, ProvinceInfoPanel, TimeControlsToolbar, CombatTelemetryPopup
+│       ├── MainView.cs              # Root scene controller wiring world, map, camera, overlay & HUD
 │       └── MainView.tscn            # Main Godot 4 presentation scene
 └── tests/
-    └── EastAsiaGSG.SimTests/        # Headless xUnit verification & benchmark suite
+    └── EastAsiaGSG.SimTests/        # Headless xUnit verification & benchmark suite (43 tests)
+        ├── CombatSystemTests.cs     # 72-hour ROK/PRK battle sims, width capping, PGM & zero-allocation checks
+        ├── PathfinderTests.cs       # A* benchmarks (< 5µs/query), DMZ/strait gating & thread-safety
+        ├── SimulationWorldTests.cs  # Calendar progression, entity resolution & CSR graph lookups
+        ├── MapLoaderTests.cs        # JSON schema validation & asymmetric edge detection
+        └── MapRendererTests.cs      # 16-bit RG color roundtripping & LUT dynamic updates
 ```
 
 ### Strict Architectural Invariants
@@ -76,7 +83,15 @@ Simulation work is stratified by frequency to guarantee **1,000+ ticks/second** 
 
 - **Tier 1 — Every 6 Hours (`00:00, 06:00, 12:00, 18:00`):**
   1. `CommandProcessor`: Drains queued player and AI commands (`SelectFocus`, `ShiftDefcon`, `AssignFactory`, `MoveDivision`, `TogglePgm`).
-  2. `DivisionMovementSystem`, `CombatResolutionSystem`, and `AirAndNavalRegionSystem` hooks.
+  2. `DivisionMovementSystem`: Advances division `MovementProgress` along province adjacency edges; initiates combat upon entering hostile territory; automatically replenishes waypoints for long-distance routes (> 16 hops).
+  3. `CombatResolutionSystem`: Resolves 6-hour HOI4 land combat math:
+     - **Hardness Blend:** $A_{\text{base}} = A_s \times (1 - H_t) + A_h \times H_t$.
+     - **PGM Authorization:** +35% combat power multiplier consuming national precision-guided munitions stockpiles.
+     - **Armor & Piercing Gate:** 50% damage penalty if target armor exceeds attacker piercing; +40% org damage if attacker armor pierces target.
+     - **Defense & Breakthrough Mitigation:** 10% blocked hit roll, 40% unblocked hit roll.
+     - **Combat Width & Reserve Commitment:** Base width 80 (+20 per flanking province) with continuous reserve filling and contiguous slice compaction.
+     - **Retreat & Shatter:** Broken divisions withdraw to adjacent friendly provinces or shatter completely if encircled.
+  4. `AirAndNavalRegionSystem` hooks.
 - **Tier 2 — Daily Tick (`00:00`):**
   1. `SupplyGraphSystem`, `ProductionSystem`, `ReinforcementSystem`, `FocusAndResearchSystem`, and `TacticalFrontlineAISystem`.
 - **Tier 3 — Monthly Tick (`Day 1 at 00:00`):**
@@ -84,9 +99,11 @@ Simulation work is stratified by frequency to guarantee **1,000+ ticks/second** 
 
 ---
 
-## GPU Two-Texture Map Renderer & $O(1)$ Picking
+## Tactical Sandbox, GPU Map Renderer & Controls (`EastAsiaGSG.GodotClient`)
 
-The map renderer (`src/EastAsiaGSG.GodotClient/Map/`) uses a two-texture GPU shader pipeline (`MapShader.gdshader`):
+The Godot presentation client provides an interactive 2D RTS map interface backed by a two-texture GPU shader pipeline (`MapShader.gdshader`) and reactive tactical overlays:
+
+### GPU Two-Texture Pipeline & $O(1)$ Picking
 1. **`provinces.png` (Static Lossless RGB8 Texture, `Filter = Nearest`):**
    - Encodes `ProvinceId` directly in the Red and Green channels: `ProvinceId = (R << 8) | G` (`0..1499` for land provinces; `0xFFFF = 65535` for ocean pixels).
    - **$O(1)$ CPU Mouse Picking:** `ProvinceMapBuffer` converts normalized mouse UV $[0, 1]^2$ on the map quad to pixel coordinates $(x, y)$ in a cached CPU byte buffer, resolving `ProvinceId` in $O(1)$ time with zero physics raycasting.
@@ -95,11 +112,23 @@ The map renderer (`src/EastAsiaGSG.GodotClient/Map/`) uses a two-texture GPU sha
    - Encodes each province's active Map Mode RGB color in bytes `0..2` and its `ControllerTag` (`0..14` or `255`) in the Alpha channel (`byte 3`).
    - **GPU Border Detection:** `MapShader.gdshader` samples 1-texel and 2-texel cardinal neighbors in `provinces_tex`, drawing thick international/DMZ borders where `ControllerTag` differs, coastline borders along ocean transitions, and subtle internal province borders where `ProvinceId` differs within the same nation.
 
-### Interactive Camera & Map Mode Controls (`EastAsiaGSG.GodotClient`)
-- **Pan Camera:** `W` / `A` / `S` / `D`, Arrow Keys, Viewport Edge Pan, or Middle/Right Mouse Drag (hold `Shift` for $2\times$ speed).
+### Interactive Tactical Map Overlay (`TacticalMapOverlay.cs`)
+- **Division NATO Counters:** Displays country banners, template icons, organization (green) and strength (brown) status bars, and selection halos.
+- **Dynamic Movement & Attack Vectors:** Real-time green movement arrows, amber retreat vectors, and red attack vectors with dashed lines along planned waypoint corridors.
+- **HOI4-Style Battle Bubbles:** Color-coded 0–100 battle indicators (Green $\ge 55$, Amber $45\text{--}54$, Red $\le 44$) reflecting real-time attacker combat advantage and line breach progress.
+- **Combat Telemetry Popup (`CombatTelemetryPopup.cs`):** Click any Battle Bubble to inspect active combat telemetry: committed attacker/defender divisions, organization & strength loss per tick, combat width utilization, active tactical stances, and national PGM stockpile consumption.
+
+### Player & Camera Controls
+- **Select Division:** Left-Click any on-map division counter (highlights division in cyan and displays its active route).
+- **Issue Move / Attack Order:** Right-Click any target province with a division selected ($O(1)$ mouse picking resolves the destination and dispatches `MoveDivisionCommand` to the simulation ring buffer).
+- **Inspect Province:** Hover or Left-Click any unselected province to view state ID, owner/controller, terrain, infrastructure, factories, supply ratio, and strategic resources in `ProvinceInfoPanel`.
+- **Pan Camera:** `W` / `A` / `S` / `D`, Arrow Keys, Viewport Edge Pan, or Middle/Right Mouse Drag (hold `Shift` for $2\times$ pan speed).
 - **Zoom Camera:** Mouse Scroll Wheel (cursor-centered zoom clamped to `[0.25x, 4.0x]`).
-- **Inspect / Select Province:** Hover or Left-Click any province to highlight it on the GPU shader and inspect its state, owner/controller, terrain, supply ratio, infrastructure, factories, and strategic resources (`Oil`, `Steel`, `Aluminum`, `Semiconductors`) in `ProvinceInfoPanel`.
-- **Switch Map Modes:** Click the bottom-right `MapModeToolbar` or press function hotkeys:
+- **Time & Speed Controls (`TimeControlsToolbar.cs`):**
+  - `Spacebar`: Toggle Play / Pause.
+  - `1x` / `2x` / `5x`: Simulation tick speed multipliers.
+  - `Step`: Execute a single 6-hour simulation tick.
+- **Switch Map Modes (`MapModeToolbar.cs`):**
   - `F1` — **Political Map Mode**
   - `F2` — **Terrain Map Mode**
   - `F3` — **Supply Map Mode**
@@ -124,7 +153,12 @@ This script verifies:
 2. **Zero Hot-Path LINQ Allocations:** Zero `System.Linq` usage in `src/EastAsiaGSG.Core/Systems`.
 3. **Strict One-Way Project Dependencies:** `Core` $\leftarrow$ `Data` $\leftarrow$ `GodotClient`.
 4. **Zero-Warning Solution Build:** `dotnet build EastAsiaGSG.sln --warnaserror` (`0 Warning(s)`, `0 Error(s)`).
-5. **Headless xUnit Suite:** Runs all unit and benchmark tests in `tests/EastAsiaGSG.SimTests`.
+5. **Headless xUnit Suite:** Runs all 43 unit and benchmark tests in `tests/EastAsiaGSG.SimTests` across all modules:
+   - `CombatSystemTests` (15 tests: 72-hour ROK vs PRK historical battles, combat width & reserve filling, encirclement shattering, PGM depletion, zero-heap allocation checks, and 1,000-battle throughput benchmark in $< 100\text{ ms}$).
+   - `PathfinderTests` (10 tests: zero-allocation verification, $< 5\ \mu\text{s}$ A* performance, DMZ cross-border gating, strait access control, multi-thread safety).
+   - `SimulationWorldTests` (7 tests: full 1-year calendar progression in $< 5\text{ ms}$, command ring buffer deterministic draining, two-phase division lookup, CSR adjacency graph).
+   - `MapLoaderTests` (8 tests: Korean Peninsula 120-province dataset, foreign key integrity, topological validation).
+   - `MapRendererTests` (3 tests: 16-bit RG encoding/decoding, $O(1)$ mouse picking, dynamic LUT buffer updates).
 
 ### Manual Build & Test Commands
 ```bash
@@ -150,8 +184,23 @@ Open `src/EastAsiaGSG.GodotClient/project.godot` in Godot 4 (.NET) or launch dir
   - [x] **Task 1.2:** Source-generated `JsonMapLoader` in `EastAsiaGSG.Data` and 120-province / 10-state Korean Peninsula dataset (`states.json`, `provinces.json`).
   - [x] **Task 1.3:** `MapShader.gdshader`, `MapRenderer.cs`, 16-bit RG `provinces.png` ID encoding/decoding, 1D `map_lut` dynamic coloring, and $O(1)$ mouse picking.
   - [x] **Task 1.4:** `CameraController.cs` (smooth WASD/edge/drag pan, cursor-centered zoom), `MapModeToolbar.cs` (`F1–F5`), `ProvinceInfoPanel.cs`, and `MainView.tscn`.
-- [ ] **Phase 2: Korean Peninsula Tactical Sandbox (Movement & Combat)**
+- [x] **Phase 2: Korean Peninsula Tactical Sandbox (Movement & Combat)**
+  - [x] **Task 2.1:** CSR Adjacency Graph & zero-allocation A* pathfinder in `EastAsiaGSG.Core/Math/ProvincePathfinder.cs`.
+  - [x] **Task 2.2:** `DivisionComponent`, `ActiveCombatComponent`, `DivisionMovementSystem`, and `CombatResolutionSystem` (6-hour tick math with Hardness, Piercing, and PGM multipliers).
+  - [x] **Task 2.3:** Headless xUnit combat balance tests (`SimTests/CombatSystemTests.cs`) simulating a 1985 ROK vs. PRK division battle over 72 hours, encirclement shattering, reserve width filling, and zero-allocation enforcement.
+  - [x] **Task 2.4:** Godot Division On-Map NATO Counters, dynamic movement/attack vector arrows, HOI4-style green/amber/red 0–100 Battle Bubbles, and interactive `CombatTelemetryPopup.cs`.
 - [ ] **Phase 3: Industrial Economy, Equipment Stockpiles & Reinforcements**
+  - [ ] **Task 3.1:** Implement `ProductionLineComponent`, `ProductionSystem` (hyperbolic efficiency growth), and `ConstructionSystem` (State building queue).
+  - [ ] **Task 3.2:** Implement `ReinforcementSystem` connecting field division strength/PGM consumption to `CountryState.EquipmentStockpile`.
+  - [ ] **Task 3.3:** Build the Godot Production Line UI, Construction Queue UI, and National Stockpile TopBar.
 - [ ] **Phase 4: Supply Graph, Air/Naval Regions & Off-Map Superpowers**
+  - [ ] **Task 4.1:** Implement `SupplyGraphSystem` (Hub/Rail/Port Dijkstra + Trans-Siberian Artery bottleneck logic).
+  - [ ] **Task 4.2:** Implement `AirAndNavalRegionSystem` and the 60% Naval / 50% Air Superiority gate for strait crossings and amphibious invasions.
+  - [ ] **Task 4.3:** Implement US PACOM `HomelandEscalation` and DEFCON thresholds.
 - [ ] **Phase 5: JSON Focus Engine, Tech Tree & 1985 Content Generation**
-- [ ] **Phase 6: Two-Tier Utility AI & 15-Year Headless Soak Tests**
+  - [ ] **Task 5.1:** Implement `FocusTreeSystem` and `FocusEffectExecutor` handling all 15 enum `EffectType` actions.
+  - [ ] **Task 5.2:** Build the procedural Godot `FocusTreeViewer.tscn` that auto-lays out nodes and prerequisite lines from `/data/focus_trees/*.json`.
+  - [ ] **Task 5.3:** Batch-generate 1985 OOBs, State definitions, and Era I Focus Trees for `PRC`, `USA`, `SOV`, `JPN`, `ROK`, `PRK`, and `TWN`.
+- [ ] **Phase 6: Two-Tier Utility AI & Polish**
+  - [ ] **Task 6.1:** Implement `StrategicMinisterAISystem` (monthly focus/production scoring) and `TacticalFrontlineAISystem` (daily frontline assignment & attack execution).
+  - [ ] **Task 6.2:** Run 15-year headless soak tests (21,900 six-hour ticks) to verify zero exceptions, zero memory leaks, and historical plausibility.
