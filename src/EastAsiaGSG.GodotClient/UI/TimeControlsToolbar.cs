@@ -37,12 +37,12 @@ public partial class TimeControlsToolbar : PanelContainer
 
     public override void _Ready()
     {
-        CustomMinimumSize = new Vector2(580, 44);
+        CustomMinimumSize = new Vector2(490, 46);
 
         var style = new StyleBoxFlat
         {
-            BgColor = new Color(0.10f, 0.12f, 0.16f, 0.94f),
-            BorderColor = new Color(0.35f, 0.42f, 0.52f, 0.95f),
+            BgColor = new Color(0.08f, 0.10f, 0.14f, 0.95f),
+            BorderColor = new Color(0.28f, 0.36f, 0.46f, 0.95f),
             BorderWidthLeft = 1,
             BorderWidthTop = 1,
             BorderWidthRight = 1,
@@ -55,14 +55,14 @@ public partial class TimeControlsToolbar : PanelContainer
         AddThemeStyleboxOverride("panel", style);
 
         var margin = new MarginContainer();
-        margin.AddThemeConstantOverride("margin_left", 14);
-        margin.AddThemeConstantOverride("margin_right", 14);
-        margin.AddThemeConstantOverride("margin_top", 6);
-        margin.AddThemeConstantOverride("margin_bottom", 6);
+        margin.AddThemeConstantOverride("margin_left", 10);
+        margin.AddThemeConstantOverride("margin_right", 10);
+        margin.AddThemeConstantOverride("margin_top", 5);
+        margin.AddThemeConstantOverride("margin_bottom", 5);
         AddChild(margin);
 
         var hbox = new HBoxContainer();
-        hbox.AddThemeConstantOverride("separation", 10);
+        hbox.AddThemeConstantOverride("separation", 8);
         margin.AddChild(hbox);
 
         // Calendar Date Display
@@ -71,7 +71,7 @@ public partial class TimeControlsToolbar : PanelContainer
             Text = "1985-01-01 00:00",
             VerticalAlignment = VerticalAlignment.Center
         };
-        _dateLabel.AddThemeFontSizeOverride("font_size", 14);
+        _dateLabel.AddThemeFontSizeOverride("font_size", 13);
         _dateLabel.AddThemeColorOverride("font_color", new Color(1.0f, 0.88f, 0.45f));
         hbox.AddChild(_dateLabel);
 
@@ -81,7 +81,7 @@ public partial class TimeControlsToolbar : PanelContainer
             Text = _isPaused ? "⏸ PAUSED" : "▶ RUNNING",
             VerticalAlignment = VerticalAlignment.Center
         };
-        _statusBadge.AddThemeFontSizeOverride("font_size", 12);
+        _statusBadge.AddThemeFontSizeOverride("font_size", 11);
         _statusBadge.AddThemeColorOverride("font_color", _isPaused ? new Color(1.0f, 0.45f, 0.45f) : new Color(0.35f, 1.0f, 0.55f));
         hbox.AddChild(_statusBadge);
 
@@ -91,18 +91,24 @@ public partial class TimeControlsToolbar : PanelContainer
         // Play/Pause Button
         _playPauseButton = new Button
         {
-            Text = _isPaused ? "▶ Play (Space)" : "⏸ Pause (Space)",
-            CustomMinimumSize = new Vector2(110, 30)
+            Text = _isPaused ? "▶ Play" : "⏸ Pause",
+            FocusMode = FocusModeEnum.None,
+            CustomMinimumSize = new Vector2(74, 30),
+            TooltipText = "Toggle Play / Pause [Hotkey: Space]"
         };
+        _playPauseButton.AddThemeFontSizeOverride("font_size", 12);
         _playPauseButton.Pressed += TogglePlayPause;
         hbox.AddChild(_playPauseButton);
 
         // Step Button
         _stepButton = new Button
         {
-            Text = "Step 6h (>|)",
-            CustomMinimumSize = new Vector2(85, 30)
+            Text = "Step 6h",
+            FocusMode = FocusModeEnum.None,
+            CustomMinimumSize = new Vector2(68, 30),
+            TooltipText = "Advance simulation by one 6-hour tick"
         };
+        _stepButton.AddThemeFontSizeOverride("font_size", 12);
         _stepButton.Pressed += ExecuteManualStep;
         hbox.AddChild(_stepButton);
 
@@ -110,9 +116,13 @@ public partial class TimeControlsToolbar : PanelContainer
         hbox.AddChild(new VSeparator());
 
         // Speed Buttons
-        _speed1Button = new Button { Text = "1x (1)", ToggleMode = true, ButtonPressed = true, CustomMinimumSize = new Vector2(50, 30) };
-        _speed2Button = new Button { Text = "2x (2)", ToggleMode = true, ButtonPressed = false, CustomMinimumSize = new Vector2(50, 30) };
-        _speed5Button = new Button { Text = "5x (3)", ToggleMode = true, ButtonPressed = false, CustomMinimumSize = new Vector2(50, 30) };
+        _speed1Button = new Button { Text = "1x", ToggleMode = true, ButtonPressed = true, FocusMode = FocusModeEnum.None, CustomMinimumSize = new Vector2(38, 30), TooltipText = "Speed 1x [Hotkey: 1]" };
+        _speed2Button = new Button { Text = "2x", ToggleMode = true, ButtonPressed = false, FocusMode = FocusModeEnum.None, CustomMinimumSize = new Vector2(38, 30), TooltipText = "Speed 2x [Hotkey: 2]" };
+        _speed5Button = new Button { Text = "5x", ToggleMode = true, ButtonPressed = false, FocusMode = FocusModeEnum.None, CustomMinimumSize = new Vector2(38, 30), TooltipText = "Speed 5x [Hotkey: 3]" };
+
+        _speed1Button.AddThemeFontSizeOverride("font_size", 12);
+        _speed2Button.AddThemeFontSizeOverride("font_size", 12);
+        _speed5Button.AddThemeFontSizeOverride("font_size", 12);
 
         _speed1Button.Pressed += () => SetSpeed(1);
         _speed2Button.Pressed += () => SetSpeed(2);
@@ -186,7 +196,7 @@ public partial class TimeControlsToolbar : PanelContainer
 
         if (_playPauseButton != null)
         {
-            _playPauseButton.Text = _isPaused ? "▶ Play (Space)" : "⏸ Pause (Space)";
+            _playPauseButton.Text = _isPaused ? "▶ Play" : "⏸ Pause";
         }
 
         if (_statusBadge != null)

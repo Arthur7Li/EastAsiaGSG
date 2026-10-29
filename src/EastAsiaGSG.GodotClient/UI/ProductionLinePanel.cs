@@ -8,7 +8,7 @@ using Godot;
 namespace EastAsiaGSG.GodotClient.UI;
 
 /// <summary>
-/// Interactive HUD panel displaying Military Factory production lines, hyperbolic Production Efficiency bars,
+/// HOI4-style Left Side-Drawer displaying Military Factory production lines, hyperbolic Production Efficiency bars,
 /// daily IC and unit output rates, strategic resource availability, and one-way factory assignment buttons.
 /// </summary>
 public partial class ProductionLinePanel : PanelContainer
@@ -37,6 +37,7 @@ public partial class ProductionLinePanel : PanelContainer
     private readonly Dictionary<int, ushort> _pendingFactoryCounts = [];
 
     public event Action? CommandEnqueued;
+    public event Action? CloseRequested;
 
     public override void _Ready()
     {
@@ -69,11 +70,11 @@ public partial class ProductionLinePanel : PanelContainer
     {
         var style = new StyleBoxFlat
         {
-            BgColor = new Color(0.08f, 0.10f, 0.14f, 0.94f),
-            BorderColor = new Color(0.36f, 0.40f, 0.52f, 0.92f),
+            BgColor = new Color(0.08f, 0.10f, 0.14f, 0.96f),
+            BorderColor = new Color(0.28f, 0.36f, 0.46f, 0.95f),
             BorderWidthLeft = 1,
             BorderWidthTop = 1,
-            BorderWidthRight = 1,
+            BorderWidthRight = 2,
             BorderWidthBottom = 1,
             CornerRadiusBottomLeft = 6,
             CornerRadiusBottomRight = 6,
@@ -81,8 +82,8 @@ public partial class ProductionLinePanel : PanelContainer
             CornerRadiusTopRight = 6,
             ContentMarginLeft = 12,
             ContentMarginRight = 12,
-            ContentMarginTop = 8,
-            ContentMarginBottom = 8
+            ContentMarginTop = 10,
+            ContentMarginBottom = 10
         };
         AddThemeStyleboxOverride("panel", style);
 
@@ -90,29 +91,35 @@ public partial class ProductionLinePanel : PanelContainer
         rootVBox.AddThemeConstantOverride("separation", 6);
         AddChild(rootVBox);
 
-        // Header Row
+        // Header Row with Title & Close Button
         var headerHBox = new HBoxContainer();
         rootVBox.AddChild(headerHBox);
 
         _titleLabel = new Label
         {
-            Text = "⚙ Military Production Lines [ROK]",
+            Text = "Military Factory Production Lines [ROK]",
             SizeFlagsHorizontal = SizeFlags.ExpandFill
         };
         _titleLabel.AddThemeFontSizeOverride("font_size", 14);
-        _titleLabel.AddThemeColorOverride("font_color", new Color(0.95f, 0.86f, 0.42f));
+        _titleLabel.AddThemeColorOverride("font_color", new Color(0.96f, 0.86f, 0.40f));
         headerHBox.AddChild(_titleLabel);
 
-        var closeBtn = new Button { Text = "✕", Flat = true };
-        closeBtn.Pressed += () => Visible = false;
+        var closeBtn = new Button
+        {
+            Text = " ✕ ",
+            FocusMode = FocusModeEnum.None,
+            Flat = true,
+            TooltipText = "Return to Map Info [Esc]"
+        };
+        closeBtn.Pressed += () => CloseRequested?.Invoke();
         headerHBox.AddChild(closeBtn);
 
         _summaryLabel = new Label
         {
-            Text = "Mil Factories: 0 / 0 | Steel: 0 | Semi: 0 | Oil: 0 | Alum: 0"
+            Text = "Mil Factories: 0 / 0 | Resources — Steel: 0 | Semi: 0 | Oil: 0 | Alum: 0"
         };
         _summaryLabel.AddThemeFontSizeOverride("font_size", 11);
-        _summaryLabel.AddThemeColorOverride("font_color", new Color(0.65f, 0.85f, 0.98f));
+        _summaryLabel.AddThemeColorOverride("font_color", new Color(0.65f, 0.86f, 0.98f));
         rootVBox.AddChild(_summaryLabel);
 
         rootVBox.AddChild(new HSeparator());
@@ -128,7 +135,7 @@ public partial class ProductionLinePanel : PanelContainer
         {
             SizeFlagsHorizontal = SizeFlags.ExpandFill
         };
-        _linesContainer.AddThemeConstantOverride("separation", 6);
+        _linesContainer.AddThemeConstantOverride("separation", 8);
         scroll.AddChild(_linesContainer);
     }
 
@@ -182,25 +189,25 @@ public partial class ProductionLinePanel : PanelContainer
         };
         var cardStyle = new StyleBoxFlat
         {
-            BgColor = new Color(0.12f, 0.15f, 0.20f, 0.92f),
-            BorderColor = new Color(0.26f, 0.32f, 0.42f, 0.85f),
-            BorderWidthLeft = 1,
+            BgColor = new Color(0.12f, 0.15f, 0.20f, 0.95f),
+            BorderColor = new Color(0.24f, 0.31f, 0.40f, 0.90f),
+            BorderWidthLeft = 2,
             BorderWidthTop = 1,
             BorderWidthRight = 1,
             BorderWidthBottom = 1,
-            CornerRadiusBottomLeft = 4,
-            CornerRadiusBottomRight = 4,
-            CornerRadiusTopLeft = 4,
-            CornerRadiusTopRight = 4,
-            ContentMarginLeft = 8,
-            ContentMarginRight = 8,
-            ContentMarginTop = 6,
-            ContentMarginBottom = 6
+            CornerRadiusBottomLeft = 5,
+            CornerRadiusBottomRight = 5,
+            CornerRadiusTopLeft = 5,
+            CornerRadiusTopRight = 5,
+            ContentMarginLeft = 10,
+            ContentMarginRight = 10,
+            ContentMarginTop = 7,
+            ContentMarginBottom = 7
         };
         card.AddThemeStyleboxOverride("panel", cardStyle);
 
         var vbox = new VBoxContainer();
-        vbox.AddThemeConstantOverride("separation", 3);
+        vbox.AddThemeConstantOverride("separation", 4);
         card.AddChild(vbox);
 
         var topRow = new HBoxContainer();
@@ -213,7 +220,7 @@ public partial class ProductionLinePanel : PanelContainer
             SizeFlagsHorizontal = SizeFlags.ExpandFill
         };
         titleLabel.AddThemeFontSizeOverride("font_size", 12);
-        titleLabel.AddThemeColorOverride("font_color", new Color(0.95f, 0.90f, 0.60f));
+        titleLabel.AddThemeColorOverride("font_color", new Color(0.96f, 0.90f, 0.60f));
         topRow.AddChild(titleLabel);
 
         int capturedLineId = lineId;
@@ -221,7 +228,8 @@ public partial class ProductionLinePanel : PanelContainer
         var minus1Btn = new Button
         {
             Text = "-1 Mil",
-            CustomMinimumSize = new Vector2(48, 22),
+            FocusMode = FocusModeEnum.None,
+            CustomMinimumSize = new Vector2(48, 24),
             TooltipText = "Remove 1 Military Factory from this production line"
         };
         minus1Btn.AddThemeFontSizeOverride("font_size", 10);
@@ -231,7 +239,8 @@ public partial class ProductionLinePanel : PanelContainer
         var plus1Btn = new Button
         {
             Text = "+1 Mil",
-            CustomMinimumSize = new Vector2(48, 22),
+            FocusMode = FocusModeEnum.None,
+            CustomMinimumSize = new Vector2(48, 24),
             TooltipText = "Assign +1 Military Factory to this production line"
         };
         plus1Btn.AddThemeFontSizeOverride("font_size", 10);
@@ -241,7 +250,8 @@ public partial class ProductionLinePanel : PanelContainer
         var plus5Btn = new Button
         {
             Text = "+5 Mil",
-            CustomMinimumSize = new Vector2(48, 22),
+            FocusMode = FocusModeEnum.None,
+            CustomMinimumSize = new Vector2(48, 24),
             TooltipText = "Assign +5 Military Factories to this production line"
         };
         plus5Btn.AddThemeFontSizeOverride("font_size", 10);
@@ -253,17 +263,17 @@ public partial class ProductionLinePanel : PanelContainer
             Text = "Factories: 0/0 | Output: 0.0 IC/d (0.0 units/d)"
         };
         outputLabel.AddThemeFontSizeOverride("font_size", 11);
-        outputLabel.AddThemeColorOverride("font_color", new Color(0.78f, 0.88f, 0.95f));
+        outputLabel.AddThemeColorOverride("font_color", new Color(0.80f, 0.88f, 0.96f));
         vbox.AddChild(outputLabel);
 
         var effRow = new HBoxContainer();
-        effRow.AddThemeConstantOverride("separation", 6);
+        effRow.AddThemeConstantOverride("separation", 8);
         vbox.AddChild(effRow);
 
         var effLabel = new Label
         {
-            Text = "Eff: 25.0% / 80%",
-            CustomMinimumSize = new Vector2(130, 0)
+            Text = "Efficiency: 25.0% (Cap 80%)",
+            CustomMinimumSize = new Vector2(165, 0)
         };
         effLabel.AddThemeFontSizeOverride("font_size", 11);
         effLabel.AddThemeColorOverride("font_color", new Color(0.55f, 0.95f, 0.65f));
@@ -276,7 +286,7 @@ public partial class ProductionLinePanel : PanelContainer
             Value = 25,
             ShowPercentage = false,
             SizeFlagsHorizontal = SizeFlags.ExpandFill,
-            CustomMinimumSize = new Vector2(80, 14)
+            CustomMinimumSize = new Vector2(90, 14)
         };
         effRow.AddChild(effBar);
 
@@ -305,7 +315,6 @@ public partial class ProductionLinePanel : PanelContainer
 
         int updated = Math.Clamp(currentAssigned + delta, 0, ProductionLineComponent.MaxFactoriesPerLine);
 
-        // One-Way UI Data Binding: Enqueue deterministic AssignProductionFactories command
         SimulationCommand cmd = SimulationCommand.CreateAssignProductionFactories(
             countryTag: _activeCountryTag,
             lineId: lineId,
@@ -319,6 +328,19 @@ public partial class ProductionLinePanel : PanelContainer
         }
     }
 
+    private static string GetArchetypeDisplayName(EquipmentType archetype) => archetype switch
+    {
+        EquipmentType.InfantryKit => "Infantry Kit & ATGM",
+        EquipmentType.SupportVehicles => "Support & C4I Vehicles",
+        EquipmentType.IFV => "Mechanized IFV / APC",
+        EquipmentType.MBT => "Main Battle Tank (MBT)",
+        EquipmentType.Artillery => "Field & Rocket Artillery",
+        EquipmentType.AttackHeli => "Attack Helicopter",
+        EquipmentType.TacticalAir => "Tactical Fighter / CAS",
+        EquipmentType.PGM => "Precision Guided Munitions (PGM)",
+        _ => archetype.ToString()
+    };
+
     /// <summary>
     /// Refreshes all production line telemetry from SimulationWorld (one-way read).
     /// </summary>
@@ -330,7 +352,7 @@ public partial class ProductionLinePanel : PanelContainer
         }
 
         string tagCode = CountryTag.GetCode(_activeCountryTag);
-        _titleLabel.Text = $"⚙ Military Production Lines [{tagCode}]";
+        _titleLabel.Text = $"Military Factory Production Lines [{tagCode}]";
 
         CountryFactorySummary summary = ConstructionSystem.CalculateFactorySummary(_world, _activeCountryTag);
 
@@ -369,14 +391,14 @@ public partial class ProductionLinePanel : PanelContainer
 
             string genStr = line.Generation switch
             {
-                TechGeneration.Gen0_1970Reserve => "Gen0 '70",
-                TechGeneration.Gen1_1980Baseline => "Gen1 '80",
-                TechGeneration.Gen2_1988LateColdWar => "Gen2 '88",
-                TechGeneration.Gen3_1995DigitalStealth => "Gen3 '95",
-                _ => "Gen1"
+                TechGeneration.Gen0_1970Reserve => "Gen 0 '70",
+                TechGeneration.Gen1_1980Baseline => "Gen 1 '80",
+                TechGeneration.Gen2_1988LateColdWar => "Gen 2 '88",
+                TechGeneration.Gen3_1995DigitalStealth => "Gen 3 '95",
+                _ => "Gen 1"
             };
 
-            row.TitleLabel.Text = $"#{line.LineId} {line.Archetype} ({genStr}) [Prio {line.Priority}]";
+            row.TitleLabel.Text = $"{GetArchetypeDisplayName(line.Archetype)} ({genStr})";
 
             float dailyIc = ProductionSystem.CalculateDailyIc(
                 activeMilitaryFactories: assigned,
@@ -388,15 +410,15 @@ public partial class ProductionLinePanel : PanelContainer
                 : ProductionLineComponent.GetDefaultEquipmentCostIc(line.Archetype, line.Generation);
             float dailyUnits = dailyIc / costIc;
 
-            string penStr = line.ResourcePenalty > 0.001f ? $" | ResPen: -{line.ResourcePenalty:P0}" : "";
+            string penStr = line.ResourcePenalty > 0.001f ? $" | Shortage: -{line.ResourcePenalty:P0}" : "";
             row.OutputLabel.Text =
-                $"Mil: {line.ActiveMilitaryFactories}/{assigned} | {dailyIc:F1} IC/d -> +{dailyUnits:F2} units/d (Cost {costIc:F1} IC){penStr}";
+                $"Factories: {line.ActiveMilitaryFactories}/{assigned} Mil | Output: {dailyIc:F1} IC/d (+{dailyUnits:F2} units/d, {costIc:F1} IC/unit){penStr}";
 
-            row.EfficiencyLabel.Text = $"Eff: {line.Efficiency:P1} (Cap {line.EfficiencyCap:P0})";
+            row.EfficiencyLabel.Text = $"Efficiency: {line.Efficiency:P1} / {line.EfficiencyCap:P0}";
             row.EfficiencyBar.Value = Mathf.Clamp(line.Efficiency * 100.0f, 0.0f, 100.0f);
         }
 
         _summaryLabel.Text =
-            $"Mil Assigned: {totalAssigned}/{summary.TotalMilitaryFactories} (Active: {totalActive}) | Steel: {steel} | Semi: {semi} | Oil: {oil} | Alum: {alum}";
+            $"Mil Assigned: {totalAssigned} / {summary.TotalMilitaryFactories} (Active: {totalActive}) | Steel: {steel} | Semi: {semi} | Oil: {oil} | Alum: {alum}";
     }
 }

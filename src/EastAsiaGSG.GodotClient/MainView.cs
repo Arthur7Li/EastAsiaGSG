@@ -16,7 +16,15 @@ namespace EastAsiaGSG.GodotClient;
 /// </summary>
 public partial class MainView : Node2D
 {
+    private enum SideDrawerTab
+    {
+        None = 0,
+        Construction = 1,
+        Production = 2
+    }
+
     private SimulationWorld? _world;
+    private SideDrawerTab _activeDrawerTab = SideDrawerTab.None;
 
     private MapRenderer? _mapRenderer;
     private CameraController? _camera;
@@ -26,6 +34,10 @@ public partial class MainView : Node2D
     private TimeControlsToolbar? _timeToolbar;
     private CombatTelemetryPopup? _combatPopup;
     private NationalStockpileTopBar? _stockpileTopBar;
+    private PanelContainer? _leftTabBar;
+    private Button? _mapInfoTabBtn;
+    private Button? _constructTabBtn;
+    private Button? _produceTabBtn;
     private ConstructionQueuePanel? _constructionPanel;
     private ProductionLinePanel? _productionPanel;
 
@@ -93,7 +105,7 @@ public partial class MainView : Node2D
             AddChild(hudLayer);
         }
 
-        // Setup NationalStockpileTopBar at top-left
+        // Setup NationalStockpileTopBar at top-left (X = 16..516, Y = 12..58 — ~500px wide, 240px gap from TimeControlsToolbar)
         _stockpileTopBar = hudLayer.GetNodeOrNull<NationalStockpileTopBar>("NationalStockpileTopBar");
         if (_stockpileTopBar == null)
         {
@@ -103,13 +115,16 @@ public partial class MainView : Node2D
         _stockpileTopBar.SetAnchorsPreset(Control.LayoutPreset.TopLeft);
         _stockpileTopBar.GrowHorizontal = Control.GrowDirection.End;
         _stockpileTopBar.GrowVertical = Control.GrowDirection.End;
-        _stockpileTopBar.OffsetLeft = 20;
-        _stockpileTopBar.OffsetTop = 16;
-        _stockpileTopBar.OffsetRight = 760;
-        _stockpileTopBar.OffsetBottom = 66;
+        _stockpileTopBar.OffsetLeft = 16;
+        _stockpileTopBar.OffsetTop = 12;
+        _stockpileTopBar.OffsetRight = 516;
+        _stockpileTopBar.OffsetBottom = 58;
         _stockpileTopBar.Initialize(_world, CountryTag.ROK);
 
-        // Setup MapModeToolbar at bottom-right
+        // Setup Persistent HOI4 Left Tab Strip below TopBar (X = 16..356, Y = 64..100)
+        BuildLeftTabBar(hudLayer);
+
+        // Setup MapModeToolbar at bottom-right (X = 680..1264, Y = 662..708)
         _toolbar = hudLayer.GetNodeOrNull<MapModeToolbar>("MapModeToolbar");
         if (_toolbar == null)
         {
@@ -119,13 +134,13 @@ public partial class MainView : Node2D
         _toolbar.SetAnchorsPreset(Control.LayoutPreset.BottomRight);
         _toolbar.GrowHorizontal = Control.GrowDirection.Begin;
         _toolbar.GrowVertical = Control.GrowDirection.Begin;
-        _toolbar.OffsetLeft = -620;
-        _toolbar.OffsetTop = -60;
-        _toolbar.OffsetRight = -20;
-        _toolbar.OffsetBottom = -15;
+        _toolbar.OffsetLeft = -600;
+        _toolbar.OffsetTop = -58;
+        _toolbar.OffsetRight = -16;
+        _toolbar.OffsetBottom = -12;
         _toolbar.ModeSelected += mode => _mapRenderer.SetMapMode(mode);
 
-        // Setup ProvinceInfoPanel at top-left below NationalStockpileTopBar
+        // Setup ProvinceInfoPanel at top-left below Left Tab Strip (X = 16..356, Y = 106..366)
         _infoPanel = hudLayer.GetNodeOrNull<ProvinceInfoPanel>("ProvinceInfoPanel");
         if (_infoPanel == null)
         {
@@ -135,13 +150,13 @@ public partial class MainView : Node2D
         _infoPanel.SetAnchorsPreset(Control.LayoutPreset.TopLeft);
         _infoPanel.GrowHorizontal = Control.GrowDirection.End;
         _infoPanel.GrowVertical = Control.GrowDirection.End;
-        _infoPanel.OffsetLeft = 20;
-        _infoPanel.OffsetTop = 74;
-        _infoPanel.OffsetRight = 360;
-        _infoPanel.OffsetBottom = 334;
+        _infoPanel.OffsetLeft = 16;
+        _infoPanel.OffsetTop = 106;
+        _infoPanel.OffsetRight = 356;
+        _infoPanel.OffsetBottom = 366;
         _infoPanel.Initialize(_world);
 
-        // Setup TimeControlsToolbar at top-right
+        // Setup TimeControlsToolbar at top-right (X = 764..1264, Y = 12..58)
         _timeToolbar = hudLayer.GetNodeOrNull<TimeControlsToolbar>("TimeControlsToolbar");
         if (_timeToolbar == null)
         {
@@ -151,45 +166,45 @@ public partial class MainView : Node2D
         _timeToolbar.SetAnchorsPreset(Control.LayoutPreset.TopRight);
         _timeToolbar.GrowHorizontal = Control.GrowDirection.Begin;
         _timeToolbar.GrowVertical = Control.GrowDirection.End;
-        _timeToolbar.OffsetLeft = -620;
-        _timeToolbar.OffsetTop = 16;
-        _timeToolbar.OffsetRight = -20;
-        _timeToolbar.OffsetBottom = 64;
+        _timeToolbar.OffsetLeft = -516;
+        _timeToolbar.OffsetTop = 12;
+        _timeToolbar.OffsetRight = -16;
+        _timeToolbar.OffsetBottom = 58;
         _timeToolbar.Initialize(_world);
 
-        // Setup ConstructionQueuePanel at bottom-left
+        // Setup HOI4-style Left Side-Drawer Tab 1: ConstructionQueuePanel (X = 16..468, Y = 106..704, closed by default)
         _constructionPanel = hudLayer.GetNodeOrNull<ConstructionQueuePanel>("ConstructionQueuePanel");
         if (_constructionPanel == null)
         {
             _constructionPanel = new ConstructionQueuePanel { Name = "ConstructionQueuePanel" };
             hudLayer.AddChild(_constructionPanel);
         }
-        _constructionPanel.SetAnchorsPreset(Control.LayoutPreset.BottomLeft);
+        _constructionPanel.SetAnchorsPreset(Control.LayoutPreset.TopLeft);
         _constructionPanel.GrowHorizontal = Control.GrowDirection.End;
-        _constructionPanel.GrowVertical = Control.GrowDirection.Begin;
-        _constructionPanel.OffsetLeft = 20;
-        _constructionPanel.OffsetTop = -345;
-        _constructionPanel.OffsetRight = 445;
-        _constructionPanel.OffsetBottom = -15;
+        _constructionPanel.GrowVertical = Control.GrowDirection.End;
+        _constructionPanel.OffsetLeft = 16;
+        _constructionPanel.OffsetTop = 106;
+        _constructionPanel.OffsetRight = 468;
+        _constructionPanel.OffsetBottom = 704;
         _constructionPanel.Initialize(_world, CountryTag.ROK);
 
-        // Setup ProductionLinePanel at bottom-center-left
+        // Setup HOI4-style Left Side-Drawer Tab 2: ProductionLinePanel (X = 16..468, Y = 106..704, closed by default)
         _productionPanel = hudLayer.GetNodeOrNull<ProductionLinePanel>("ProductionLinePanel");
         if (_productionPanel == null)
         {
             _productionPanel = new ProductionLinePanel { Name = "ProductionLinePanel" };
             hudLayer.AddChild(_productionPanel);
         }
-        _productionPanel.SetAnchorsPreset(Control.LayoutPreset.BottomLeft);
+        _productionPanel.SetAnchorsPreset(Control.LayoutPreset.TopLeft);
         _productionPanel.GrowHorizontal = Control.GrowDirection.End;
-        _productionPanel.GrowVertical = Control.GrowDirection.Begin;
-        _productionPanel.OffsetLeft = 458;
-        _productionPanel.OffsetTop = -345;
-        _productionPanel.OffsetRight = 895;
-        _productionPanel.OffsetBottom = -15;
+        _productionPanel.GrowVertical = Control.GrowDirection.End;
+        _productionPanel.OffsetLeft = 16;
+        _productionPanel.OffsetTop = 106;
+        _productionPanel.OffsetRight = 468;
+        _productionPanel.OffsetBottom = 704;
         _productionPanel.Initialize(_world, CountryTag.ROK);
 
-        // Setup CombatTelemetryPopup at center-right
+        // Setup CombatTelemetryPopup at center-right (X = 924..1264, Y = 220..500)
         _combatPopup = hudLayer.GetNodeOrNull<CombatTelemetryPopup>("CombatTelemetryPopup");
         if (_combatPopup == null)
         {
@@ -199,36 +214,59 @@ public partial class MainView : Node2D
         _combatPopup.SetAnchorsPreset(Control.LayoutPreset.CenterRight);
         _combatPopup.GrowHorizontal = Control.GrowDirection.Begin;
         _combatPopup.GrowVertical = Control.GrowDirection.Both;
-        _combatPopup.OffsetLeft = -360;
+        _combatPopup.OffsetLeft = -356;
         _combatPopup.OffsetTop = -140;
-        _combatPopup.OffsetRight = -20;
+        _combatPopup.OffsetRight = -16;
         _combatPopup.OffsetBottom = 140;
 
-        // Wire TopBar drawer toggles & country switching
+        // Wire HOI4 Side-Drawer Tab State Machine (Mutually exclusive Map Info / Construction / Production tabs)
+        SetActiveDrawerTab(SideDrawerTab.None);
+
         _stockpileTopBar.ActiveCountryChanged += tag =>
         {
             _constructionPanel.SetActiveCountry(tag);
             _productionPanel.SetActiveCountry(tag);
         };
+        _stockpileTopBar.MapInfoTabRequested += () => SetActiveDrawerTab(SideDrawerTab.None);
         _stockpileTopBar.ToggleConstructionRequested += () =>
         {
-            _constructionPanel.Visible = !_constructionPanel.Visible;
-            _stockpileTopBar.SetDrawerStates(_constructionPanel.Visible, _productionPanel.Visible);
+            SetActiveDrawerTab(_activeDrawerTab == SideDrawerTab.Construction
+                ? SideDrawerTab.None
+                : SideDrawerTab.Construction);
         };
         _stockpileTopBar.ToggleProductionRequested += () =>
         {
-            _productionPanel.Visible = !_productionPanel.Visible;
-            _stockpileTopBar.SetDrawerStates(_constructionPanel.Visible, _productionPanel.Visible);
+            SetActiveDrawerTab(_activeDrawerTab == SideDrawerTab.Production
+                ? SideDrawerTab.None
+                : SideDrawerTab.Production);
         };
+
+        _constructionPanel.CloseRequested += () => SetActiveDrawerTab(SideDrawerTab.None);
         _constructionPanel.CommandEnqueued += () => _stockpileTopBar.Refresh();
+
+        _productionPanel.CloseRequested += () => SetActiveDrawerTab(SideDrawerTab.None);
         _productionPanel.CommandEnqueued += () => _stockpileTopBar.Refresh();
 
         // Wire map interactions to info panel
         _mapRenderer.ProvinceHovered += id => _infoPanel.DisplayProvince(id);
-        _mapRenderer.ProvinceSelected += id => _infoPanel.DisplayProvince(id);
+        _mapRenderer.ProvinceSelected += id =>
+        {
+            if (_activeDrawerTab != SideDrawerTab.None)
+            {
+                SetActiveDrawerTab(SideDrawerTab.None);
+            }
+            _infoPanel.DisplayProvince(id);
+        };
 
         // Wire tactical overlay interactions to HUD
-        _tacticalOverlay.DivisionSelected += div => _infoPanel.DisplaySelectedDivision(div);
+        _tacticalOverlay.DivisionSelected += div =>
+        {
+            if (_activeDrawerTab != SideDrawerTab.None)
+            {
+                SetActiveDrawerTab(SideDrawerTab.None);
+            }
+            _infoPanel.DisplaySelectedDivision(div);
+        };
         _tacticalOverlay.DivisionDeselected += () => _infoPanel.DisplaySelectedDivision(null);
         _tacticalOverlay.CombatSelected += combat => _combatPopup.DisplayCombat(_world, combat.CombatId);
 
@@ -244,6 +282,127 @@ public partial class MainView : Node2D
             _constructionPanel?.Refresh();
             _productionPanel?.Refresh();
         };
+    }
+
+    private void BuildLeftTabBar(CanvasLayer hudLayer)
+    {
+        _leftTabBar = hudLayer.GetNodeOrNull<PanelContainer>("LeftTabBar");
+        if (_leftTabBar == null)
+        {
+            _leftTabBar = new PanelContainer { Name = "LeftTabBar" };
+            hudLayer.AddChild(_leftTabBar);
+        }
+
+        _leftTabBar.SetAnchorsPreset(Control.LayoutPreset.TopLeft);
+        _leftTabBar.GrowHorizontal = Control.GrowDirection.End;
+        _leftTabBar.GrowVertical = Control.GrowDirection.End;
+        _leftTabBar.OffsetLeft = 16;
+        _leftTabBar.OffsetTop = 64;
+        _leftTabBar.OffsetRight = 356;
+        _leftTabBar.OffsetBottom = 100;
+
+        var style = new StyleBoxFlat
+        {
+            BgColor = new Color(0.08f, 0.10f, 0.14f, 0.95f),
+            BorderColor = new Color(0.28f, 0.36f, 0.46f, 0.95f),
+            BorderWidthLeft = 1,
+            BorderWidthTop = 1,
+            BorderWidthRight = 1,
+            BorderWidthBottom = 1,
+            CornerRadiusBottomLeft = 6,
+            CornerRadiusBottomRight = 6,
+            CornerRadiusTopLeft = 6,
+            CornerRadiusTopRight = 6,
+            ContentMarginLeft = 5,
+            ContentMarginRight = 5,
+            ContentMarginTop = 4,
+            ContentMarginBottom = 4
+        };
+        _leftTabBar.AddThemeStyleboxOverride("panel", style);
+
+        var hbox = new HBoxContainer();
+        hbox.AddThemeConstantOverride("separation", 5);
+        _leftTabBar.AddChild(hbox);
+
+        _mapInfoTabBtn = new Button
+        {
+            Text = "📍 Map Info",
+            ToggleMode = true,
+            ButtonPressed = true,
+            FocusMode = Control.FocusModeEnum.None,
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+            CustomMinimumSize = new Vector2(0, 26),
+            TooltipText = "Province & Division Inspector [Hotkey: Esc]"
+        };
+        _mapInfoTabBtn.AddThemeFontSizeOverride("font_size", 11);
+        _mapInfoTabBtn.Pressed += () => SetActiveDrawerTab(SideDrawerTab.None);
+        hbox.AddChild(_mapInfoTabBtn);
+
+        _constructTabBtn = new Button
+        {
+            Text = "🏗 Construct (C)",
+            ToggleMode = true,
+            ButtonPressed = false,
+            FocusMode = Control.FocusModeEnum.None,
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+            CustomMinimumSize = new Vector2(0, 26),
+            TooltipText = "State Construction Queue [Hotkey: C]"
+        };
+        _constructTabBtn.AddThemeFontSizeOverride("font_size", 11);
+        _constructTabBtn.Pressed += () => SetActiveDrawerTab(
+            _activeDrawerTab == SideDrawerTab.Construction ? SideDrawerTab.None : SideDrawerTab.Construction);
+        hbox.AddChild(_constructTabBtn);
+
+        _produceTabBtn = new Button
+        {
+            Text = "⚙ Produce (P)",
+            ToggleMode = true,
+            ButtonPressed = false,
+            FocusMode = Control.FocusModeEnum.None,
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+            CustomMinimumSize = new Vector2(0, 26),
+            TooltipText = "Military Factory Production Lines [Hotkey: P]"
+        };
+        _produceTabBtn.AddThemeFontSizeOverride("font_size", 11);
+        _produceTabBtn.Pressed += () => SetActiveDrawerTab(
+            _activeDrawerTab == SideDrawerTab.Production ? SideDrawerTab.None : SideDrawerTab.Production);
+        hbox.AddChild(_produceTabBtn);
+    }
+
+    private void SetActiveDrawerTab(SideDrawerTab tab)
+    {
+        _activeDrawerTab = tab;
+
+        bool showConstruction = tab == SideDrawerTab.Construction;
+        bool showProduction = tab == SideDrawerTab.Production;
+        bool drawerOpen = showConstruction || showProduction;
+
+        if (_constructionPanel != null)
+        {
+            _constructionPanel.Visible = showConstruction;
+            if (showConstruction)
+            {
+                _constructionPanel.Refresh();
+            }
+        }
+
+        if (_productionPanel != null)
+        {
+            _productionPanel.Visible = showProduction;
+            if (showProduction)
+            {
+                _productionPanel.Refresh();
+            }
+        }
+
+        if (_infoPanel != null)
+        {
+            _infoPanel.Visible = !drawerOpen;
+        }
+
+        _mapInfoTabBtn?.SetPressedNoSignal(!drawerOpen);
+        _constructTabBtn?.SetPressedNoSignal(showConstruction);
+        _produceTabBtn?.SetPressedNoSignal(showProduction);
     }
 
     private void SpawnStartingSandboxDivisions()
