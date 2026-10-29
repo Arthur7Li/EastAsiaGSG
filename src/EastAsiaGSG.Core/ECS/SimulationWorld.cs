@@ -36,6 +36,7 @@ public sealed class SimulationWorld : IDisposable
     public readonly CountryState[] Countries = new CountryState[MaxCountries];
     public readonly StrategicRegionData[] Regions = new StrategicRegionData[MaxStrategicRegions];
     public readonly DivisionTemplateRecord[] Templates = new DivisionTemplateRecord[MaxDivisionTemplates];
+    public readonly ushort[] CountryCapitals = new ushort[MaxCountries];
 
     // Global CSR Adjacency Graph for Provinces
     public readonly ProvinceGraph Graph = new();
@@ -112,6 +113,29 @@ public sealed class SimulationWorld : IDisposable
             Regions[i].RegionId = i;
             Regions[i].WeatherEfficiencyModifier = 1.0f;
         }
+
+        for (byte i = 0; i < MaxCountries; i++)
+        {
+            CountryCapitals[i] = ushort.MaxValue;
+        }
+        CountryCapitals[CountryTag.ROK] = 0;   // Seoul
+        CountryCapitals[CountryTag.PRK] = 60;  // Pyongyang
+        CountryCapitals[CountryTag.SOV] = 0;   // Trans-Siberian Irkutsk/Chita Artery Entry Node
+        CountryCapitals[CountryTag.USA] = 3;   // PACOM Naval Entry Port
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ushort GetCapitalProvince(byte countryTag)
+    {
+        if (countryTag < MaxCountries)
+        {
+            ushort capital = CountryCapitals[countryTag];
+            if (capital < MaxProvinces)
+            {
+                return capital;
+            }
+        }
+        return ushort.MaxValue;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -437,7 +461,9 @@ public sealed class SimulationWorld : IDisposable
     {
         DailyTicksExecuted++;
 
-        // 1. SupplyGraphSystem hook (Phase 4.1)
+        // 1. SupplyGraphSystem (Phase 4.1):
+        SupplyGraphSystem.Execute(this);
+
         // 2. ConstructionSystem & ProductionSystem (Phase 3.1):
         ConstructionSystem.Execute(this);
         ProductionSystem.Execute(this);

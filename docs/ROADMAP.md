@@ -18,7 +18,7 @@
 - [x] **Task 3.3:** Build the Godot Production Line UI, Construction Queue UI, and National Stockpile TopBar.
 
 ## Phase 4: Supply Graph, Air/Naval Regions & Off-Map Superpowers
-- [ ] **Task 4.1:** Implement `SupplyGraphSystem` (Hub/Rail/Port Dijkstra + Trans-Siberian Artery bottleneck logic).
+- [x] **Task 4.1:** Implement `SupplyGraphSystem` (Hub/Rail/Port Dijkstra + Trans-Siberian Artery bottleneck logic).
 - [ ] **Task 4.2:** Implement `AirAndNavalRegionSystem` and the 60% Naval / 50% Air Superiority gate for strait crossings and amphibious invasions.
 - [ ] **Task 4.3:** Implement US PACOM `HomelandEscalation` and DEFCON thresholds.
 
