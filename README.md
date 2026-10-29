@@ -42,10 +42,10 @@ EastAsiaGSG/
 │       └── provinces.png            # Lossless 1024x1024 16-bit RG encoded province ID map
 ├── src/
 │   ├── EastAsiaGSG.Core/            # Headless Data-Oriented simulation kernel (zero engine deps)
-│   │   ├── Components/              # Blittable fixed-size structs & domain enums (DivisionComponent, ActiveCombatComponent, etc.)
+│   │   ├── Components/              # Blittable fixed-size structs & domain enums (DivisionComponent, ActiveCombatComponent, ProductionLineComponent, DivisionTemplateRecord, etc.)
 │   │   ├── Math/                    # Compressed Sparse Row (CSR) ProvinceGraph & zero-allocation A* ProvincePathfinder
 │   │   ├── Commands/                # Unmanaged SimulationCommand & CommandRingBuffer
-│   │   ├── Systems/                 # Pure simulation systems (DivisionMovementSystem, CombatResolutionSystem)
+│   │   ├── Systems/                 # Pure simulation systems (DivisionMovementSystem, CombatResolutionSystem, ConstructionSystem, ProductionSystem, ReinforcementSystem)
 │   │   └── ECS/                     # SimulationWorld & stratified StepSixHours() pipeline
 │   ├── EastAsiaGSG.Data/            # Source-generated JSON loaders & CPU map/LUT buffers
 │   │   ├── Schemas/                 # System.Text.Json DTOs & MapJsonContext
@@ -54,12 +54,14 @@ EastAsiaGSG/
 │   └── EastAsiaGSG.GodotClient/     # Godot 4.x (.NET 8) reactive presentation client
 │       ├── Map/                     # MapShader.gdshader, MapRenderer.cs, CameraController.cs
 │       ├── Tactics/                 # TacticalMapOverlay.cs (NATO counters, movement arrows, HOI4 Battle Bubbles)
-│       ├── UI/                      # MapModeToolbar, ProvinceInfoPanel, TimeControlsToolbar, CombatTelemetryPopup
-│       ├── MainView.cs              # Root scene controller wiring world, map, camera, overlay & HUD
+│       ├── UI/                      # NationalStockpileTopBar, ConstructionQueuePanel, ProductionLinePanel, ProvinceInfoPanel, MapModeToolbar, TimeControlsToolbar, CombatTelemetryPopup
+│       ├── MainView.cs              # Root scene controller wiring world, map, camera, overlay & HOI4 Side-Drawer HUD
 │       └── MainView.tscn            # Main Godot 4 presentation scene
 └── tests/
-    └── EastAsiaGSG.SimTests/        # Headless xUnit verification & benchmark suite (43 tests)
+    └── EastAsiaGSG.SimTests/        # Headless xUnit verification & benchmark suite (55 tests)
         ├── CombatSystemTests.cs     # 72-hour ROK/PRK battle sims, width capping, PGM & zero-allocation checks
+        ├── ProductionSystemTests.cs # Hyperbolic efficiency growth, state construction queue & 15-factory cap
+        ├── ReinforcementSystemTests.cs # Newest-gen stockpile draw, manpower/XP dilution & end-to-end IC-to-frontline loop
         ├── PathfinderTests.cs       # A* benchmarks (< 5µs/query), DMZ/strait gating & thread-safety
         ├── SimulationWorldTests.cs  # Calendar progression, entity resolution & CSR graph lookups
         ├── MapLoaderTests.cs        # JSON schema validation & asymmetric edge detection
@@ -82,7 +84,7 @@ EastAsiaGSG/
 Simulation work is stratified by frequency to guarantee **1,000+ ticks/second** in headless mode (1 full year / 1,460 six-hour ticks executes in **$< 5\text{ ms}$**):
 
 - **Tier 1 — Every 6 Hours (`00:00, 06:00, 12:00, 18:00`):**
-  1. `CommandProcessor`: Drains queued player and AI commands (`SelectFocus`, `ShiftDefcon`, `AssignFactory`, `MoveDivision`, `TogglePgm`).
+  1. `CommandProcessor`: Drains queued player and AI commands (`SelectFocus`, `ShiftDefcon`, `AssignFactory`, `QueueConstruction`, `AssignProductionFactories`, `MoveDivision`, `TogglePgm`).
   2. `DivisionMovementSystem`: Advances division `MovementProgress` along province adjacency edges; initiates combat upon entering hostile territory; automatically replenishes waypoints for long-distance routes (> 16 hops).
   3. `CombatResolutionSystem`: Resolves 6-hour HOI4 land combat math:
      - **Hardness Blend:** $A_{\text{base}} = A_s \times (1 - H_t) + A_h \times H_t$.
@@ -93,15 +95,18 @@ Simulation work is stratified by frequency to guarantee **1,000+ ticks/second** 
      - **Retreat & Shatter:** Broken divisions withdraw to adjacent friendly provinces or shatter completely if encircled.
   4. `AirAndNavalRegionSystem` hooks.
 - **Tier 2 — Daily Tick (`00:00`):**
-  1. `SupplyGraphSystem`, `ProductionSystem`, `ReinforcementSystem`, `FocusAndResearchSystem`, and `TacticalFrontlineAISystem`.
+  1. `ConstructionSystem`: Calculates available Civilian Factories ($C_{\text{free}} = \max(0, C_{\text{total}} - \lceil \text{TotalFactories} \times \text{ConsumerGoodsRatio} \rceil + C_{\text{trade}})$), enforces the 15-factory per-state cap, advances State building progress ($\Delta P = C_{\text{assigned}} \times 5.0 \times (1 + \text{SpeedMod})$), and increments `Civ`, `Mil`, `Dock`, `Airbase`, `Radar/SAM`, `Infra`, `SupplyHub`, and `Port` levels.
+  2. `ProductionSystem`: Evaluates priority-ordered `ProductionLineComponent` entities across the 8 Equipment Archetypes (`InfantryKit`, `SupportVehicles`, `IFV`, `MBT`, `Artillery`, `AttackHeli`, `TacticalAir`, `PGM`), applies strategic resource shortage penalties (`Steel`, `Semiconductors`, `Oil`, `Aluminum`), updates hyperbolic Production Efficiency ($\Delta E_i = 0.001 \times (E_{\text{cap}}^2 / E_i)$), and increments national `EquipmentStockpile`.
+  3. `ReinforcementSystem`: Transfers manpower and equipment (`Gen 3 -> Gen 0` priority) from national stockpiles to depleted field divisions in valid supply (`SupplyRatio >= 0.15f`), dilutes division experience proportionally when absorbing green replacements, and recovers daily `Organization`.
+  4. `SupplyGraphSystem`, `FocusAndResearchSystem`, and `TacticalFrontlineAISystem` hooks.
 - **Tier 3 — Monthly Tick (`Day 1 at 00:00`):**
-  1. `MacroEconomySystem` and `StrategicMinisterAISystem`.
+  1. `MacroEconomySystem` and `StrategicMinisterAISystem` hooks.
 
 ---
 
-## Tactical Sandbox, GPU Map Renderer & Controls (`EastAsiaGSG.GodotClient`)
+## Tactical Sandbox, Industrial HUD & Controls (`EastAsiaGSG.GodotClient`)
 
-The Godot presentation client provides an interactive 2D RTS map interface backed by a two-texture GPU shader pipeline (`MapShader.gdshader`) and reactive tactical overlays:
+The Godot presentation client provides an interactive 2D RTS map interface backed by a two-texture GPU shader pipeline (`MapShader.gdshader`), reactive tactical overlays, and an HOI4-inspired Left Side-Drawer HUD:
 
 ### GPU Two-Texture Pipeline & $O(1)$ Picking
 1. **`provinces.png` (Static Lossless RGB8 Texture, `Filter = Nearest`):**
@@ -118,16 +123,25 @@ The Godot presentation client provides an interactive 2D RTS map interface backe
 - **HOI4-Style Battle Bubbles:** Color-coded 0–100 battle indicators (Green $\ge 55$, Amber $45\text{--}54$, Red $\le 44$) reflecting real-time attacker combat advantage and line breach progress.
 - **Combat Telemetry Popup (`CombatTelemetryPopup.cs`):** Click any Battle Bubble to inspect active combat telemetry: committed attacker/defender divisions, organization & strength loss per tick, combat width utilization, active tactical stances, and national PGM stockpile consumption.
 
+### HOI4-Style Industrial & Stockpile HUD
+- **`NationalStockpileTopBar.cs` (Top-Left HUD):** Displays active nation switcher (`ROK ⇄ PRK`, hotkey `Tab`), Political Power (`PP`), `Stability`, `War Support`, `Manpower`, free/total Civilian & Military Factories, and live national equipment stockpiles across all archetypes.
+- **Persistent Left Tab Strip (`MainView.cs`):** Positioned directly below the top bar with three mutually-exclusive view modes so left-side panels never overlap:
+  - **`📍 Map Info` (`Esc`):** Displays `ProvinceInfoPanel.cs` for province and division inspection.
+  - **`🏗 Construct (C)` (`C`):** Opens `ConstructionQueuePanel.cs` left side-drawer displaying controlled States, $C_{\text{free}}$ / Consumer Goods breakdown, active State construction progress bars, and one-way command buttons (`+Civ`, `+Mil`, `+Infra`, `+SAM`, `+Air`, `-5`/`+5` Civ Factories).
+  - **`⚙ Produce (P)` (`P`):** Opens `ProductionLinePanel.cs` left side-drawer displaying Military Factory allocation, strategic resource availability (`Steel`, `Semi`, `Oil`, `Alum`), hyperbolic Production Efficiency bars, daily IC & unit output rates, and one-way factory assignment buttons (`-1`, `+1`, `+5` Mil Factories).
+
 ### Player & Camera Controls
-- **Select Division:** Left-Click any on-map division counter (highlights division in cyan and displays its active route).
+- **Select Division:** Left-Click any on-map division counter (highlights division in cyan, switches to `📍 Map Info` if a drawer is open, and displays its active route).
 - **Issue Move / Attack Order:** Right-Click any target province with a division selected ($O(1)$ mouse picking resolves the destination and dispatches `MoveDivisionCommand` to the simulation ring buffer).
 - **Inspect Province:** Hover or Left-Click any unselected province to view state ID, owner/controller, terrain, infrastructure, factories, supply ratio, and strategic resources in `ProvinceInfoPanel`.
+- **Switch Inspected Nation (`ROK` ⇄ `PRK`):** Press `Tab` or click the top-left `ROK ⇄` button.
+- **Toggle Industrial Side-Drawers:** Press `C` for Construction Queue, `P` for Military Production Lines, or `Esc` to return to Map Info.
 - **Pan Camera:** `W` / `A` / `S` / `D`, Arrow Keys, Viewport Edge Pan, or Middle/Right Mouse Drag (hold `Shift` for $2\times$ pan speed).
 - **Zoom Camera:** Mouse Scroll Wheel (cursor-centered zoom clamped to `[0.25x, 4.0x]`).
 - **Time & Speed Controls (`TimeControlsToolbar.cs`):**
   - `Spacebar`: Toggle Play / Pause.
-  - `1x` / `2x` / `5x`: Simulation tick speed multipliers.
-  - `Step`: Execute a single 6-hour simulation tick.
+  - `1` / `2` / `3`: Simulation tick speed multipliers (`1x`, `2x`, `5x`).
+  - `.` / `>`: Step a single 6-hour simulation tick.
 - **Switch Map Modes (`MapModeToolbar.cs`):**
   - `F1` — **Political Map Mode**
   - `F2` — **Terrain Map Mode**
@@ -153,8 +167,10 @@ This script verifies:
 2. **Zero Hot-Path LINQ Allocations:** Zero `System.Linq` usage in `src/EastAsiaGSG.Core/Systems`.
 3. **Strict One-Way Project Dependencies:** `Core` $\leftarrow$ `Data` $\leftarrow$ `GodotClient`.
 4. **Zero-Warning Solution Build:** `dotnet build EastAsiaGSG.sln --warnaserror` (`0 Warning(s)`, `0 Error(s)`).
-5. **Headless xUnit Suite:** Runs all 43 unit and benchmark tests in `tests/EastAsiaGSG.SimTests` across all modules:
+5. **Headless xUnit Suite:** Runs all **55** unit and benchmark tests in `tests/EastAsiaGSG.SimTests` across all modules:
    - `CombatSystemTests` (15 tests: 72-hour ROK vs PRK historical battles, combat width & reserve filling, encirclement shattering, PGM depletion, zero-heap allocation checks, and 1,000-battle throughput benchmark in $< 100\text{ ms}$).
+   - `ProductionSystemTests` (7 tests: 32-byte blittable layouts, $C_{\text{free}}$ & Consumer Goods formulas, State construction queue & 15-factory cap, hyperbolic efficiency growth, resource shortage penalties, equipment switch retention, and zero-allocation daily loop checks).
+   - `ReinforcementSystemTests` (5 tests: 24-byte `DivisionTemplateRecord` layout, newest-generation-first equipment draw & experience dilution, partial stockpile/manpower/supply gates, end-to-end production-to-frontline reinforcement + PGM resupply, and zero-allocation daily loop checks).
    - `PathfinderTests` (10 tests: zero-allocation verification, $< 5\ \mu\text{s}$ A* performance, DMZ cross-border gating, strait access control, multi-thread safety).
    - `SimulationWorldTests` (7 tests: full 1-year calendar progression in $< 5\text{ ms}$, command ring buffer deterministic draining, two-phase division lookup, CSR adjacency graph).
    - `MapLoaderTests` (8 tests: Korean Peninsula 120-province dataset, foreign key integrity, topological validation).
@@ -189,10 +205,10 @@ Open `src/EastAsiaGSG.GodotClient/project.godot` in Godot 4 (.NET) or launch dir
   - [x] **Task 2.2:** `DivisionComponent`, `ActiveCombatComponent`, `DivisionMovementSystem`, and `CombatResolutionSystem` (6-hour tick math with Hardness, Piercing, and PGM multipliers).
   - [x] **Task 2.3:** Headless xUnit combat balance tests (`SimTests/CombatSystemTests.cs`) simulating a 1985 ROK vs. PRK division battle over 72 hours, encirclement shattering, reserve width filling, and zero-allocation enforcement.
   - [x] **Task 2.4:** Godot Division On-Map NATO Counters, dynamic movement/attack vector arrows, HOI4-style green/amber/red 0–100 Battle Bubbles, and interactive `CombatTelemetryPopup.cs`.
-- [ ] **Phase 3: Industrial Economy, Equipment Stockpiles & Reinforcements**
-  - [ ] **Task 3.1:** Implement `ProductionLineComponent`, `ProductionSystem` (hyperbolic efficiency growth), and `ConstructionSystem` (State building queue).
-  - [ ] **Task 3.2:** Implement `ReinforcementSystem` connecting field division strength/PGM consumption to `CountryState.EquipmentStockpile`.
-  - [ ] **Task 3.3:** Build the Godot Production Line UI, Construction Queue UI, and National Stockpile TopBar.
+- [x] **Phase 3: Industrial Economy, Equipment Stockpiles & Reinforcements**
+  - [x] **Task 3.1:** Implement `ProductionLineComponent`, `ProductionSystem` (hyperbolic efficiency growth), and `ConstructionSystem` (State building queue).
+  - [x] **Task 3.2:** Implement `ReinforcementSystem` connecting field division strength/PGM consumption to `CountryState.EquipmentStockpile`.
+  - [x] **Task 3.3:** Build the Godot Production Line UI, Construction Queue UI, and National Stockpile TopBar with an HOI4-style mutually-exclusive Left Side-Drawer architecture.
 - [ ] **Phase 4: Supply Graph, Air/Naval Regions & Off-Map Superpowers**
   - [ ] **Task 4.1:** Implement `SupplyGraphSystem` (Hub/Rail/Port Dijkstra + Trans-Siberian Artery bottleneck logic).
   - [ ] **Task 4.2:** Implement `AirAndNavalRegionSystem` and the 60% Naval / 50% Air Superiority gate for strait crossings and amphibious invasions.
