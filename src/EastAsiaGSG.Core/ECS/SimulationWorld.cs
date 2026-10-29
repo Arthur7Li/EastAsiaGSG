@@ -354,7 +354,8 @@ public sealed class SimulationWorld : IDisposable
         // 3. CombatResolutionSystem: Resolve 6-hour HOI4 land combat math
         CombatResolutionSystem.Execute(this);
 
-        // 4. AirAndNavalRegionSystem hook (Phase 4.2)
+        // 4. AirAndNavalRegionSystem (Phase 4.2): Update air superiority, naval control & A2/AD
+        AirAndNavalRegionSystem.Execute(this);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
