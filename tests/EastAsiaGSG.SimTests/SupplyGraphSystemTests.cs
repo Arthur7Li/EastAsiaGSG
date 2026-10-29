@@ -414,4 +414,34 @@ public sealed class SupplyGraphSystemTests
         // US unit in Seoul is supported by the Bluefor coalition hub and receives full supply
         Assert.Equal(1.0f, world.Provinces[0].SupplyRatio);
     }
+
+    [Fact]
+    public void SupplyGraphSystem_LocalStateFactoryTrickle_SuppliesIsolatedPocket()
+    {
+        using SimulationWorld world = new();
+
+        // Setup an isolated province in State 5 with no capital connection
+        ushort provId = 50;
+        ushort stateId = 5;
+
+        world.States[stateId].StateId = stateId;
+        world.States[stateId].ControllerTag = CountryTag.ROK;
+        world.States[stateId].CivilianFactories = 4;
+        world.States[stateId].MilitaryFactories = 6;
+
+        world.Provinces[provId].ProvinceId = provId;
+        world.Provinces[provId].StateId = stateId;
+        world.Provinces[provId].ControllerTag = CountryTag.ROK;
+        world.Provinces[provId].SupplyHubLevel = 1;
+
+        // Station a division in this pocket
+        SpawnTestDivision(world, 101, CountryTag.ROK, provId, hardness: 0.20f, strength: 1.0f);
+
+        SupplyGraphSystem.Execute(world);
+
+        // Local factories (4 + 6) * 0.5f = 5.0f supply capacity provided to hub
+        // Division demand is 0.70f + (0.20 * 0.60) = 0.82f
+        // Hub capacity 5.0f easily satisfies 0.82f demand -> full 1.0f supply ratio
+        Assert.Equal(1.0f, world.Provinces[provId].SupplyRatio);
+    }
 }

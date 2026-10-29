@@ -178,7 +178,7 @@ public sealed class MapLutBuffer
         ReadOnlySpan<StrategicRegionData> regions,
         byte controllerTag)
     {
-        if (controllerTag == CountryTag.None || prov.StrategicRegionId >= regions.Length)
+        if (prov.StrategicRegionId >= regions.Length)
         {
             return UnownedColor;
         }

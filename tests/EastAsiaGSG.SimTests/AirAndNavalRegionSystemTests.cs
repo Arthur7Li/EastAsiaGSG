@@ -5,6 +5,7 @@ using EastAsiaGSG.Core.ECS;
 using EastAsiaGSG.Core.Math;
 using EastAsiaGSG.Core.Systems;
 using EastAsiaGSG.Data.Loaders;
+using EastAsiaGSG.Data.Map;
 
 namespace EastAsiaGSG.SimTests;
 
@@ -486,5 +487,111 @@ public sealed class AirAndNavalRegionSystemTests
                 Assert.Equal(0.0f, nav);
             }
         }
+    }
+
+    [Fact]
+    public void AirbaseCapacity_EnforcesGenerationalScarcity_AcrossMultipleAirbases()
+    {
+        using SimulationWorld world = new();
+        byte regionId = 0;
+        world.Regions[regionId].RegionId = regionId;
+
+        world.Countries[CountryTag.ROK].Faction = FactionId.BlueforPacom;
+        // ROK has strictly 20 Gen 3 stealth aircraft (multiplier 1.70x) and 0 of other generations
+        world.Countries[CountryTag.ROK].SetStockpile(EquipmentType.TacticalAir, TechGeneration.Gen3_1995DigitalStealth, 20);
+
+        // Setup two distinct states in Region 0 with AirbaseLevel = 1 (capacity 20 aircraft each)
+        ushort stateA = 1;
+        ushort stateB = 2;
+
+        world.States[stateA].StateId = stateA;
+        world.States[stateA].ControllerTag = CountryTag.ROK;
+        world.States[stateA].AirbaseLevel = 1;
+
+        world.States[stateB].StateId = stateB;
+        world.States[stateB].ControllerTag = CountryTag.ROK;
+        world.States[stateB].AirbaseLevel = 1;
+
+        world.Provinces[10].ProvinceId = 10;
+        world.Provinces[10].StateId = stateA;
+        world.Provinces[10].StrategicRegionId = regionId;
+        world.Provinces[10].ControllerTag = CountryTag.ROK;
+
+        world.Provinces[20].ProvinceId = 20;
+        world.Provinces[20].StateId = stateB;
+        world.Provinces[20].StrategicRegionId = regionId;
+        world.Provinces[20].ControllerTag = CountryTag.ROK;
+
+        AirAndNavalRegionSystem.Execute(world);
+
+        // State A should consume the 20 Gen 3 jets: 20 * 1.70f = 34.0f air power
+        // State B finds 0 remaining Gen 3 jets and 0 remaining total aircraft, so contributes 0.0f
+        // Total air power must equal 34.0f (NOT 68.0f which was the defect behavior where Gen 3 was cloned!)
+        float blueAir = world.Regions[regionId].GetAirSuperiority(FactionId.BlueforPacom);
+        Assert.Equal(1.0f, blueAir); // Uncontested, normalized to 1.0f
+
+        // Now test in contested environment: PRK has 34 baseline aircraft (multiplier 1.0f -> 34 air power)
+        world.Countries[CountryTag.PRK].Faction = FactionId.RedforSocialist;
+        world.Countries[CountryTag.PRK].SetStockpile(EquipmentType.TacticalAir, TechGeneration.Gen1_1980Baseline, 34);
+
+        ushort statePrk = 3;
+        world.States[statePrk].StateId = statePrk;
+        world.States[statePrk].ControllerTag = CountryTag.PRK;
+        world.States[statePrk].AirbaseLevel = 2; // capacity 40
+
+        world.Provinces[30].ProvinceId = 30;
+        world.Provinces[30].StateId = statePrk;
+        world.Provinces[30].StrategicRegionId = regionId;
+        world.Provinces[30].ControllerTag = CountryTag.PRK;
+
+        AirAndNavalRegionSystem.Execute(world);
+
+        // ROK air power = 34.0f (20 * 1.70), PRK air power = 34.0f (34 * 1.0)
+        // With equal power (34 vs 34), ratio must be exactly 50% / 50%
+        float blueRatio = world.Regions[regionId].GetAirSuperiority(FactionId.BlueforPacom);
+        float redRatio = world.Regions[regionId].GetAirSuperiority(FactionId.RedforSocialist);
+
+        Assert.Equal(0.50f, blueRatio, 0.01f);
+        Assert.Equal(0.50f, redRatio, 0.01f);
+    }
+
+    [Fact]
+    public void MapLutBuffer_AirSuperiorityMode_RendersSeaZonesAccurately()
+    {
+        using SimulationWorld world = new();
+        byte regionId = 3;
+        world.Regions[regionId].RegionId = regionId;
+
+        // Setup Bluefor dominance in region 3
+        world.Countries[CountryTag.ROK].Faction = FactionId.BlueforPacom;
+        world.Countries[CountryTag.ROK].SetStockpile(EquipmentType.TacticalAir, TechGeneration.Gen1_1980Baseline, 100);
+
+        ushort landState = 10;
+        world.States[landState].StateId = landState;
+        world.States[landState].ControllerTag = CountryTag.ROK;
+        world.States[landState].AirbaseLevel = 5;
+
+        world.Provinces[100].ProvinceId = 100;
+        world.Provinces[100].StateId = landState;
+        world.Provinces[100].StrategicRegionId = regionId;
+        world.Provinces[100].ControllerTag = CountryTag.ROK;
+
+        // Ocean province in region 3 with CountryTag.None
+        ushort seaProvId = 101;
+        world.Provinces[seaProvId].ProvinceId = seaProvId;
+        world.Provinces[seaProvId].Terrain = TerrainType.Ocean;
+        world.Provinces[seaProvId].StrategicRegionId = regionId;
+        world.Provinces[seaProvId].ControllerTag = CountryTag.None;
+
+        AirAndNavalRegionSystem.Execute(world);
+
+        MapLutBuffer lut = new();
+        lut.UpdateFromWorld(world, MapMode.AirSuperiority);
+
+        // Sea zone texel must NOT be the neutral unowned gray (96, 102, 108);
+        // It should render the Blue-dominant air superiority color (Blue dominant has high blue channel)
+        Color32 seaColor = lut[seaProvId];
+        Assert.True(seaColor.B > seaColor.R, "Sea zone in AirSuperiority mode should reflect Bluefor air dominance (B > R)");
+        Assert.Equal(CountryTag.None, seaColor.A);
     }
 }

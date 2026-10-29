@@ -93,12 +93,14 @@ Simulation work is stratified by frequency to guarantee **1,000+ ticks/second** 
      - **Defense & Breakthrough Mitigation:** 10% blocked hit roll, 40% unblocked hit roll.
      - **Combat Width & Reserve Commitment:** Base width 80 (+20 per flanking province) with continuous reserve filling and contiguous slice compaction.
      - **Retreat & Shatter:** Broken divisions withdraw to adjacent friendly provinces or shatter completely if encircled.
-  4. `AirAndNavalRegionSystem` hooks.
+  4. `AirAndNavalRegionSystem`: Computes contested air superiority and naval control ratios across the 18 Strategic Regions, applies weather modifiers, accounts for coastal A2/AD missile batteries (Radar/SAM Lv 3+ with PGM), deploys Carrier Strike Groups (CSGs), and enforces the Strait & Amphibious Control Gate (> 60% Naval Control and > 50% Air Superiority required for crossing).
 - **Tier 2 — Daily Tick (`00:00`):**
-  1. `ConstructionSystem`: Calculates available Civilian Factories ($C_{\text{free}} = \max(0, C_{\text{total}} - \lceil \text{TotalFactories} \times \text{ConsumerGoodsRatio} \rceil + C_{\text{trade}})$), enforces the 15-factory per-state cap, advances State building progress ($\Delta P = C_{\text{assigned}} \times 5.0 \times (1 + \text{SpeedMod})$), and increments `Civ`, `Mil`, `Dock`, `Airbase`, `Radar/SAM`, `Infra`, `SupplyHub`, and `Port` levels.
-  2. `ProductionSystem`: Evaluates priority-ordered `ProductionLineComponent` entities across the 8 Equipment Archetypes (`InfantryKit`, `SupportVehicles`, `IFV`, `MBT`, `Artillery`, `AttackHeli`, `TacticalAir`, `PGM`), applies strategic resource shortage penalties (`Steel`, `Semiconductors`, `Oil`, `Aluminum`), updates hyperbolic Production Efficiency ($\Delta E_i = 0.001 \times (E_{\text{cap}}^2 / E_i)$), and increments national `EquipmentStockpile`.
-  3. `ReinforcementSystem`: Transfers manpower and equipment (`Gen 3 -> Gen 0` priority) from national stockpiles to depleted field divisions in valid supply (`SupplyRatio >= 0.15f`), dilutes division experience proportionally when absorbing green replacements, and recovers daily `Organization`.
-  4. `SupplyGraphSystem`, `FocusAndResearchSystem`, and `TacticalFrontlineAISystem` hooks.
+  1. `SupplyGraphSystem`: Executes multi-source Dijkstra overland supply distribution from operational Supply Hubs, Ports, and Railways; tracks Trans-Siberian Artery bottleneck throughput; applies local factory trickle to isolated pockets; calculates division supply consumption and updates `ProvinceSupplyRatio[1500]`.
+  2. `ConstructionSystem`: Calculates available Civilian Factories ($C_{\text{free}} = \max(0, C_{\text{total}} - \lceil \text{TotalFactories} \times \text{ConsumerGoodsRatio} \rceil + C_{\text{trade}})$), enforces the 15-factory per-state cap, advances State building progress ($\Delta P = C_{\text{assigned}} \times 5.0 \times (1 + \text{SpeedMod})$), and increments `Civ`, `Mil`, `Dock`, `Airbase`, `Radar/SAM`, `Infra`, `SupplyHub`, and `Port` levels.
+  3. `ProductionSystem`: Evaluates priority-ordered `ProductionLineComponent` entities across the 8 Equipment Archetypes (`InfantryKit`, `SupportVehicles`, `IFV`, `MBT`, `Artillery`, `AttackHeli`, `TacticalAir`, `PGM`), applies strategic resource shortage penalties (`Steel`, `Semiconductors`, `Oil`, `Aluminum`), updates hyperbolic Production Efficiency ($\Delta E_i = 0.001 \times (E_{\text{cap}}^2 / E_i)$), and increments national `EquipmentStockpile`.
+  4. `ReinforcementSystem`: Transfers manpower and equipment (`Gen 3 -> Gen 0` priority) from national stockpiles to depleted field divisions in valid supply (`SupplyRatio >= 0.15f`), dilutes division experience proportionally when absorbing green replacements, and recovers daily `Organization`.
+  5. `SuperpowerEscalationSystem`: Evaluates theatre threat scoring (Seoul, Taiwan, US forward bases, active Bluefor combat), updates US PACOM `HomelandEscalation` (15..100) and theatre `DEFCON` (5..1), scales CONUS off-map military factories (10..200), ships daily materiel convoys at DEFCON 3 or below, and mobilizes coalition readiness postures.
+  6. `FocusAndResearchSystem` and `TacticalFrontlineAISystem` hooks.
 - **Tier 3 — Monthly Tick (`Day 1 at 00:00`):**
   1. `MacroEconomySystem` and `StrategicMinisterAISystem` hooks.
 
@@ -123,17 +125,18 @@ The Godot presentation client provides an interactive 2D RTS map interface backe
 - **HOI4-Style Battle Bubbles:** Color-coded 0–100 battle indicators (Green $\ge 55$, Amber $45\text{--}54$, Red $\le 44$) reflecting real-time attacker combat advantage and line breach progress.
 - **Combat Telemetry Popup (`CombatTelemetryPopup.cs`):** Click any Battle Bubble to inspect active combat telemetry: committed attacker/defender divisions, organization & strength loss per tick, combat width utilization, active tactical stances, and national PGM stockpile consumption.
 
-### HOI4-Style Industrial & Stockpile HUD
-- **`NationalStockpileTopBar.cs` (Top-Left HUD):** Displays active nation switcher (`ROK ⇄ PRK`, hotkey `Tab`), Political Power (`PP`), `Stability`, `War Support`, `Manpower`, free/total Civilian & Military Factories, and live national equipment stockpiles across all archetypes.
+### HOI4-Style Industrial, Strategic & Stockpile HUD
+- **`NationalStockpileTopBar.cs` (Top-Left HUD):** Displays active nation switcher (`ROK ⇄ PRK`, hotkey `Tab`), Political Power (`PP`), `Stability`, `War Support`, `Manpower`, free/total Civilian & Military Factories, live national equipment stockpiles across all archetypes, and US PACOM `HomelandEscalation` telemetry (`Esc: XX%` with DEFCON tooltip).
+- **`TimeControlsToolbar.cs` (Top-Right HUD):** Simulation calendar date, Play/Pause/Step buttons, speed controls (`1x`, `2x`, `5x`), and a dynamic color-coded **DEFCON Alert Badge** (`DEFCON 5: FADE OUT` through `DEFCON 1: COCKED PISTOL`).
 - **Persistent Left Tab Strip (`MainView.cs`):** Positioned directly below the top bar with three mutually-exclusive view modes so left-side panels never overlap:
-  - **`📍 Map Info` (`Esc`):** Displays `ProvinceInfoPanel.cs` for province and division inspection.
+  - **`📍 Map Info` (`Esc`):** Displays `ProvinceInfoPanel.cs` with live-refreshed province inspection: State ID, Owner/Controller, Terrain, Supply Hub/Port/Infra levels, Civilian/Military/Dockyard counts, Population, Strategic Resources, Stationed Units, and **Strategic Region telemetry** (Air Superiority %, Naval Control %, Coastal A2/AD penalty, and Strait Crossing status).
   - **`🏗 Construct (C)` (`C`):** Opens `ConstructionQueuePanel.cs` left side-drawer displaying controlled States, $C_{\text{free}}$ / Consumer Goods breakdown, active State construction progress bars, and one-way command buttons (`+Civ`, `+Mil`, `+Infra`, `+SAM`, `+Air`, `-5`/`+5` Civ Factories).
   - **`⚙ Produce (P)` (`P`):** Opens `ProductionLinePanel.cs` left side-drawer displaying Military Factory allocation, strategic resource availability (`Steel`, `Semi`, `Oil`, `Alum`), hyperbolic Production Efficiency bars, daily IC & unit output rates, and one-way factory assignment buttons (`-1`, `+1`, `+5` Mil Factories).
 
 ### Player & Camera Controls
 - **Select Division:** Left-Click any on-map division counter (highlights division in cyan, switches to `📍 Map Info` if a drawer is open, and displays its active route).
 - **Issue Move / Attack Order:** Right-Click any target province with a division selected ($O(1)$ mouse picking resolves the destination and dispatches `MoveDivisionCommand` to the simulation ring buffer).
-- **Inspect Province:** Hover or Left-Click any unselected province to view state ID, owner/controller, terrain, infrastructure, factories, supply ratio, and strategic resources in `ProvinceInfoPanel`.
+- **Inspect Province:** Hover or Left-Click any unselected province to view state ID, owner/controller, terrain, infrastructure, factories, supply ratio, strategic resources, and strategic region balance in `ProvinceInfoPanel`.
 - **Switch Inspected Nation (`ROK` ⇄ `PRK`):** Press `Tab` or click the top-left `ROK ⇄` button.
 - **Toggle Industrial Side-Drawers:** Press `C` for Construction Queue, `P` for Military Production Lines, or `Esc` to return to Map Info.
 - **Pan Camera:** `W` / `A` / `S` / `D`, Arrow Keys, Viewport Edge Pan, or Middle/Right Mouse Drag (hold `Shift` for $2\times$ pan speed).
@@ -145,9 +148,9 @@ The Godot presentation client provides an interactive 2D RTS map interface backe
 - **Switch Map Modes (`MapModeToolbar.cs`):**
   - `F1` — **Political Map Mode**
   - `F2` — **Terrain Map Mode**
-  - `F3` — **Supply Map Mode**
-  - `F4` — **Industrial Map Mode**
-  - `F5` — **Air Superiority Map Mode**
+  - `F3` — **Supply Map Mode** (Overland Dijkstra supply ratio gradient)
+  - `F4` — **Industrial Map Mode** (Factory concentration density)
+  - `F5` — **Air Superiority Map Mode** (Contested Red vs Contested vs Blue air power across land and maritime sea zones)
 
 ---
 
@@ -167,8 +170,11 @@ This script verifies:
 2. **Zero Hot-Path LINQ Allocations:** Zero `System.Linq` usage in `src/EastAsiaGSG.Core/Systems`.
 3. **Strict One-Way Project Dependencies:** `Core` $\leftarrow$ `Data` $\leftarrow$ `GodotClient`.
 4. **Zero-Warning Solution Build:** `dotnet build EastAsiaGSG.sln --warnaserror` (`0 Warning(s)`, `0 Error(s)`).
-5. **Headless xUnit Suite:** Runs all **55** unit and benchmark tests in `tests/EastAsiaGSG.SimTests` across all modules:
+5. **Headless xUnit Suite:** Runs all **85** unit and benchmark tests in `tests/EastAsiaGSG.SimTests` across all modules:
    - `CombatSystemTests` (15 tests: 72-hour ROK vs PRK historical battles, combat width & reserve filling, encirclement shattering, PGM depletion, zero-heap allocation checks, and 1,000-battle throughput benchmark in $< 100\text{ ms}$).
+   - `SupplyGraphSystemTests` (8 tests: Two-tier Dijkstra overland supply, Trans-Siberian Artery bottleneck, island port-to-port sea lanes, local state factory trickle, zero-allocation daily loop checks, and $< 1\text{ ms}$ throughput benchmark).
+   - `AirAndNavalRegionSystemTests` (13 tests: Contested air superiority, weather attenuation, coastal A2/AD missile suppression, generational scarcity enforcement across multiple airbases, Strait & Amphibious Control Gates, sea zone dynamic LUT rendering, and zero-allocation 6-hour loop checks).
+   - `SuperpowerEscalationSystemTests` (6 tests: PACOM threat scoring, Homeland Escalation scaling, DEFCON transitions, CONUS off-map military factories, peacetime decay, Carrier Strike Group deployments, and $< 1\text{ ms}$ throughput benchmark).
    - `ProductionSystemTests` (7 tests: 32-byte blittable layouts, $C_{\text{free}}$ & Consumer Goods formulas, State construction queue & 15-factory cap, hyperbolic efficiency growth, resource shortage penalties, equipment switch retention, and zero-allocation daily loop checks).
    - `ReinforcementSystemTests` (5 tests: 24-byte `DivisionTemplateRecord` layout, newest-generation-first equipment draw & experience dilution, partial stockpile/manpower/supply gates, end-to-end production-to-frontline reinforcement + PGM resupply, and zero-allocation daily loop checks).
    - `PathfinderTests` (10 tests: zero-allocation verification, $< 5\ \mu\text{s}$ A* performance, DMZ cross-border gating, strait access control, multi-thread safety).
@@ -209,10 +215,10 @@ Open `src/EastAsiaGSG.GodotClient/project.godot` in Godot 4 (.NET) or launch dir
   - [x] **Task 3.1:** Implement `ProductionLineComponent`, `ProductionSystem` (hyperbolic efficiency growth), and `ConstructionSystem` (State building queue).
   - [x] **Task 3.2:** Implement `ReinforcementSystem` connecting field division strength/PGM consumption to `CountryState.EquipmentStockpile`.
   - [x] **Task 3.3:** Build the Godot Production Line UI, Construction Queue UI, and National Stockpile TopBar with an HOI4-style mutually-exclusive Left Side-Drawer architecture.
-- [ ] **Phase 4: Supply Graph, Air/Naval Regions & Off-Map Superpowers**
-  - [ ] **Task 4.1:** Implement `SupplyGraphSystem` (Hub/Rail/Port Dijkstra + Trans-Siberian Artery bottleneck logic).
-  - [ ] **Task 4.2:** Implement `AirAndNavalRegionSystem` and the 60% Naval / 50% Air Superiority gate for strait crossings and amphibious invasions.
-  - [ ] **Task 4.3:** Implement US PACOM `HomelandEscalation` and DEFCON thresholds.
+- [x] **Phase 4: Supply Graph, Air/Naval Regions & Off-Map Superpowers**
+  - [x] **Task 4.1:** Implement `SupplyGraphSystem` (Hub/Rail/Port Dijkstra + Trans-Siberian Artery bottleneck logic).
+  - [x] **Task 4.2:** Implement `AirAndNavalRegionSystem` and the 60% Naval / 50% Air Superiority gate for strait crossings and amphibious invasions.
+  - [x] **Task 4.3:** Implement US PACOM `HomelandEscalation` and DEFCON thresholds.
 - [ ] **Phase 5: JSON Focus Engine, Tech Tree & 1985 Content Generation**
   - [ ] **Task 5.1:** Implement `FocusTreeSystem` and `FocusEffectExecutor` handling all 15 enum `EffectType` actions.
   - [ ] **Task 5.2:** Build the procedural Godot `FocusTreeViewer.tscn` that auto-lays out nodes and prerequisite lines from `/data/focus_trees/*.json`.

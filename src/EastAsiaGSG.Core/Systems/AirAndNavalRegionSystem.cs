@@ -54,9 +54,15 @@ public static class AirAndNavalRegionSystem
 
         // Track remaining deployable TacticalAir per country across regions
         Span<int> remainingAirStockpile = stackalloc int[SimulationWorld.MaxCountries];
+        Span<int> remainingGenAirStockpile = stackalloc int[SimulationWorld.MaxCountries * 4];
         for (byte c = 0; c < SimulationWorld.MaxCountries; c++)
         {
-            remainingAirStockpile[c] = world.Countries[c].GetTotalArchetypeStockpile(EquipmentType.TacticalAir);
+            ref readonly CountryState country = ref world.Countries[c];
+            remainingAirStockpile[c] = country.GetTotalArchetypeStockpile(EquipmentType.TacticalAir);
+            for (int g = 0; g < 4; g++)
+            {
+                remainingGenAirStockpile[(c * 4) + g] = country.GetStockpile(EquipmentType.TacticalAir, (TechGeneration)g);
+            }
         }
 
         ReadOnlySpan<ProvinceData> provinces = world.Provinces.AsSpan();
@@ -117,20 +123,21 @@ public static class AirAndNavalRegionSystem
                                 {
                                     remainingAirStockpile[countryTag] -= deployedCount;
 
-                                    ref readonly CountryState country = ref world.Countries[countryTag];
                                     float stateAirPower = 0.0f;
                                     int remainingToWeight = deployedCount;
+                                    int countryGenBase = countryTag * 4;
 
-                                    // Weight deployed aircraft by tech generation (Gen 3 -> Gen 0)
+                                    // Weight deployed aircraft by tech generation (Gen 3 -> Gen 0), consuming from remaining gen pool
                                     for (int gen = (int)TechGeneration.Gen3_1995DigitalStealth; gen >= 0 && remainingToWeight > 0; gen--)
                                     {
-                                        int genStock = country.GetStockpile(EquipmentType.TacticalAir, (TechGeneration)gen);
+                                        int genStock = remainingGenAirStockpile[countryGenBase + gen];
                                         if (genStock > 0)
                                         {
                                             int slice = genStock < remainingToWeight ? genStock : remainingToWeight;
                                             float genMultiplier = GetTechGenerationAirMultiplier((TechGeneration)gen);
                                             stateAirPower += slice * genMultiplier;
                                             remainingToWeight -= slice;
+                                            remainingGenAirStockpile[countryGenBase + gen] -= slice;
                                         }
                                     }
 

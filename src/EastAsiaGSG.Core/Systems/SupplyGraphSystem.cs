@@ -377,10 +377,16 @@ public static class SupplyGraphSystem
             }
         }
 
-        // 4. Pass 3: Local state factory trickle for isolated pockets
-        for (ushort s = 0; s < SimulationWorld.MaxStates; s++)
+        // 4. Pass 3: Local state factory trickle for isolated pockets (single-pass O(N) over provinces)
+        for (ushort p = 0; p < SimulationWorld.MaxProvinces; p++)
         {
-            ref readonly StateData state = ref world.States[s];
+            ref readonly ProvinceData prov = ref world.Provinces[p];
+            if (prov.SupplyHubLevel == 0 || prov.StateId >= SimulationWorld.MaxStates)
+            {
+                continue;
+            }
+
+            ref readonly StateData state = ref world.States[prov.StateId];
             if (state.ControllerTag == CountryTag.None)
             {
                 continue;
@@ -392,17 +398,11 @@ public static class SupplyGraphSystem
                 continue;
             }
 
-            for (ushort p = 0; p < SimulationWorld.MaxProvinces; p++)
+            if (DivisionMovementSystem.IsFriendlyOrAllied(world, state.ControllerTag, prov.ControllerTag))
             {
-                ref readonly ProvinceData prov = ref world.Provinces[p];
-                if (prov.StateId == s
-                    && prov.SupplyHubLevel > 0
-                    && DivisionMovementSystem.IsFriendlyOrAllied(world, state.ControllerTag, prov.ControllerTag))
-                {
-                    float maxLocalCap = prov.SupplyHubLevel * 10.0f;
-                    float finalLocal = localSupply < maxLocalCap ? localSupply : maxLocalCap;
-                    ctx.HubCapacity[p] = System.Math.Max(ctx.HubCapacity[p], finalLocal);
-                }
+                float maxLocalCap = prov.SupplyHubLevel * 10.0f;
+                float finalLocal = localSupply < maxLocalCap ? localSupply : maxLocalCap;
+                ctx.HubCapacity[p] = System.Math.Max(ctx.HubCapacity[p], finalLocal);
             }
         }
 

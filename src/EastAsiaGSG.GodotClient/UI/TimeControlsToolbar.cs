@@ -11,6 +11,7 @@ public partial class TimeControlsToolbar : PanelContainer
 {
     private Label? _dateLabel;
     private Label? _statusBadge;
+    private Label? _defconBadge;
     private Button? _playPauseButton;
     private Button? _stepButton;
     private Button? _speed1Button;
@@ -33,6 +34,7 @@ public partial class TimeControlsToolbar : PanelContainer
     {
         _world = world;
         UpdateCalendarLabel();
+        UpdateDefconBadge();
     }
 
     public override void _Ready()
@@ -85,6 +87,16 @@ public partial class TimeControlsToolbar : PanelContainer
         _statusBadge.AddThemeColorOverride("font_color", _isPaused ? new Color(1.0f, 0.45f, 0.45f) : new Color(0.35f, 1.0f, 0.55f));
         hbox.AddChild(_statusBadge);
 
+        // DEFCON Alert Badge
+        _defconBadge = new Label
+        {
+            Text = "DEFCON 5",
+            VerticalAlignment = VerticalAlignment.Center
+        };
+        _defconBadge.AddThemeFontSizeOverride("font_size", 11);
+        _defconBadge.AddThemeColorOverride("font_color", new Color(0.35f, 0.85f, 0.95f));
+        hbox.AddChild(_defconBadge);
+
         // Separator
         hbox.AddChild(new VSeparator());
 
@@ -133,6 +145,7 @@ public partial class TimeControlsToolbar : PanelContainer
         hbox.AddChild(_speed5Button);
 
         UpdateCalendarLabel();
+        UpdateDefconBadge();
     }
 
     public override void _Process(double delta)
@@ -234,6 +247,7 @@ public partial class TimeControlsToolbar : PanelContainer
 
         _world.StepSixHours();
         UpdateCalendarLabel();
+        UpdateDefconBadge();
         Ticked?.Invoke();
     }
 
@@ -249,5 +263,39 @@ public partial class TimeControlsToolbar : PanelContainer
         string dayStr = _world.CurrentDay < 10 ? $"0{_world.CurrentDay}" : $"{_world.CurrentDay}";
 
         _dateLabel.Text = $"{_world.CurrentYear}-{monthStr}-{dayStr} {hourStr}";
+    }
+
+    private void UpdateDefconBadge()
+    {
+        if (_defconBadge == null || _world == null)
+        {
+            return;
+        }
+
+        byte defcon = _world.Countries[EastAsiaGSG.Core.Components.CountryTag.USA].Defcon;
+        if (defcon == 0 || defcon > 5)
+        {
+            defcon = 5;
+        }
+
+        (string text, Color color) = defcon switch
+        {
+            1 => ("DEFCON 1", new Color(1.0f, 0.20f, 0.20f)),
+            2 => ("DEFCON 2", new Color(1.0f, 0.45f, 0.15f)),
+            3 => ("DEFCON 3", new Color(1.0f, 0.85f, 0.20f)),
+            4 => ("DEFCON 4", new Color(0.65f, 0.95f, 0.35f)),
+            _ => ("DEFCON 5", new Color(0.35f, 0.85f, 0.95f))
+        };
+
+        _defconBadge.Text = text;
+        _defconBadge.AddThemeColorOverride("font_color", color);
+        _defconBadge.TooltipText = defcon switch
+        {
+            1 => "DEFCON 1: COCKED PISTOL — Maximum Readiness / Nuclear Escalation Imminent",
+            2 => "DEFCON 2: FAST PACE — Armed Forces ready to deploy in 6 hours",
+            3 => "DEFCON 3: ROUND HOUSE — Air Force ready to mobilize in 15 minutes",
+            4 => "DEFCON 4: DOUBLE TAKE — Intelligence watch and security heightened",
+            _ => "DEFCON 5: FADE OUT — Normal Peacetime Readiness"
+        };
     }
 }

@@ -24,9 +24,12 @@ public partial class ProvinceInfoPanel : PanelContainer
     private Label? _infraLabel;
     private Label? _economyLabel;
     private Label? _resourcesLabel;
+    private Label? _strategicRegionLabel;
     private Label? _stationedDivLabel;
     private PanelContainer? _selectedDivPanel;
     private Label? _selectedDivLabel;
+
+    private ushort _currentProvinceId = ushort.MaxValue;
 
     public override void _Ready()
     {
@@ -96,6 +99,11 @@ public partial class ProvinceInfoPanel : PanelContainer
         _resourcesLabel.AddThemeFontSizeOverride("font_size", 13);
         _resourcesLabel.AddThemeColorOverride("font_color", new Color(0.6f, 0.8f, 0.95f));
         vbox.AddChild(_resourcesLabel);
+
+        _strategicRegionLabel = new Label { Text = "Region: —" };
+        _strategicRegionLabel.AddThemeFontSizeOverride("font_size", 12);
+        _strategicRegionLabel.AddThemeColorOverride("font_color", new Color(0.85f, 0.75f, 1.0f));
+        vbox.AddChild(_strategicRegionLabel);
 
         _stationedDivLabel = new Label { Text = "Units: None" };
         _stationedDivLabel.AddThemeFontSizeOverride("font_size", 13);
@@ -172,6 +180,14 @@ public partial class ProvinceInfoPanel : PanelContainer
         }
     }
 
+    public void RefreshCurrent()
+    {
+        if (_currentProvinceId != ushort.MaxValue)
+        {
+            DisplayProvince(_currentProvinceId);
+        }
+    }
+
     /// <summary>
     /// Updates the panel with data from the specified province ID.
     /// </summary>
@@ -181,6 +197,8 @@ public partial class ProvinceInfoPanel : PanelContainer
         {
             return;
         }
+
+        _currentProvinceId = provinceId;
 
         if (provinceId >= SimulationWorld.MaxProvinces || provinceId == ProvinceMapBuffer.OceanProvinceId)
         {
@@ -192,6 +210,23 @@ public partial class ProvinceInfoPanel : PanelContainer
             _economyLabel!.Text = "Civ: 0 | Mil: 0 | Dock: 0 | Pop: 0";
             _resourcesLabel!.Text = "Steel: 0 | Semi: 0 | Oil: 0 | Alum: 0";
             _stationedDivLabel!.Text = "Units: None";
+
+            if (provinceId < SimulationWorld.MaxProvinces && _world != null)
+            {
+                ref readonly ProvinceData seaProv = ref _world.Provinces[provinceId];
+                if (seaProv.StrategicRegionId < SimulationWorld.MaxStrategicRegions)
+                {
+                    ref readonly StrategicRegionData region = ref _world.Regions[seaProv.StrategicRegionId];
+                    float blueAir = region.GetAirSuperiority(FactionId.BlueforPacom);
+                    float redAir = region.GetAirSuperiority(FactionId.RedforSocialist) + region.GetAirSuperiority(FactionId.PrcSphere);
+                    float blueNaval = region.GetNavalControl(FactionId.BlueforPacom);
+                    float redNaval = region.GetNavalControl(FactionId.RedforSocialist) + region.GetNavalControl(FactionId.PrcSphere);
+                    _strategicRegionLabel!.Text = $"Reg #{seaProv.StrategicRegionId} (Sea Zone): Air {blueAir:P0}B/{redAir:P0}R | Nav {blueNaval:P0}B/{redNaval:P0}R";
+                    return;
+                }
+            }
+
+            _strategicRegionLabel!.Text = "Region: Open International Waters";
             return;
         }
 
@@ -215,6 +250,28 @@ public partial class ProvinceInfoPanel : PanelContainer
         _infraLabel!.Text = $"Hub: Lv.{prov.SupplyHubLevel} | Port: Lv.{prov.PortLevel} | Infra: Lv.{prov.InfrastructureLevel}";
         _economyLabel!.Text = $"Civ: {state.CivilianFactories} | Mil: {state.MilitaryFactories} | Dock: {state.NavalDockyards} | Pop: {state.Population:N0}";
         _resourcesLabel!.Text = $"Steel: {state.GetResource(ResourceType.Steel)} | Semi: {state.GetResource(ResourceType.Semiconductors)} | Oil: {state.GetResource(ResourceType.Oil)} | Alum: {state.GetResource(ResourceType.Aluminum)}";
+
+        // Strategic Region Air & Naval Balance
+        if (prov.StrategicRegionId < SimulationWorld.MaxStrategicRegions)
+        {
+            ref readonly StrategicRegionData region = ref _world.Regions[prov.StrategicRegionId];
+            float blueAir = region.GetAirSuperiority(FactionId.BlueforPacom);
+            float redAir = region.GetAirSuperiority(FactionId.RedforSocialist) + region.GetAirSuperiority(FactionId.PrcSphere);
+            float blueNaval = region.GetNavalControl(FactionId.BlueforPacom);
+            float redNaval = region.GetNavalControl(FactionId.RedforSocialist) + region.GetNavalControl(FactionId.PrcSphere);
+
+            bool canBlueCross = region.CanCrossStraitOrInvade(FactionId.BlueforPacom);
+            string straitStatus = canBlueCross ? "Strait: OPEN" : "Strait: GATED";
+            string a2adStatus = region.CoastalRadarSamPenaltyBps > 0
+                ? $" | A2/AD: -{region.CoastalRadarSamPenaltyBps / 100.0f:F0}%"
+                : "";
+
+            _strategicRegionLabel!.Text = $"Reg #{prov.StrategicRegionId}: Air {blueAir:P0}B/{redAir:P0}R | Nav {blueNaval:P0}B/{redNaval:P0}R | {straitStatus}{a2adStatus}";
+        }
+        else
+        {
+            _strategicRegionLabel!.Text = "Region: None";
+        }
 
         // Query stationed divisions in this province
         string stationedText = "";

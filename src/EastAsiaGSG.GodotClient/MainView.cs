@@ -153,10 +153,10 @@ public partial class MainView : Node2D
         _infoPanel.OffsetLeft = 16;
         _infoPanel.OffsetTop = 106;
         _infoPanel.OffsetRight = 356;
-        _infoPanel.OffsetBottom = 366;
+        _infoPanel.OffsetBottom = 390;
         _infoPanel.Initialize(_world);
 
-        // Setup TimeControlsToolbar at top-right (X = 764..1264, Y = 12..58)
+        // Setup TimeControlsToolbar at top-right (X = 734..1264, Y = 12..58)
         _timeToolbar = hudLayer.GetNodeOrNull<TimeControlsToolbar>("TimeControlsToolbar");
         if (_timeToolbar == null)
         {
@@ -166,7 +166,7 @@ public partial class MainView : Node2D
         _timeToolbar.SetAnchorsPreset(Control.LayoutPreset.TopRight);
         _timeToolbar.GrowHorizontal = Control.GrowDirection.Begin;
         _timeToolbar.GrowVertical = Control.GrowDirection.End;
-        _timeToolbar.OffsetLeft = -516;
+        _timeToolbar.OffsetLeft = -546;
         _timeToolbar.OffsetTop = 12;
         _timeToolbar.OffsetRight = -16;
         _timeToolbar.OffsetBottom = 58;
@@ -281,6 +281,7 @@ public partial class MainView : Node2D
             _stockpileTopBar?.Refresh();
             _constructionPanel?.Refresh();
             _productionPanel?.Refresh();
+            _infoPanel?.RefreshCurrent();
         };
     }
 

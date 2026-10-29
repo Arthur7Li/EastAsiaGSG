@@ -172,8 +172,13 @@ public partial class NationalStockpileTopBar : PanelContainer
             ? $"{country.Manpower / 1000.0f:F0}k"
             : country.Manpower.ToString("N0");
 
+        float pacomEsc = _world.CountryHomelandEscalation[CountryTag.USA];
+        byte defcon = _world.Countries[CountryTag.USA].Defcon;
+        if (defcon == 0 || defcon > 5) defcon = 5;
+
         _macroStatsLabel.Text =
-            $"PP: {country.PoliticalPower:F0} | Stab: {country.Stability:P0} | War: {country.WarSupport:P0} | MP: {mpFormatted} | Civ: {summary.FreeCivilianFactories}/{summary.TotalCivilianFactories} | Mil: {summary.TotalMilitaryFactories}";
+            $"PP: {country.PoliticalPower:F0} | Stab: {country.Stability:P0} | War: {country.WarSupport:P0} | MP: {mpFormatted} | Civ: {summary.FreeCivilianFactories}/{summary.TotalCivilianFactories} | Mil: {summary.TotalMilitaryFactories} | Esc: {pacomEsc:F0}%";
+        _macroStatsLabel.TooltipText = $"Inspecting [{code}] | US PACOM Homeland Escalation: {pacomEsc:F0}% | DEFCON {defcon}";
 
         int inf = country.GetTotalArchetypeStockpile(EquipmentType.InfantryKit);
         int ifv = country.GetTotalArchetypeStockpile(EquipmentType.IFV);
