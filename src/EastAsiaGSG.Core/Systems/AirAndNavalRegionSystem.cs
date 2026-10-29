@@ -169,10 +169,21 @@ public static class AirAndNavalRegionSystem
         }
 
         // Second pass: Calculate normalized ratios across all 18 strategic regions
+        byte usEscalation = world.Countries[CountryTag.USA].HomelandEscalation;
+        int activeCsgs = SuperpowerEscalationSystem.GetActiveCsgCount(usEscalation);
+
         for (byte r = 0; r < regionCount; r++)
         {
             ref StrategicRegionData region = ref world.Regions[r];
             int regionBaseOffset = r * factionCount;
+
+            // If this is a maritime sea zone, surge US Carrier Strike Groups
+            if (region.IsSeaZone != 0 && activeCsgs > 0)
+            {
+                int blueforIdx = regionBaseOffset + (int)FactionId.BlueforPacom;
+                airPower[blueforIdx] += activeCsgs * SuperpowerEscalationSystem.CsgAirPower;
+                navalPower[blueforIdx] += activeCsgs * SuperpowerEscalationSystem.CsgNavalPower;
+            }
 
             // Apply weather efficiency modifier to air power (clamped 0.10f to 1.00f)
             float weather = System.Math.Clamp(region.WeatherEfficiencyModifier, 0.10f, 1.00f);

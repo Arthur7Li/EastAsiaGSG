@@ -37,6 +37,7 @@ public sealed class SimulationWorld : IDisposable
     public readonly StrategicRegionData[] Regions = new StrategicRegionData[MaxStrategicRegions];
     public readonly DivisionTemplateRecord[] Templates = new DivisionTemplateRecord[MaxDivisionTemplates];
     public readonly ushort[] CountryCapitals = new ushort[MaxCountries];
+    public readonly float[] CountryHomelandEscalation = new float[MaxCountries];
 
     // Global CSR Adjacency Graph for Provinces
     public readonly ProvinceGraph Graph = new();
@@ -93,6 +94,7 @@ public sealed class SimulationWorld : IDisposable
             Countries[i].TagId = i;
             Countries[i].Defcon = 5;
             Countries[i].HomelandEscalation = i == CountryTag.USA ? (byte)15 : (byte)0;
+            CountryHomelandEscalation[i] = i == CountryTag.USA ? 15.0f : 0.0f;
             Countries[i].Stability = 0.70f;
             Countries[i].WarSupport = 0.50f;
             Countries[i].ConsumerGoodsRatio = 0.25f;
@@ -465,7 +467,10 @@ public sealed class SimulationWorld : IDisposable
         // 1. SupplyGraphSystem (Phase 4.1):
         SupplyGraphSystem.Execute(this);
 
-        // 2. ConstructionSystem & ProductionSystem (Phase 3.1):
+        // 2. SuperpowerEscalationSystem (Phase 4.3):
+        SuperpowerEscalationSystem.Execute(this);
+
+        // 3. ConstructionSystem & ProductionSystem (Phase 3.1):
         ConstructionSystem.Execute(this);
         ProductionSystem.Execute(this);
 

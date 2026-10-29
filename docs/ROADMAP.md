@@ -20,7 +20,7 @@
 ## Phase 4: Supply Graph, Air/Naval Regions & Off-Map Superpowers
 - [x] **Task 4.1:** Implement `SupplyGraphSystem` (Hub/Rail/Port Dijkstra + Trans-Siberian Artery bottleneck logic).
 - [x] **Task 4.2:** Implement `AirAndNavalRegionSystem` and the 60% Naval / 50% Air Superiority gate for strait crossings and amphibious invasions.
-- [ ] **Task 4.3:** Implement US PACOM `HomelandEscalation` and DEFCON thresholds.
+- [x] **Task 4.3:** Implement US PACOM `HomelandEscalation` and DEFCON thresholds.
 
 ## Phase 5: JSON Focus Engine, Tech Tree & 1985 Content Generation
 - [ ] **Task 5.1:** Implement `FocusTreeSystem` and `FocusEffectExecutor` handling all 15 enum `EffectType` actions.
