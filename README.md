@@ -36,30 +36,39 @@ EastAsiaGSG/
 │   ├── DATA_SCHEMAS.md              # Modding JSON schemas (States, OOBs, Focuses)
 │   └── ROADMAP.md                   # Phased execution roadmap (Phases 1–6)
 ├── data/
+│   ├── focus_trees/                 # 1985 Era I Focus Trees (PRC, USA, SOV, JPN, ROK, PRK, TWN, GENERIC)
+│   ├── oob_1985/                    # 1985 Historical OOBs & Division Templates (PRC, USA, SOV, JPN, ROK, PRK, TWN)
 │   └── map/
 │       ├── states.json              # 10-state Korean Peninsula sandbox definitions
+│       ├── east_asia_1985_states.json # 28-state East Asia theatre definitions across all 15 tags
 │       ├── provinces.json           # 120-province Korean Peninsula graph & coordinates
 │       └── provinces.png            # Lossless 1024x1024 16-bit RG encoded province ID map
 ├── src/
 │   ├── EastAsiaGSG.Core/            # Headless Data-Oriented simulation kernel (zero engine deps)
-│   │   ├── Components/              # Blittable fixed-size structs & domain enums (DivisionComponent, ActiveCombatComponent, ProductionLineComponent, DivisionTemplateRecord, etc.)
+│   │   ├── Components/              # Blittable fixed-size structs & domain enums (DivisionComponent, ActiveCombatComponent, ProductionLineComponent, DivisionTemplateRecord, FocusNodeData, etc.)
 │   │   ├── Math/                    # Compressed Sparse Row (CSR) ProvinceGraph & zero-allocation A* ProvincePathfinder
 │   │   ├── Commands/                # Unmanaged SimulationCommand & CommandRingBuffer
-│   │   ├── Systems/                 # Pure simulation systems (DivisionMovementSystem, CombatResolutionSystem, ConstructionSystem, ProductionSystem, ReinforcementSystem)
+│   │   ├── Systems/                 # Pure simulation systems (DivisionMovementSystem, CombatResolutionSystem, AirAndNavalRegionSystem, SupplyGraphSystem, ConstructionSystem, ProductionSystem, ReinforcementSystem, SuperpowerEscalationSystem, FocusTreeSystem, FocusEffectExecutor, TacticalFrontlineAISystem, MacroEconomySystem, StrategicMinisterAISystem)
 │   │   └── ECS/                     # SimulationWorld & stratified StepSixHours() pipeline
 │   ├── EastAsiaGSG.Data/            # Source-generated JSON loaders & CPU map/LUT buffers
-│   │   ├── Schemas/                 # System.Text.Json DTOs & MapJsonContext
-│   │   ├── Loaders/                 # JsonMapLoader with bijective graph validation
+│   │   ├── Schemas/                 # System.Text.Json DTOs & MapJsonContext (Map, FocusTreeDto, OobDto)
+│   │   ├── Loaders/                 # JsonMapLoader, JsonFocusTreeLoader & JsonOobLoader with FK validation
 │   │   └── Map/                     # ProvinceMapBuffer (O(1) picking) & MapLutBuffer (2048x1 RGBA8)
 │   └── EastAsiaGSG.GodotClient/     # Godot 4.x (.NET 8) reactive presentation client
 │       ├── Map/                     # MapShader.gdshader, MapRenderer.cs, CameraController.cs
 │       ├── Tactics/                 # TacticalMapOverlay.cs (NATO counters, movement arrows, HOI4 Battle Bubbles)
-│       ├── UI/                      # NationalStockpileTopBar, ConstructionQueuePanel, ProductionLinePanel, ProvinceInfoPanel, MapModeToolbar, TimeControlsToolbar, CombatTelemetryPopup
-│       ├── MainView.cs              # Root scene controller wiring world, map, camera, overlay & HOI4 Side-Drawer HUD
+│       ├── UI/                      # NationalStockpileTopBar, ConstructionQueuePanel, ProductionLinePanel, FocusTreeViewer, ProvinceInfoPanel, MapModeToolbar, TimeControlsToolbar, CombatTelemetryPopup
+│       ├── MainView.cs              # Root scene controller wiring world, map, camera, overlay, AI & HOI4 Side-Drawer HUD
 │       └── MainView.tscn            # Main Godot 4 presentation scene
 └── tests/
-    └── EastAsiaGSG.SimTests/        # Headless xUnit verification & benchmark suite (55 tests)
+    └── EastAsiaGSG.SimTests/        # Headless xUnit verification & benchmark suite (97 tests)
         ├── CombatSystemTests.cs     # 72-hour ROK/PRK battle sims, width capping, PGM & zero-allocation checks
+        ├── SupplyGraphSystemTests.cs # Overland Dijkstra supply, Trans-Siberian bottleneck & island sea lanes
+        ├── AirAndNavalRegionSystemTests.cs # Contested air/sea superiority, A2/AD & strait crossing gates
+        ├── SuperpowerEscalationSystemTests.cs # PACOM Homeland Escalation, DEFCON & CONUS off-map factories
+        ├── FocusTreeSystemTests.cs  # Focus prerequisites, mutual exclusions, all 15 EffectType actions & zero-alloc loop
+        ├── Content1985BatchTests.cs # 1985 Era I Focus Trees, 7 Major Power OOBs & 28-state East Asia dataset verification
+        ├── TwoTierAiAndSoakTests.cs # StrategicMinisterAI, TacticalFrontlineAI & 15-year (21,912-tick) headless soak test
         ├── ProductionSystemTests.cs # Hyperbolic efficiency growth, state construction queue & 15-factory cap
         ├── ReinforcementSystemTests.cs # Newest-gen stockpile draw, manpower/XP dilution & end-to-end IC-to-frontline loop
         ├── PathfinderTests.cs       # A* benchmarks (< 5µs/query), DMZ/strait gating & thread-safety
@@ -100,15 +109,17 @@ Simulation work is stratified by frequency to guarantee **1,000+ ticks/second** 
   3. `ProductionSystem`: Evaluates priority-ordered `ProductionLineComponent` entities across the 8 Equipment Archetypes (`InfantryKit`, `SupportVehicles`, `IFV`, `MBT`, `Artillery`, `AttackHeli`, `TacticalAir`, `PGM`), applies strategic resource shortage penalties (`Steel`, `Semiconductors`, `Oil`, `Aluminum`), updates hyperbolic Production Efficiency ($\Delta E_i = 0.001 \times (E_{\text{cap}}^2 / E_i)$), and increments national `EquipmentStockpile`.
   4. `ReinforcementSystem`: Transfers manpower and equipment (`Gen 3 -> Gen 0` priority) from national stockpiles to depleted field divisions in valid supply (`SupplyRatio >= 0.15f`), dilutes division experience proportionally when absorbing green replacements, and recovers daily `Organization`.
   5. `SuperpowerEscalationSystem`: Evaluates theatre threat scoring (Seoul, Taiwan, US forward bases, active Bluefor combat), updates US PACOM `HomelandEscalation` (15..100) and theatre `DEFCON` (5..1), scales CONUS off-map military factories (10..200), ships daily materiel convoys at DEFCON 3 or below, and mobilizes coalition readiness postures.
-  6. `FocusAndResearchSystem` and `TacticalFrontlineAISystem` hooks.
+  6. `FocusTreeSystem`: Advances active National Focuses (`FocusDaysRemaining`), accrues daily Political Power (`+2.0/day` base, `-1.0/day` while executing an active focus), evaluates all 11 `FocusConditionType` gates, and fires `FocusEffectExecutor` across all 15 `FocusEffectType` actions when `FocusDaysRemaining == 0`.
+  7. `TacticalFrontlineAISystem`: Computes daily border threat/desirability gradients for AI-controlled nations, positions peacetime divisions on high-value frontier provinces (DMZ, Taiwan Strait, Sino-Soviet border), and issues wartime offensive movement commands with automatic PGM authorization when combat power ratio exceeds `1.15x`.
 - **Tier 3 — Monthly Tick (`Day 1 at 00:00`):**
-  1. `MacroEconomySystem` and `StrategicMinisterAISystem` hooks.
+  1. `MacroEconomySystem`: Applies historical Cold War macro-economic trends—Soviet/DPRK 1990s economic overheating & Arduous March consumer goods pressure, and East Asian export miracle growth (`ROK`, `TWN`, `JPN`, `PRC`) with periodic civilian factory expansion.
+  2. `StrategicMinisterAISystem`: Evaluates monthly geopolitical utility scores for AI nations to select available National Focuses (`aiBaseWeight` $\times$ war/DEFCON multipliers), queue State construction projects (`MilitaryFactory`, `CivilianFactory`, `RadarSam`, `Infrastructure`), and dynamically balance Military Factory allocations across active equipment production lines.
 
 ---
 
 ## Tactical Sandbox, Industrial HUD & Controls (`EastAsiaGSG.GodotClient`)
 
-The Godot presentation client provides an interactive 2D RTS map interface backed by a two-texture GPU shader pipeline (`MapShader.gdshader`), reactive tactical overlays, and an HOI4-inspired Left Side-Drawer HUD:
+The Godot presentation client provides an interactive 2D RTS map interface backed by a two-texture GPU shader pipeline (`MapShader.gdshader`), reactive tactical overlays, and an HOI4-inspired Left Side-Drawer & Modal Focus Tree HUD:
 
 ### GPU Two-Texture Pipeline & $O(1)$ Picking
 1. **`provinces.png` (Static Lossless RGB8 Texture, `Filter = Nearest`):**
@@ -126,19 +137,20 @@ The Godot presentation client provides an interactive 2D RTS map interface backe
 - **Combat Telemetry Popup (`CombatTelemetryPopup.cs`):** Click any Battle Bubble to inspect active combat telemetry: committed attacker/defender divisions, organization & strength loss per tick, combat width utilization, active tactical stances, and national PGM stockpile consumption.
 
 ### HOI4-Style Industrial, Strategic & Stockpile HUD
-- **`NationalStockpileTopBar.cs` (Top-Left HUD):** Displays active nation switcher (`ROK ⇄ PRK`, hotkey `Tab`), Political Power (`PP`), `Stability`, `War Support`, `Manpower`, free/total Civilian & Military Factories, live national equipment stockpiles across all archetypes, and US PACOM `HomelandEscalation` telemetry (`Esc: XX%` with DEFCON tooltip).
+- **`NationalStockpileTopBar.cs` (Top-Left HUD):** Displays active nation switcher (`ROK ⇄ PRK`, hotkey `Tab`), Political Power (`PP`), `Stability`, `War Support`, `Manpower`, free/total Civilian & Military Factories, live national equipment stockpiles across all archetypes, US PACOM `HomelandEscalation` telemetry (`Esc: XX%` with DEFCON tooltip), and the **Active National Focus badge** (`🎯 Focus: ...` / `Select [F]`).
 - **`TimeControlsToolbar.cs` (Top-Right HUD):** Simulation calendar date, Play/Pause/Step buttons, speed controls (`1x`, `2x`, `5x`), and a dynamic color-coded **DEFCON Alert Badge** (`DEFCON 5: FADE OUT` through `DEFCON 1: COCKED PISTOL`).
-- **Persistent Left Tab Strip (`MainView.cs`):** Positioned directly below the top bar with three mutually-exclusive view modes so left-side panels never overlap:
+- **Persistent Left Tab Strip (`MainView.cs`):** Positioned directly below the top bar with mutually-exclusive view modes so panels never overlap:
   - **`📍 Map Info` (`Esc`):** Displays `ProvinceInfoPanel.cs` with live-refreshed province inspection: State ID, Owner/Controller, Terrain, Supply Hub/Port/Infra levels, Civilian/Military/Dockyard counts, Population, Strategic Resources, Stationed Units, and **Strategic Region telemetry** (Air Superiority %, Naval Control %, Coastal A2/AD penalty, and Strait Crossing status).
   - **`🏗 Construct (C)` (`C`):** Opens `ConstructionQueuePanel.cs` left side-drawer displaying controlled States, $C_{\text{free}}$ / Consumer Goods breakdown, active State construction progress bars, and one-way command buttons (`+Civ`, `+Mil`, `+Infra`, `+SAM`, `+Air`, `-5`/`+5` Civ Factories).
   - **`⚙ Produce (P)` (`P`):** Opens `ProductionLinePanel.cs` left side-drawer displaying Military Factory allocation, strategic resource availability (`Steel`, `Semi`, `Oil`, `Alum`), hyperbolic Production Efficiency bars, daily IC & unit output rates, and one-way factory assignment buttons (`-1`, `+1`, `+5` Mil Factories).
+  - **`🎯 Focuses (F)` (`F`):** Opens the procedural `FocusTreeViewer.cs` (`FocusTreeViewer.tscn`) modal canvas displaying the active nation's `/data/focus_trees/{TAG}_1985.json` tree with color-coded prerequisite connector lines, mutual-exclusion indicators, condition/effect tooltips, progress bars, and one-click `SelectFocusCommand` dispatch.
 
 ### Player & Camera Controls
 - **Select Division:** Left-Click any on-map division counter (highlights division in cyan, switches to `📍 Map Info` if a drawer is open, and displays its active route).
 - **Issue Move / Attack Order:** Right-Click any target province with a division selected ($O(1)$ mouse picking resolves the destination and dispatches `MoveDivisionCommand` to the simulation ring buffer).
 - **Inspect Province:** Hover or Left-Click any unselected province to view state ID, owner/controller, terrain, infrastructure, factories, supply ratio, strategic resources, and strategic region balance in `ProvinceInfoPanel`.
-- **Switch Inspected Nation (`ROK` ⇄ `PRK`):** Press `Tab` or click the top-left `ROK ⇄` button.
-- **Toggle Industrial Side-Drawers:** Press `C` for Construction Queue, `P` for Military Production Lines, or `Esc` to return to Map Info.
+- **Switch Inspected Nation (`ROK` ⇄ `PRK`):** Press `Tab` or click the top-left `ROK ⇄` button (automatically updates `AiControlledCountryMask` so non-player nations are driven by the Two-Tier Utility AI).
+- **Toggle Industrial & Focus Views:** Press `C` for Construction Queue, `P` for Military Production Lines, `F` for the National Focus Tree Viewer, or `Esc` to return to Map Info.
 - **Pan Camera:** `W` / `A` / `S` / `D`, Arrow Keys, Viewport Edge Pan, or Middle/Right Mouse Drag (hold `Shift` for $2\times$ pan speed).
 - **Zoom Camera:** Mouse Scroll Wheel (cursor-centered zoom clamped to `[0.25x, 4.0x]`).
 - **Time & Speed Controls (`TimeControlsToolbar.cs`):**
@@ -170,15 +182,18 @@ This script verifies:
 2. **Zero Hot-Path LINQ Allocations:** Zero `System.Linq` usage in `src/EastAsiaGSG.Core/Systems`.
 3. **Strict One-Way Project Dependencies:** `Core` $\leftarrow$ `Data` $\leftarrow$ `GodotClient`.
 4. **Zero-Warning Solution Build:** `dotnet build EastAsiaGSG.sln --warnaserror` (`0 Warning(s)`, `0 Error(s)`).
-5. **Headless xUnit Suite:** Runs all **85** unit and benchmark tests in `tests/EastAsiaGSG.SimTests` across all modules:
+5. **Headless xUnit Suite:** Runs all **97** unit, integration, and soak tests in `tests/EastAsiaGSG.SimTests` across all modules:
    - `CombatSystemTests` (15 tests: 72-hour ROK vs PRK historical battles, combat width & reserve filling, encirclement shattering, PGM depletion, zero-heap allocation checks, and 1,000-battle throughput benchmark in $< 100\text{ ms}$).
    - `SupplyGraphSystemTests` (8 tests: Two-tier Dijkstra overland supply, Trans-Siberian Artery bottleneck, island port-to-port sea lanes, local state factory trickle, zero-allocation daily loop checks, and $< 1\text{ ms}$ throughput benchmark).
    - `AirAndNavalRegionSystemTests` (13 tests: Contested air superiority, weather attenuation, coastal A2/AD missile suppression, generational scarcity enforcement across multiple airbases, Strait & Amphibious Control Gates, sea zone dynamic LUT rendering, and zero-allocation 6-hour loop checks).
    - `SuperpowerEscalationSystemTests` (6 tests: PACOM threat scoring, Homeland Escalation scaling, DEFCON transitions, CONUS off-map military factories, peacetime decay, Carrier Strike Group deployments, and $< 1\text{ ms}$ throughput benchmark).
+   - `FocusTreeSystemTests` (5 tests: JSON loading & FK validation, prerequisites & mutual-exclusion enforcement, all 11 `FocusConditionType` gates, all 15 `FocusEffectType` actions, and zero-allocation daily tick verification).
+   - `Content1985BatchTests` (3 tests: All 7 Major Power + Generic 1985 Era I Focus Trees, all 7 Major Power 1985 OOB files & 38 starting divisions, and 360-tick multi-nation simulation across the 28-state East Asia dataset).
+   - `TwoTierAiAndSoakTests` (4 tests: `StrategicMinisterAISystem` monthly focus/construction/factory scoring, `TacticalFrontlineAISystem` peacetime garrisoning & wartime offensive execution, and the **15-year / 21,912-tick headless soak test** from `1985-01-01` to `2000-01-01` verifying zero exceptions, bounded memory, and $> 1,000\text{ ticks/sec}$ throughput).
    - `ProductionSystemTests` (7 tests: 32-byte blittable layouts, $C_{\text{free}}$ & Consumer Goods formulas, State construction queue & 15-factory cap, hyperbolic efficiency growth, resource shortage penalties, equipment switch retention, and zero-allocation daily loop checks).
    - `ReinforcementSystemTests` (5 tests: 24-byte `DivisionTemplateRecord` layout, newest-generation-first equipment draw & experience dilution, partial stockpile/manpower/supply gates, end-to-end production-to-frontline reinforcement + PGM resupply, and zero-allocation daily loop checks).
    - `PathfinderTests` (10 tests: zero-allocation verification, $< 5\ \mu\text{s}$ A* performance, DMZ cross-border gating, strait access control, multi-thread safety).
-   - `SimulationWorldTests` (7 tests: full 1-year calendar progression in $< 5\text{ ms}$, command ring buffer deterministic draining, two-phase division lookup, CSR adjacency graph).
+   - `SimulationWorldTests` (10 tests: full 1-year calendar progression, command ring buffer deterministic draining, two-phase division lookup, CSR adjacency graph).
    - `MapLoaderTests` (8 tests: Korean Peninsula 120-province dataset, foreign key integrity, topological validation).
    - `MapRendererTests` (3 tests: 16-bit RG encoding/decoding, $O(1)$ mouse picking, dynamic LUT buffer updates).
 
@@ -219,10 +234,10 @@ Open `src/EastAsiaGSG.GodotClient/project.godot` in Godot 4 (.NET) or launch dir
   - [x] **Task 4.1:** Implement `SupplyGraphSystem` (Hub/Rail/Port Dijkstra + Trans-Siberian Artery bottleneck logic).
   - [x] **Task 4.2:** Implement `AirAndNavalRegionSystem` and the 60% Naval / 50% Air Superiority gate for strait crossings and amphibious invasions.
   - [x] **Task 4.3:** Implement US PACOM `HomelandEscalation` and DEFCON thresholds.
-- [ ] **Phase 5: JSON Focus Engine, Tech Tree & 1985 Content Generation**
-  - [ ] **Task 5.1:** Implement `FocusTreeSystem` and `FocusEffectExecutor` handling all 15 enum `EffectType` actions.
-  - [ ] **Task 5.2:** Build the procedural Godot `FocusTreeViewer.tscn` that auto-lays out nodes and prerequisite lines from `/data/focus_trees/*.json`.
-  - [ ] **Task 5.3:** Batch-generate 1985 OOBs, State definitions, and Era I Focus Trees for `PRC`, `USA`, `SOV`, `JPN`, `ROK`, `PRK`, and `TWN`.
-- [ ] **Phase 6: Two-Tier Utility AI & Polish**
-  - [ ] **Task 6.1:** Implement `StrategicMinisterAISystem` (monthly focus/production scoring) and `TacticalFrontlineAISystem` (daily frontline assignment & attack execution).
-  - [ ] **Task 6.2:** Run 15-year headless soak tests (21,900 six-hour ticks) to verify zero exceptions, zero memory leaks, and historical plausibility.
+- [x] **Phase 5: JSON Focus Engine, Tech Tree & 1985 Content Generation**
+  - [x] **Task 5.1:** Implement `FocusTreeSystem` and `FocusEffectExecutor` handling all 15 enum `EffectType` actions.
+  - [x] **Task 5.2:** Build the procedural Godot `FocusTreeViewer.tscn` that auto-lays out nodes and prerequisite lines from `/data/focus_trees/*.json`.
+  - [x] **Task 5.3:** Batch-generate 1985 OOBs, State definitions, and Era I Focus Trees for `PRC`, `USA`, `SOV`, `JPN`, `ROK`, `PRK`, and `TWN`.
+- [x] **Phase 6: Two-Tier Utility AI & Polish**
+  - [x] **Task 6.1:** Implement `StrategicMinisterAISystem` (monthly focus/production scoring) and `TacticalFrontlineAISystem` (daily frontline assignment & attack execution).
+  - [x] **Task 6.2:** Run 15-year headless soak tests (21,900 six-hour ticks) to verify zero exceptions, zero memory leaks, and historical plausibility.
