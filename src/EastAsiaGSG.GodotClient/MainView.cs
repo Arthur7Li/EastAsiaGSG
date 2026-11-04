@@ -103,6 +103,7 @@ public partial class MainView : Node2D
 
         // 4.5. Seed Starting 1985 Historical Divisions, Stockpiles & Production Lines
         SpawnStartingSandboxDivisions();
+        _world.EnableAiForAllCountries(excludedPlayerTag: CountryTag.ROK);
 
         // 5. Setup HUD CanvasLayer
         var hudLayer = GetNodeOrNull<CanvasLayer>("HUD");
@@ -251,6 +252,7 @@ public partial class MainView : Node2D
 
         _stockpileTopBar.ActiveCountryChanged += tag =>
         {
+            _world.EnableAiForAllCountries(excludedPlayerTag: tag);
             _focusTreeViewer.SetActiveCountry(tag);
             _constructionPanel.SetActiveCountry(tag);
             _productionPanel.SetActiveCountry(tag);

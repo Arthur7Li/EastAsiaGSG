@@ -71,6 +71,12 @@ public sealed class SimulationWorld : IDisposable
     public int CommandsProcessedCount { get; private set; }
     public int TriggeredNewsEventCount { get; private set; }
 
+    /// <summary>
+    /// 16-bit mask of country tags (0..14) controlled by the Two-Tier Utility AI (StrategicMinisterAISystem &amp; TacticalFrontlineAISystem).
+    /// Defaults to 0 so isolated unit tests remain unaffected unless AI is explicitly enabled.
+    /// </summary>
+    public ushort AiControlledCountryMask { get; set; }
+
     public int CurrentYear { get; private set; } = StartYear;
     public int CurrentMonth { get; private set; } = StartMonth;
     public int CurrentDay { get; private set; } = StartDay;
@@ -709,6 +715,39 @@ public sealed class SimulationWorld : IDisposable
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetAiControlled(byte countryTag, bool enabled)
+    {
+        if (countryTag < CountryTag.ActiveCount)
+        {
+            if (enabled)
+            {
+                AiControlledCountryMask |= (ushort)(1 << countryTag);
+            }
+            else
+            {
+                AiControlledCountryMask &= (ushort)~(1 << countryTag);
+            }
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsAiControlled(byte countryTag)
+    {
+        return countryTag < CountryTag.ActiveCount && (AiControlledCountryMask & (1 << countryTag)) != 0;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void EnableAiForAllCountries(byte excludedPlayerTag = CountryTag.None)
+    {
+        ushort mask = (ushort)((1 << CountryTag.ActiveCount) - 1);
+        if (excludedPlayerTag < CountryTag.ActiveCount)
+        {
+            mask &= (ushort)~(1 << excludedPlayerTag);
+        }
+        AiControlledCountryMask = mask;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void ExecuteDailyTier()
     {
         DailyTicksExecuted++;
@@ -729,7 +768,8 @@ public sealed class SimulationWorld : IDisposable
         // 4. FocusTreeSystem (Phase 5.1 - daily Political Power, Focus countdown & FocusEffectExecutor):
         FocusTreeSystem.Execute(this);
 
-        // 5. TacticalFrontlineAISystem hook (Phase 6.1)
+        // 5. TacticalFrontlineAISystem (Phase 6.1 - daily frontline assignment & attack execution):
+        TacticalFrontlineAISystem.Execute(this);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -737,8 +777,11 @@ public sealed class SimulationWorld : IDisposable
     {
         MonthlyTicksExecuted++;
 
-        // 1. MacroEconomySystem hook (Phase 3 / Phase 4)
-        // 2. StrategicMinisterAISystem hook (Phase 6.1)
+        // 1. MacroEconomySystem (Phase 3 / Phase 6 - monthly Cold War economic modifiers):
+        MacroEconomySystem.Execute(this);
+
+        // 2. StrategicMinisterAISystem (Phase 6.1 - monthly focus, construction & production utility scoring):
+        StrategicMinisterAISystem.Execute(this);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

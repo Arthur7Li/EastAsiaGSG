@@ -28,5 +28,5 @@
 - [x] **Task 5.3:** Batch-generate 1985 OOBs, State definitions, and Era I Focus Trees for `PRC`, `USA`, `SOV`, `JPN`, `ROK`, `PRK`, and `TWN`.
 
 ## Phase 6: Two-Tier Utility AI & Polish
-- [ ] **Task 6.1:** Implement `StrategicMinisterAISystem` (monthly focus/production scoring) and `TacticalFrontlineAISystem` (daily frontline assignment & attack execution).
-- [ ] **Task 6.2:** Run 15-year headless soak tests (21,900 six-hour ticks) to verify zero exceptions, zero memory leaks, and historical plausibility.
+- [x] **Task 6.1:** Implement `StrategicMinisterAISystem` (monthly focus/production scoring) and `TacticalFrontlineAISystem` (daily frontline assignment & attack execution).
+- [x] **Task 6.2:** Run 15-year headless soak tests (21,900 six-hour ticks) to verify zero exceptions, zero memory leaks, and historical plausibility.
