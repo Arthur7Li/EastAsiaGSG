@@ -22,6 +22,7 @@ public partial class NationalStockpileTopBar : PanelContainer
 
     public event Action<byte>? ActiveCountryChanged;
     public event Action? MapInfoTabRequested;
+    public event Action? ToggleFocusTreeRequested;
     public event Action? ToggleConstructionRequested;
     public event Action? ToggleProductionRequested;
 
@@ -128,6 +129,11 @@ public partial class NationalStockpileTopBar : PanelContainer
             if (keyEvent.Keycode == Key.Tab)
             {
                 CycleActiveCountry();
+                GetViewport().SetInputAsHandled();
+            }
+            else if (keyEvent.Keycode == Key.F)
+            {
+                ToggleFocusTreeRequested?.Invoke();
                 GetViewport().SetInputAsHandled();
             }
             else if (keyEvent.Keycode == Key.C)

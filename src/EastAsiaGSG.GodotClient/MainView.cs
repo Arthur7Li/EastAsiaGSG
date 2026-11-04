@@ -19,12 +19,14 @@ public partial class MainView : Node2D
     private enum SideDrawerTab
     {
         None = 0,
-        Construction = 1,
-        Production = 2
+        FocusTree = 1,
+        Construction = 2,
+        Production = 3
     }
 
     private SimulationWorld? _world;
     private SideDrawerTab _activeDrawerTab = SideDrawerTab.None;
+    private readonly List<LoadedFocusTree> _loadedFocusTrees = [];
 
     private MapRenderer? _mapRenderer;
     private CameraController? _camera;
@@ -36,8 +38,10 @@ public partial class MainView : Node2D
     private NationalStockpileTopBar? _stockpileTopBar;
     private PanelContainer? _leftTabBar;
     private Button? _mapInfoTabBtn;
+    private Button? _focusTabBtn;
     private Button? _constructTabBtn;
     private Button? _produceTabBtn;
+    private FocusTreeViewer? _focusTreeViewer;
     private ConstructionQueuePanel? _constructionPanel;
     private ProductionLinePanel? _productionPanel;
 
@@ -59,6 +63,9 @@ public partial class MainView : Node2D
         {
             GD.PushWarning("[MainView] Could not locate data/map JSON files; running with default world state.");
         }
+
+        // 1.5. Load National Focus Trees from data/focus_trees/*.json
+        LoadAvailableFocusTrees();
 
         // 2. Setup MapRenderer
         _mapRenderer = GetNodeOrNull<MapRenderer>("MapRenderer");
@@ -172,6 +179,26 @@ public partial class MainView : Node2D
         _timeToolbar.OffsetBottom = 58;
         _timeToolbar.Initialize(_world);
 
+        // Setup HOI4-style Left Side-Drawer Tab 0: FocusTreeViewer (X = 16..760, Y = 106..704, closed by default)
+        _focusTreeViewer = hudLayer.GetNodeOrNull<FocusTreeViewer>("FocusTreeViewer");
+        if (_focusTreeViewer == null)
+        {
+            _focusTreeViewer = new FocusTreeViewer { Name = "FocusTreeViewer" };
+            hudLayer.AddChild(_focusTreeViewer);
+        }
+        _focusTreeViewer.SetAnchorsPreset(Control.LayoutPreset.TopLeft);
+        _focusTreeViewer.GrowHorizontal = Control.GrowDirection.End;
+        _focusTreeViewer.GrowVertical = Control.GrowDirection.End;
+        _focusTreeViewer.OffsetLeft = 16;
+        _focusTreeViewer.OffsetTop = 106;
+        _focusTreeViewer.OffsetRight = 760;
+        _focusTreeViewer.OffsetBottom = 704;
+        foreach (LoadedFocusTree loadedTree in _loadedFocusTrees)
+        {
+            _focusTreeViewer.RegisterFocusTree(loadedTree);
+        }
+        _focusTreeViewer.Initialize(_world, CountryTag.ROK);
+
         // Setup HOI4-style Left Side-Drawer Tab 1: ConstructionQueuePanel (X = 16..468, Y = 106..704, closed by default)
         _constructionPanel = hudLayer.GetNodeOrNull<ConstructionQueuePanel>("ConstructionQueuePanel");
         if (_constructionPanel == null)
@@ -219,15 +246,22 @@ public partial class MainView : Node2D
         _combatPopup.OffsetRight = -16;
         _combatPopup.OffsetBottom = 140;
 
-        // Wire HOI4 Side-Drawer Tab State Machine (Mutually exclusive Map Info / Construction / Production tabs)
+        // Wire HOI4 Side-Drawer Tab State Machine (Mutually exclusive Map Info / Focus Tree / Construction / Production tabs)
         SetActiveDrawerTab(SideDrawerTab.None);
 
         _stockpileTopBar.ActiveCountryChanged += tag =>
         {
+            _focusTreeViewer.SetActiveCountry(tag);
             _constructionPanel.SetActiveCountry(tag);
             _productionPanel.SetActiveCountry(tag);
         };
         _stockpileTopBar.MapInfoTabRequested += () => SetActiveDrawerTab(SideDrawerTab.None);
+        _stockpileTopBar.ToggleFocusTreeRequested += () =>
+        {
+            SetActiveDrawerTab(_activeDrawerTab == SideDrawerTab.FocusTree
+                ? SideDrawerTab.None
+                : SideDrawerTab.FocusTree);
+        };
         _stockpileTopBar.ToggleConstructionRequested += () =>
         {
             SetActiveDrawerTab(_activeDrawerTab == SideDrawerTab.Construction
@@ -240,6 +274,9 @@ public partial class MainView : Node2D
                 ? SideDrawerTab.None
                 : SideDrawerTab.Production);
         };
+
+        _focusTreeViewer.CloseRequested += () => SetActiveDrawerTab(SideDrawerTab.None);
+        _focusTreeViewer.CommandEnqueued += () => _stockpileTopBar.Refresh();
 
         _constructionPanel.CloseRequested += () => SetActiveDrawerTab(SideDrawerTab.None);
         _constructionPanel.CommandEnqueued += () => _stockpileTopBar.Refresh();
@@ -276,13 +313,45 @@ public partial class MainView : Node2D
             _mapRenderer.RefreshMapLut();
             _combatPopup?.RefreshIfActive();
             _tacticalOverlay?.QueueRedraw();
+            _focusTreeViewer?.ClearPendingPreviews();
             _constructionPanel?.ClearPendingPreviews();
             _productionPanel?.ClearPendingPreviews();
             _stockpileTopBar?.Refresh();
+            _focusTreeViewer?.Refresh();
             _constructionPanel?.Refresh();
             _productionPanel?.Refresh();
             _infoPanel?.RefreshCurrent();
         };
+    }
+
+    private void LoadAvailableFocusTrees()
+    {
+        if (_world == null)
+        {
+            return;
+        }
+
+        _loadedFocusTrees.Clear();
+        for (byte tag = 0; tag < CountryTag.ActiveCount; tag++)
+        {
+            string code = CountryTag.GetCode(tag);
+            string? focusJsonPath = ResolvePath($"data/focus_trees/{code}_1985.json");
+            if (focusJsonPath == null)
+            {
+                continue;
+            }
+
+            try
+            {
+                LoadedFocusTree loaded = JsonFocusTreeLoader.LoadFocusTree(_world, focusJsonPath, tag);
+                _loadedFocusTrees.Add(loaded);
+                GD.Print($"[MainView] Loaded Focus Tree for [{code}] ({loaded.Focuses.Count} focuses) from: {focusJsonPath}");
+            }
+            catch (Exception ex)
+            {
+                GD.PushWarning($"[MainView] Failed to load focus tree '{focusJsonPath}': {ex.Message}");
+            }
+        }
     }
 
     private void BuildLeftTabBar(CanvasLayer hudLayer)
@@ -299,7 +368,7 @@ public partial class MainView : Node2D
         _leftTabBar.GrowVertical = Control.GrowDirection.End;
         _leftTabBar.OffsetLeft = 16;
         _leftTabBar.OffsetTop = 64;
-        _leftTabBar.OffsetRight = 356;
+        _leftTabBar.OffsetRight = 468;
         _leftTabBar.OffsetBottom = 100;
 
         var style = new StyleBoxFlat
@@ -339,6 +408,21 @@ public partial class MainView : Node2D
         _mapInfoTabBtn.Pressed += () => SetActiveDrawerTab(SideDrawerTab.None);
         hbox.AddChild(_mapInfoTabBtn);
 
+        _focusTabBtn = new Button
+        {
+            Text = "📜 Focus (F)",
+            ToggleMode = true,
+            ButtonPressed = false,
+            FocusMode = Control.FocusModeEnum.None,
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+            CustomMinimumSize = new Vector2(0, 26),
+            TooltipText = "National Focus Tree [Hotkey: F]"
+        };
+        _focusTabBtn.AddThemeFontSizeOverride("font_size", 11);
+        _focusTabBtn.Pressed += () => SetActiveDrawerTab(
+            _activeDrawerTab == SideDrawerTab.FocusTree ? SideDrawerTab.None : SideDrawerTab.FocusTree);
+        hbox.AddChild(_focusTabBtn);
+
         _constructTabBtn = new Button
         {
             Text = "🏗 Construct (C)",
@@ -374,9 +458,19 @@ public partial class MainView : Node2D
     {
         _activeDrawerTab = tab;
 
+        bool showFocusTree = tab == SideDrawerTab.FocusTree;
         bool showConstruction = tab == SideDrawerTab.Construction;
         bool showProduction = tab == SideDrawerTab.Production;
-        bool drawerOpen = showConstruction || showProduction;
+        bool drawerOpen = showFocusTree || showConstruction || showProduction;
+
+        if (_focusTreeViewer != null)
+        {
+            _focusTreeViewer.Visible = showFocusTree;
+            if (showFocusTree)
+            {
+                _focusTreeViewer.Refresh();
+            }
+        }
 
         if (_constructionPanel != null)
         {
@@ -402,6 +496,7 @@ public partial class MainView : Node2D
         }
 
         _mapInfoTabBtn?.SetPressedNoSignal(!drawerOpen);
+        _focusTabBtn?.SetPressedNoSignal(showFocusTree);
         _constructTabBtn?.SetPressedNoSignal(showConstruction);
         _produceTabBtn?.SetPressedNoSignal(showProduction);
     }

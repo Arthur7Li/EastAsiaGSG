@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://c5focusviewer85"]
+
+[ext_resource type="Script" path="res://UI/FocusTreeViewer.cs" id="1_focusviewer"]
+
+[node name="FocusTreeViewer" type="PanelContainer"]
+visible = false
+offset_left = 16.0
+offset_top = 106.0
+offset_right = 760.0
+offset_bottom = 704.0
+script = ExtResource("1_focusviewer")

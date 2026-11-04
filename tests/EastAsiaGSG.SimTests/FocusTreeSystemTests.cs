@@ -411,4 +411,46 @@ public sealed class FocusTreeSystemTests
 
         Assert.Equal(0L, afterBytes - beforeBytes);
     }
+
+    [Fact]
+    public void JsonFocusTreeLoader_LoadsDiskFocusTrees_ROKAndPRK_AndValidatesGraph()
+    {
+        using SimulationWorld world = new();
+        string repoRoot = FindRepoRoot();
+
+        string rokPath = Path.Combine(repoRoot, "data", "focus_trees", "ROK_1985.json");
+        string prkPath = Path.Combine(repoRoot, "data", "focus_trees", "PRK_1985.json");
+
+        LoadedFocusTree rokTree = JsonFocusTreeLoader.LoadFocusTree(world, rokPath);
+        LoadedFocusTree prkTree = JsonFocusTreeLoader.LoadFocusTree(world, prkPath);
+
+        Assert.Equal(CountryTag.ROK, rokTree.CountryTag);
+        Assert.True(rokTree.Focuses.Count >= 10);
+        Assert.Equal(rokTree.Focuses.Count, world.CountryFocusCounts[CountryTag.ROK]);
+
+        Assert.Equal(CountryTag.PRK, prkTree.CountryTag);
+        Assert.True(prkTree.Focuses.Count >= 10);
+        Assert.Equal(prkTree.Focuses.Count, world.CountryFocusCounts[CountryTag.PRK]);
+
+        // Root node ROK_miracle_on_the_han requires ControlsState(STATE_SEOUL -> State 0)
+        world.States[0].OwnerTag = CountryTag.ROK;
+        world.States[0].ControllerTag = CountryTag.ROK;
+        short rokMiracleIdx = rokTree.GetFocusIndex("ROK_miracle_on_the_han");
+        Assert.True(rokMiracleIdx >= 0);
+        Assert.True(FocusTreeSystem.CanStartFocus(world, CountryTag.ROK, rokMiracleIdx));
+    }
+
+    private static string FindRepoRoot()
+    {
+        string? dir = AppContext.BaseDirectory;
+        while (!string.IsNullOrEmpty(dir))
+        {
+            if (File.Exists(Path.Combine(dir, "EastAsiaGSG.sln")))
+            {
+                return dir;
+            }
+            dir = Directory.GetParent(dir)?.FullName;
+        }
+        throw new DirectoryNotFoundException("Could not locate EastAsiaGSG.sln repository root.");
+    }
 }

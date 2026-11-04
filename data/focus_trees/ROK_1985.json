@@ -1,0 +1,221 @@
+{
+  "countryTag": "ROK",
+  "era": "1985_LateColdWar",
+  "focuses": [
+    {
+      "id": "ROK_miracle_on_the_han",
+      "name": "Miracle on the Han River",
+      "description": "Accelerate export-oriented Chaebol industrialization across the Gyeonggi-Seoul corridor.",
+      "icon": "focus_industry_han",
+      "gridX": 0,
+      "gridY": 0,
+      "costDays": 28,
+      "prerequisites": [],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 120,
+      "conditions": [
+        { "type": "ControlsState", "target": "STATE_SEOUL", "value": 0 }
+      ],
+      "effects": [
+        { "type": "AddPoliticalPower", "target": "SELF", "value": 75 },
+        { "type": "AddCivilianFactories", "target": "STATE_SEOUL", "value": 2 }
+      ]
+    },
+    {
+      "id": "ROK_chaebol_semiconductor_push",
+      "name": "Chaebol Semiconductor Push",
+      "description": "Invest heavily in Suwon and Giheung DRAM fabrication plants to challenge global memory markets.",
+      "icon": "focus_tech_semiconductors",
+      "gridX": 0,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["ROK_miracle_on_the_han"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 115,
+      "conditions": [],
+      "effects": [
+        { "type": "AddCivilianFactories", "target": "STATE_SEOUL", "value": 3 },
+        { "type": "ModifyConsumerGoods", "target": "SELF", "value": -0.04 }
+      ]
+    },
+    {
+      "id": "ROK_ulsan_pohang_heavy_arsenal",
+      "name": "Ulsan-Pohang Heavy Arsenal",
+      "description": "Expand POSCO steel output and Hyundai heavy defense manufacturing in the southeastern industrial belt.",
+      "icon": "focus_mil_factories",
+      "gridX": 1,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["ROK_miracle_on_the_han"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 110,
+      "conditions": [
+        { "type": "ControlsState", "target": "STATE_GYEONGSANG", "value": 0 }
+      ],
+      "effects": [
+        { "type": "AddMilitaryFactories", "target": "STATE_GYEONGSANG", "value": 3 },
+        { "type": "AddNavalDockyards", "target": "STATE_GYEONGSANG", "value": 2 }
+      ]
+    },
+    {
+      "id": "ROK_1988_seoul_olympics_prep",
+      "name": "1988 Seoul Olympic Preparations",
+      "description": "Showcase South Korea's economic rise to the world and elevate national unity and diplomatic standing.",
+      "icon": "focus_seoul_olympics",
+      "gridX": 0,
+      "gridY": 2,
+      "costDays": 35,
+      "prerequisites": ["ROK_chaebol_semiconductor_push", "ROK_ulsan_pohang_heavy_arsenal"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 130,
+      "conditions": [
+        { "type": "AtPeace", "target": "SELF", "value": 0 }
+      ],
+      "effects": [
+        { "type": "AddPoliticalPower", "target": "SELF", "value": 150 },
+        { "type": "AddStability", "target": "SELF", "value": 0.10 },
+        { "type": "TriggerNewsEvent", "target": "NEWS_1988_SEOUL_OLYMPICS", "value": 0 }
+      ]
+    },
+    {
+      "id": "ROK_fifth_republic_security_state",
+      "name": "Consolidate the Fifth Republic",
+      "description": "Maintain emergency presidential decrees and prioritize internal security along the DMZ.",
+      "icon": "focus_politics_authoritarian",
+      "gridX": 2,
+      "gridY": 0,
+      "costDays": 28,
+      "prerequisites": [],
+      "mutuallyExclusive": ["ROK_june_1987_democratic_reforms"],
+      "aiBaseWeight": 80,
+      "conditions": [],
+      "effects": [
+        { "type": "AddWarSupport", "target": "SELF", "value": 0.10 },
+        { "type": "AddPoliticalPower", "target": "SELF", "value": 60 }
+      ]
+    },
+    {
+      "id": "ROK_june_1987_democratic_reforms",
+      "name": "June 29 Declaration & Sixth Republic",
+      "description": "Adopt direct presidential elections and constitutional democracy, unlocking broad civic legitimacy.",
+      "icon": "focus_politics_democracy",
+      "gridX": 3,
+      "gridY": 0,
+      "costDays": 28,
+      "prerequisites": [],
+      "mutuallyExclusive": ["ROK_fifth_republic_security_state"],
+      "aiBaseWeight": 125,
+      "conditions": [],
+      "effects": [
+        { "type": "AddStability", "target": "SELF", "value": 0.12 },
+        { "type": "AddPoliticalPower", "target": "SELF", "value": 100 }
+      ]
+    },
+    {
+      "id": "ROK_nordpolitik_diplomacy",
+      "name": "Nordpolitik Diplomatic Initiative",
+      "description": "Open trade and diplomatic channels with socialist states to isolate Pyongyang geopolitically.",
+      "icon": "focus_diplomacy_nordpolitik",
+      "gridX": 3,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["ROK_june_1987_democratic_reforms"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 100,
+      "conditions": [],
+      "effects": [
+        { "type": "AddPoliticalPower", "target": "SELF", "value": 120 },
+        { "type": "AddStability", "target": "SELF", "value": 0.05 }
+      ]
+    },
+    {
+      "id": "ROK_martial_garrison_mobilization",
+      "name": "Capital Defense Command Mobilization",
+      "description": "Place homeland reserve brigades on heightened alert and expand military readiness.",
+      "icon": "focus_army_garrison",
+      "gridX": 2,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["ROK_fifth_republic_security_state"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 95,
+      "conditions": [],
+      "effects": [
+        { "type": "AddWarSupport", "target": "SELF", "value": 0.08 },
+        { "type": "SpawnDivisionTemplate", "target": "Infantry@0", "value": 1 }
+      ]
+    },
+    {
+      "id": "ROK_yulgok_force_improvement",
+      "name": "Yulgok Project Force Improvement",
+      "description": "Modernize Republic of Korea Armed Forces C4I, artillery fire-control, and forward air defense.",
+      "icon": "focus_army_modernization",
+      "gridX": 4,
+      "gridY": 0,
+      "costDays": 28,
+      "prerequisites": [],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 120,
+      "conditions": [],
+      "effects": [
+        { "type": "AddEquipmentStockpile", "target": "InfantryKit:Gen1", "value": 500 },
+        { "type": "AddEquipmentStockpile", "target": "Artillery:Gen1", "value": 80 },
+        { "type": "AddRadarSamLevel", "target": "STATE_SEOUL", "value": 1 }
+      ]
+    },
+    {
+      "id": "ROK_k200_ifv_k1_tank_program",
+      "name": "K200 KIFV & K1 88-Tank Production",
+      "description": "Field indigenous K1 main battle tanks and Daewoo K200 mechanized infantry fighting vehicles.",
+      "icon": "focus_armor_k1",
+      "gridX": 4,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["ROK_yulgok_force_improvement"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 125,
+      "conditions": [],
+      "effects": [
+        { "type": "GrantTechBonus", "target": "MBT:Gen2", "value": 0.15 },
+        { "type": "GrantTechBonus", "target": "IFV:Gen2", "value": 0.15 },
+        { "type": "AddEquipmentStockpile", "target": "MBT:Gen2", "value": 60 },
+        { "type": "AddEquipmentStockpile", "target": "IFV:Gen2", "value": 120 }
+      ]
+    },
+    {
+      "id": "ROK_us_combined_forces_team_spirit",
+      "name": "ROK-US CFC & Team Spirit Exercises",
+      "description": "Deepen joint warfighting integration with USFK Eighth Army and Seventh Air Force.",
+      "icon": "focus_alliance_us_rok",
+      "gridX": 5,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["ROK_yulgok_force_improvement"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 115,
+      "conditions": [],
+      "effects": [
+        { "type": "AddEquipmentStockpile", "target": "PGM:Gen2", "value": 150 },
+        { "type": "AddEquipmentStockpile", "target": "TacticalAir:Gen2", "value": 30 },
+        { "type": "AddHomelandEscalation", "target": "USA", "value": 10 }
+      ]
+    },
+    {
+      "id": "ROK_vii_mobile_corps_spearhead",
+      "name": "Activate VII Mobile Corps Spearhead",
+      "description": "Form an elite armored counter-offensive corps equipped with K1 tanks and precision munitions.",
+      "icon": "focus_armor_spearhead",
+      "gridX": 4,
+      "gridY": 2,
+      "costDays": 42,
+      "prerequisites": ["ROK_k200_ifv_k1_tank_program", "ROK_us_combined_forces_team_spirit"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 130,
+      "conditions": [],
+      "effects": [
+        { "type": "SpawnDivisionTemplate", "target": "Armored@0", "value": 1 },
+        { "type": "AddWarSupport", "target": "SELF", "value": 0.10 }
+      ]
+    }
+  ]
+}

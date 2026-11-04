@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://b23n817k9p3v"]
+[gd_scene load_steps=10 format=3 uid="uid://b23n817k9p3v"]
 
 [ext_resource type="Script" path="res://MainView.cs" id="1_main"]
 [ext_resource type="Script" path="res://Map/MapRenderer.cs" id="2_renderer"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://Tactics/TacticalMapOverlay.cs" id="6_overlay"]
 [ext_resource type="Script" path="res://UI/TimeControlsToolbar.cs" id="7_timetoolbar"]
 [ext_resource type="Script" path="res://UI/CombatTelemetryPopup.cs" id="8_combatpopup"]
+[ext_resource type="PackedScene" uid="uid://c5focusviewer85" path="res://UI/FocusTreeViewer.tscn" id="9_focusviewer"]
 
 [node name="MainView" type="Node2D"]
 script = ExtResource("1_main")
@@ -41,14 +42,17 @@ script = ExtResource("4_toolbar")
 offset_left = 16.0
 offset_top = 106.0
 offset_right = 356.0
-offset_bottom = 366.0
+offset_bottom = 390.0
 script = ExtResource("5_infopanel")
+
+[node name="FocusTreeViewer" parent="HUD" instance=ExtResource("9_focusviewer")]
+visible = false
 
 [node name="TimeControlsToolbar" type="PanelContainer" parent="HUD"]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -516.0
+offset_left = -546.0
 offset_top = 12.0
 offset_right = -16.0
 offset_bottom = 58.0

@@ -1,0 +1,184 @@
+{
+  "countryTag": "PRK",
+  "era": "1985_LateColdWar",
+  "focuses": [
+    {
+      "id": "PRK_juche_heavy_industry_plan",
+      "name": "Third Seven-Year Juche Plan",
+      "description": "Direct state resources into heavy steel, coal, and armaments production in Pyongyang and Hamgyong.",
+      "icon": "focus_industry_juche",
+      "gridX": 0,
+      "gridY": 0,
+      "costDays": 28,
+      "prerequisites": [],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 115,
+      "conditions": [
+        { "type": "ControlsState", "target": "STATE_PYONGYANG", "value": 0 }
+      ],
+      "effects": [
+        { "type": "AddPoliticalPower", "target": "SELF", "value": 75 },
+        { "type": "AddMilitaryFactories", "target": "STATE_PYONGYANG", "value": 2 }
+      ]
+    },
+    {
+      "id": "PRK_chagang_underground_arsenals",
+      "name": "Chagang Underground Munitions",
+      "description": "Expand subterranean artillery and infantry weapons factories in the northern mountain redoubt.",
+      "icon": "focus_underground_factory",
+      "gridX": 0,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["PRK_juche_heavy_industry_plan"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 120,
+      "conditions": [],
+      "effects": [
+        { "type": "AddMilitaryFactories", "target": "STATE_PYONGAN", "value": 3 },
+        { "type": "AddRadarSamLevel", "target": "STATE_PYONGYANG", "value": 1 }
+      ]
+    },
+    {
+      "id": "PRK_chongjin_kimchaek_steel_works",
+      "name": "Kim Chaek Steel & Rail Expansion",
+      "description": "Boost steel output and eastern coastal rail links toward the Soviet Far East border.",
+      "icon": "focus_steel_rail",
+      "gridX": 1,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["PRK_juche_heavy_industry_plan"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 105,
+      "conditions": [
+        { "type": "ControlsState", "target": "STATE_HAMGYONG", "value": 0 }
+      ],
+      "effects": [
+        { "type": "AddCivilianFactories", "target": "STATE_HAMGYONG", "value": 2 },
+        { "type": "AddNavalDockyards", "target": "STATE_HAMGYONG", "value": 1 }
+      ]
+    },
+    {
+      "id": "PRK_soviet_military_aid_treaty",
+      "name": "Moscow-Pyongyang Defense Protocol",
+      "description": "Secure deliveries of Soviet MiG-29 fighters, T-72/Chonma-ho components, and SA-5 Gammon SAMs.",
+      "icon": "focus_diplomacy_soviet",
+      "gridX": 2,
+      "gridY": 0,
+      "costDays": 28,
+      "prerequisites": [],
+      "mutuallyExclusive": ["PRK_self_reliant_nuclear_program"],
+      "aiBaseWeight": 115,
+      "conditions": [],
+      "effects": [
+        { "type": "AddEquipmentStockpile", "target": "TacticalAir:Gen2", "value": 36 },
+        { "type": "AddEquipmentStockpile", "target": "MBT:Gen1", "value": 80 },
+        { "type": "AddRadarSamLevel", "target": "STATE_PYONGYANG", "value": 2 }
+      ]
+    },
+    {
+      "id": "PRK_self_reliant_nuclear_program",
+      "name": "Yongbyon Nuclear Research Complex",
+      "description": "Prioritize indigenous nuclear fuel reprocessing and long-range ballistic missile deterrence.",
+      "icon": "focus_nuclear_yongbyon",
+      "gridX": 3,
+      "gridY": 0,
+      "costDays": 35,
+      "prerequisites": [],
+      "mutuallyExclusive": ["PRK_soviet_military_aid_treaty"],
+      "aiBaseWeight": 100,
+      "conditions": [],
+      "effects": [
+        { "type": "AddWarSupport", "target": "SELF", "value": 0.12 },
+        { "type": "AddEquipmentStockpile", "target": "PGM:Gen2", "value": 120 },
+        { "type": "AddHomelandEscalation", "target": "USA", "value": 15 }
+      ]
+    },
+    {
+      "id": "PRK_hwasong_scud_brigades",
+      "name": "Form Hwasong Ballistic Brigades",
+      "description": "Deploy mobile theatre missile launchers capable of striking ports and airbases across the peninsula.",
+      "icon": "focus_missile_scud",
+      "gridX": 3,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["PRK_self_reliant_nuclear_program"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 110,
+      "conditions": [],
+      "effects": [
+        { "type": "GrantTechBonus", "target": "PGM:Gen2", "value": 0.15 },
+        { "type": "AddEquipmentStockpile", "target": "PGM:Gen2", "value": 160 }
+      ]
+    },
+    {
+      "id": "PRK_four_military_lines_doctrine",
+      "name": "Uphold the Four Military Lines",
+      "description": "Arm the entire population, fortify the entire country, and train every soldier as a cadre.",
+      "icon": "focus_army_kpa",
+      "gridX": 4,
+      "gridY": 0,
+      "costDays": 28,
+      "prerequisites": [],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 125,
+      "conditions": [],
+      "effects": [
+        { "type": "AddWarSupport", "target": "SELF", "value": 0.10 },
+        { "type": "AddEquipmentStockpile", "target": "InfantryKit:Gen1", "value": 800 }
+      ]
+    },
+    {
+      "id": "PRK_koksan_long_range_artillery",
+      "name": "170mm Koksan & 240mm MRL Hardened Sites",
+      "description": "Emplace massed long-range artillery batteries in hardened Hwanghae mountain casemates north of Seoul.",
+      "icon": "focus_artillery_koksan",
+      "gridX": 4,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["PRK_four_military_lines_doctrine"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 125,
+      "conditions": [
+        { "type": "ControlsState", "target": "STATE_HWANGHAE", "value": 0 }
+      ],
+      "effects": [
+        { "type": "GrantTechBonus", "target": "Artillery:Gen2", "value": 0.15 },
+        { "type": "AddEquipmentStockpile", "target": "Artillery:Gen1", "value": 150 }
+      ]
+    },
+    {
+      "id": "PRK_815th_mechanized_corps",
+      "name": "Forward Deploy 815th Mechanized Corps",
+      "description": "Position Chonma-ho armored and mechanized brigades along the Kaesong-Sariwon highway.",
+      "icon": "focus_armor_chonmaho",
+      "gridX": 5,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["PRK_four_military_lines_doctrine"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 120,
+      "conditions": [],
+      "effects": [
+        { "type": "SpawnDivisionTemplate", "target": "Mechanized@60", "value": 1 },
+        { "type": "AddEquipmentStockpile", "target": "IFV:Gen1", "value": 100 }
+      ]
+    },
+    {
+      "id": "PRK_fatherland_liberation_plan",
+      "name": "Operational Plan: Three-Day Campaign",
+      "description": "Prepare the Korean People's Army for a high-tempo combined-arms offensive across the 38th Parallel.",
+      "icon": "focus_wargoal_dmz",
+      "gridX": 4,
+      "gridY": 2,
+      "costDays": 42,
+      "prerequisites": ["PRK_koksan_long_range_artillery", "PRK_815th_mechanized_corps"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 110,
+      "conditions": [],
+      "effects": [
+        { "type": "CreateWargoal", "target": "ROK", "value": 0 },
+        { "type": "ShiftDefcon", "target": "SELF", "value": 2 }
+      ]
+    }
+  ]
+}
