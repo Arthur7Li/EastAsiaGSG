@@ -1,0 +1,185 @@
+{
+  "countryTag": "SOV",
+  "era": "1985_LateColdWar",
+  "focuses": [
+    {
+      "id": "SOV_far_eastern_tvd_command",
+      "name": "Far Eastern Theater High Command (TVD)",
+      "description": "Consolidate Transbaikal, Far Eastern, and Pacific Fleet forces under an integrated Theater Strategic Command.",
+      "icon": "focus_sov_tvd",
+      "gridX": 1,
+      "gridY": 0,
+      "costDays": 28,
+      "prerequisites": [],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 120,
+      "conditions": [],
+      "effects": [
+        { "type": "AddPoliticalPower", "target": "SELF", "value": 85 },
+        { "type": "AddWarSupport", "target": "SELF", "value": 0.05 }
+      ]
+    },
+    {
+      "id": "SOV_bam_railway_full_operational_capacity",
+      "name": "Baikal-Amur Mainline (BAM) Full Capacity",
+      "description": "Harden the northern rail artery from Irkutsk to Komsomolsk-on-Amur to guarantee uninterrupted Trans-Siberian logistics.",
+      "icon": "focus_sov_bam_rail",
+      "gridX": 0,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["SOV_far_eastern_tvd_command"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 125,
+      "conditions": [],
+      "effects": [
+        { "type": "AddCivilianFactories", "target": "STATE_IRKUTSK", "value": 3 },
+        { "type": "AddMilitaryFactories", "target": "STATE_KHABAROVSK", "value": 2 }
+      ]
+    },
+    {
+      "id": "SOV_vladivostok_pacific_fleet_bastion",
+      "name": "Vladivostok & Sea of Okhotsk Bastion",
+      "description": "Fortify the Red Banner Pacific Fleet with Kirov-class battlecruisers, Oscar-II SSGNs, and Tu-22M3 Backfire regiments.",
+      "icon": "focus_sov_pacific_fleet",
+      "gridX": 2,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["SOV_far_eastern_tvd_command"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 115,
+      "conditions": [],
+      "effects": [
+        { "type": "AddNavalDockyards", "target": "STATE_VLADIVOSTOK", "value": 3 },
+        { "type": "AddRadarSamLevel", "target": "STATE_VLADIVOSTOK", "value": 2 },
+        { "type": "AddEquipmentStockpile", "target": "PGM:Gen2", "value": 150 }
+      ]
+    },
+    {
+      "id": "SOV_su27_flanker_and_t80_deployment",
+      "name": "Su-27 Flanker & T-80BV Far East Deployment",
+      "description": "Re-equip Far Eastern Military District front-line divisions with fourth-generation fighters and gas-turbine tanks.",
+      "icon": "focus_sov_flanker",
+      "gridX": 1,
+      "gridY": 2,
+      "costDays": 42,
+      "prerequisites": ["SOV_bam_railway_full_operational_capacity", "SOV_vladivostok_pacific_fleet_bastion"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 120,
+      "conditions": [],
+      "effects": [
+        { "type": "GrantTechBonus", "target": "TacticalAir:Gen2", "value": 1 },
+        { "type": "GrantTechBonus", "target": "MBT:Gen2", "value": 1 },
+        { "type": "AddEquipmentStockpile", "target": "TacticalAir:Gen2", "value": 70 },
+        { "type": "AddEquipmentStockpile", "target": "MBT:Gen2", "value": 140 }
+      ]
+    },
+    {
+      "id": "SOV_gorbachev_perestroika_acceleration",
+      "name": "Uskoreniye & Perestroika Economic Reform",
+      "description": "Shift Gosplan investment from military-industrial overheating toward machine-building and civilian consumer goods.",
+      "icon": "focus_sov_perestroika",
+      "gridX": 5,
+      "gridY": 0,
+      "costDays": 35,
+      "prerequisites": [],
+      "mutuallyExclusive": ["SOV_gosplan_defense_industrial_priority"],
+      "aiBaseWeight": 110,
+      "conditions": [],
+      "effects": [
+        { "type": "ModifyConsumerGoods", "target": "SELF", "value": -0.04 },
+        { "type": "AddStability", "target": "SELF", "value": 0.06 },
+        { "type": "AddCivilianFactories", "target": "STATE_VLADIVOSTOK", "value": 3 }
+      ]
+    },
+    {
+      "id": "SOV_gosplan_defense_industrial_priority",
+      "name": "Gosplan Military-Industrial Priority",
+      "description": "Maintain full Soviet defense mobilization across Komsomolsk-on-Amur aviation and Khabarovsk armor plants.",
+      "icon": "focus_sov_gosplan_mil",
+      "gridX": 7,
+      "gridY": 0,
+      "costDays": 35,
+      "prerequisites": [],
+      "mutuallyExclusive": ["SOV_gorbachev_perestroika_acceleration"],
+      "aiBaseWeight": 90,
+      "conditions": [],
+      "effects": [
+        { "type": "AddWarSupport", "target": "SELF", "value": 0.08 },
+        { "type": "AddMilitaryFactories", "target": "STATE_KHABAROVSK", "value": 4 },
+        { "type": "AddEquipmentStockpile", "target": "Artillery:Gen2", "value": 200 }
+      ]
+    },
+    {
+      "id": "SOV_vladivostok_1986_asian_initiative",
+      "name": "Gorbachev's 1986 Vladivostok Initiative",
+      "description": "Seek détente with Beijing and expand Pacific trade access across the Soviet Far East.",
+      "icon": "focus_sov_diplomacy",
+      "gridX": 5,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["SOV_gorbachev_perestroika_acceleration"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 105,
+      "conditions": [
+        { "type": "DateAfter", "target": "1986.07.01", "value": 0 }
+      ],
+      "effects": [
+        { "type": "AddPoliticalPower", "target": "SELF", "value": 110 },
+        { "type": "AddStability", "target": "SELF", "value": 0.05 },
+        { "type": "TriggerNewsEvent", "target": "NEWS_SOV_VLADIVOSTOK_SPEECH", "value": 0 }
+      ]
+    },
+    {
+      "id": "SOV_operational_maneuver_groups_fe",
+      "name": "Far East Operational Maneuver Groups (OMG)",
+      "description": "Form high-speed tank and Hind helicopter exploitation corps capable of deep operational breakthroughs.",
+      "icon": "focus_sov_omg",
+      "gridX": 7,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["SOV_gosplan_defense_industrial_priority"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 100,
+      "conditions": [],
+      "effects": [
+        { "type": "SpawnDivisionTemplate", "target": "Armored", "value": 1 },
+        { "type": "AddEquipmentStockpile", "target": "AttackHeli:Gen2", "value": 60 }
+      ]
+    },
+    {
+      "id": "SOV_pyongyang_cam_ranh_strategic_axis",
+      "name": "Pyongyang & Cam Ranh Bay Strategic Axis",
+      "description": "Expand Soviet military-technical assistance to the DPRK and Vietnam in exchange for naval and air basing rights.",
+      "icon": "focus_sov_allies",
+      "gridX": 10,
+      "gridY": 0,
+      "costDays": 35,
+      "prerequisites": [],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 105,
+      "conditions": [],
+      "effects": [
+        { "type": "AddPoliticalPower", "target": "SELF", "value": 75 },
+        { "type": "AddWarSupport", "target": "PRK", "value": 0.05 },
+        { "type": "AddHomelandEscalation", "target": "USA", "value": 8 }
+      ]
+    },
+    {
+      "id": "SOV_sakhalin_kuril_a2ad_fortress",
+      "name": "Sakhalin & Kuril S-300P Air Defense Belt",
+      "description": "Seal the Soya and Tartary Straits with long-range surface-to-air missiles and coastal anti-ship batteries.",
+      "icon": "focus_sov_s300",
+      "gridX": 10,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["SOV_pyongyang_cam_ranh_strategic_axis"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 110,
+      "conditions": [],
+      "effects": [
+        { "type": "AddRadarSamLevel", "target": "STATE_SAKHALIN", "value": 3 },
+        { "type": "AddEquipmentStockpile", "target": "PGM:Gen2", "value": 100 }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "countryTag": "PRK",
+  "templates": [
+    {
+      "templateId": 7,
+      "name": "KPA Forward Echelon Infantry Division",
+      "combatWidth": 20,
+      "battalions": ["InfantryKit", "InfantryKit", "InfantryKit", "InfantryKit", "Artillery", "Artillery"],
+      "supportCompanies": ["SupportVehicles", "Artillery"]
+    },
+    {
+      "templateId": 8,
+      "name": "KPA 820th Armored Division",
+      "combatWidth": 20,
+      "battalions": ["MBT", "MBT", "MBT", "IFV", "IFV", "Artillery"],
+      "supportCompanies": ["SupportVehicles", "Artillery"]
+    },
+    {
+      "templateId": 9,
+      "name": "KPA Mechanized Exploitation Corps",
+      "combatWidth": 20,
+      "battalions": ["IFV", "IFV", "IFV", "MBT", "Artillery", "Artillery"],
+      "supportCompanies": ["SupportVehicles", "Artillery"]
+    },
+    {
+      "templateId": 10,
+      "name": "KPA VIII Special Purpose Sniper Brigade",
+      "combatWidth": 20,
+      "battalions": ["InfantryKit", "InfantryKit", "InfantryKit", "SupportVehicles", "Artillery"],
+      "supportCompanies": ["SupportVehicles", "AttackHeli"]
+    }
+  ],
+  "startingDivisions": [
+    {
+      "name": "KPA 6th Infantry Division ('Kaesong Guard')",
+      "templateId": 7,
+      "startingProvinceId": 92,
+      "startingExperience": 0.50,
+      "startingStrength": 1.0,
+      "pgmAuthorized": false
+    },
+    {
+      "name": "KPA 105th Ryu Kyong-su Tank Division",
+      "templateId": 8,
+      "startingProvinceId": 91,
+      "startingExperience": 0.60,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    },
+    {
+      "name": "KPA 815th Mechanized Corps",
+      "templateId": 9,
+      "startingProvinceId": 60,
+      "startingExperience": 0.55,
+      "startingStrength": 1.0,
+      "pgmAuthorized": false
+    },
+    {
+      "name": "KPA 12th Infantry Division ('Andong')",
+      "templateId": 7,
+      "startingProvinceId": 96,
+      "startingExperience": 0.45,
+      "startingStrength": 1.0,
+      "pgmAuthorized": false
+    },
+    {
+      "name": "KPA 17th Sniper & Air-Assault Brigade",
+      "templateId": 10,
+      "startingProvinceId": 102,
+      "startingExperience": 0.65,
+      "startingStrength": 1.0,
+      "pgmAuthorized": false
+    }
+  ]
+}

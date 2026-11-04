@@ -1,0 +1,52 @@
+{
+  "countryTag": "USA",
+  "templates": [
+    {
+      "templateId": 15,
+      "name": "US Heavy Mechanized Infantry Division (M2/M1)",
+      "combatWidth": 20,
+      "battalions": ["IFV", "IFV", "IFV", "MBT", "MBT", "Artillery"],
+      "supportCompanies": ["SupportVehicles", "Artillery", "AttackHeli"]
+    },
+    {
+      "templateId": 16,
+      "name": "USMC Marine Expeditionary Brigade (MEF)",
+      "combatWidth": 20,
+      "battalions": ["InfantryKit", "InfantryKit", "IFV", "MBT", "Artillery", "AttackHeli"],
+      "supportCompanies": ["SupportVehicles", "Artillery", "AttackHeli"]
+    },
+    {
+      "templateId": 17,
+      "name": "US Air Assault / Light Infantry Division",
+      "combatWidth": 20,
+      "battalions": ["InfantryKit", "InfantryKit", "InfantryKit", "AttackHeli", "AttackHeli", "Artillery"],
+      "supportCompanies": ["SupportVehicles", "AttackHeli"]
+    }
+  ],
+  "startingDivisions": [
+    {
+      "name": "2nd Infantry Division ('Indianhead' — Camp Casey)",
+      "templateId": 15,
+      "startingProvinceId": 1,
+      "startingExperience": 0.75,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    },
+    {
+      "name": "III Marine Expeditionary Force (3rd Marine Division — Okinawa)",
+      "templateId": 16,
+      "startingProvinceId": 500,
+      "startingExperience": 0.75,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    },
+    {
+      "name": "25th Infantry Division ('Tropic Lightning' — PACOM Reserve)",
+      "templateId": 17,
+      "startingProvinceId": 510,
+      "startingExperience": 0.70,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    }
+  ]
+}

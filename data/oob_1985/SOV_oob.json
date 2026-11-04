@@ -1,0 +1,60 @@
+{
+  "countryTag": "SOV",
+  "templates": [
+    {
+      "templateId": 19,
+      "name": "Soviet Guards Motor Rifle Division (BMP-2/T-72B)",
+      "combatWidth": 20,
+      "battalions": ["IFV", "IFV", "IFV", "MBT", "Artillery", "Artillery"],
+      "supportCompanies": ["SupportVehicles", "Artillery", "AttackHeli"]
+    },
+    {
+      "templateId": 20,
+      "name": "Soviet Red Banner Tank Division (T-80BV)",
+      "combatWidth": 20,
+      "battalions": ["MBT", "MBT", "MBT", "IFV", "IFV", "Artillery"],
+      "supportCompanies": ["SupportVehicles", "Artillery", "AttackHeli"]
+    },
+    {
+      "templateId": 21,
+      "name": "Soviet Pacific Fleet Naval Infantry Division",
+      "combatWidth": 20,
+      "battalions": ["IFV", "IFV", "InfantryKit", "InfantryKit", "MBT", "Artillery"],
+      "supportCompanies": ["SupportVehicles", "Artillery"]
+    }
+  ],
+  "startingDivisions": [
+    {
+      "name": "21st Tank Division (5th Combined Arms Army — Ussuriysk)",
+      "templateId": 20,
+      "startingProvinceId": 170,
+      "startingExperience": 0.65,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    },
+    {
+      "name": "270th Motor Rifle Division (15th Army — Khabarovsk)",
+      "templateId": 19,
+      "startingProvinceId": 160,
+      "startingExperience": 0.60,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    },
+    {
+      "name": "55th Naval Infantry Division (Vladivostok Pacific Fleet)",
+      "templateId": 21,
+      "startingProvinceId": 171,
+      "startingExperience": 0.70,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    },
+    {
+      "name": "41st Motor Rifle Division (Transbaikal Entry Reserve)",
+      "templateId": 19,
+      "startingProvinceId": 150,
+      "startingExperience": 0.55,
+      "startingStrength": 1.0,
+      "pgmAuthorized": false
+    }
+  ]
+}

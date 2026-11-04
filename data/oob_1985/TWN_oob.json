@@ -1,0 +1,60 @@
+{
+  "countryTag": "TWN",
+  "templates": [
+    {
+      "templateId": 26,
+      "name": "ROCA Heavy Infantry Division",
+      "combatWidth": 20,
+      "battalions": ["InfantryKit", "InfantryKit", "InfantryKit", "IFV", "Artillery", "Artillery"],
+      "supportCompanies": ["SupportVehicles", "Artillery"]
+    },
+    {
+      "templateId": 27,
+      "name": "ROCA Independent Armored Brigade (CM-11/M60A3)",
+      "combatWidth": 20,
+      "battalions": ["MBT", "MBT", "IFV", "IFV", "IFV", "Artillery"],
+      "supportCompanies": ["SupportVehicles", "Artillery", "AttackHeli"]
+    },
+    {
+      "templateId": 28,
+      "name": "ROCMC Marine Division (Tsoying)",
+      "combatWidth": 20,
+      "battalions": ["InfantryKit", "InfantryKit", "IFV", "IFV", "MBT", "Artillery"],
+      "supportCompanies": ["SupportVehicles", "Artillery"]
+    }
+  ],
+  "startingDivisions": [
+    {
+      "name": "ROCA 6th Army Corps (Taipei-Hsinchu Defense)",
+      "templateId": 26,
+      "startingProvinceId": 400,
+      "startingExperience": 0.60,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    },
+    {
+      "name": "ROCA 542nd Armored Brigade ('Thunderbolt' — Hukou)",
+      "templateId": 27,
+      "startingProvinceId": 401,
+      "startingExperience": 0.65,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    },
+    {
+      "name": "ROCMC 99th Marine Division ('Iron Forces' — Kaohsiung)",
+      "templateId": 28,
+      "startingProvinceId": 410,
+      "startingExperience": 0.65,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    },
+    {
+      "name": "Kinmen Defense Command ('Golden Gate' Bastion)",
+      "templateId": 26,
+      "startingProvinceId": 420,
+      "startingExperience": 0.70,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    }
+  ]
+}

@@ -64,6 +64,126 @@ public static class JsonMapLoader
         LoadAndValidate(world, states, provinces);
     }
 
+    /// <summary>
+    /// Loads and validates a standalone state definitions JSON file into SimulationWorld.States
+    /// (also assigning province ownership/stateId for listed provinces without requiring a full CSR adjacency graph).
+    /// </summary>
+    public static IReadOnlyList<StateDto> LoadStatesOnly(SimulationWorld world, string statesJsonPath)
+    {
+        ArgumentNullException.ThrowIfNull(world);
+        ArgumentException.ThrowIfNullOrWhiteSpace(statesJsonPath);
+
+        if (!File.Exists(statesJsonPath))
+        {
+            throw new FileNotFoundException($"States JSON file not found at '{statesJsonPath}'", statesJsonPath);
+        }
+
+        using FileStream statesStream = File.OpenRead(statesJsonPath);
+        List<StateDto>? states = JsonSerializer.Deserialize(statesStream, MapJsonContext.Default.ListStateDto);
+        if (states == null || states.Count == 0)
+        {
+            throw new MapValidationException("State definition list is empty or could not be deserialized.");
+        }
+
+        var seenStates = new HashSet<ushort>(states.Count);
+        var seenProvinces = new HashSet<ushort>();
+
+        foreach (StateDto stateDto in states)
+        {
+            if (stateDto.StateId >= SimulationWorld.MaxStates)
+            {
+                throw new MapValidationException(
+                    $"State '{stateDto.Name}' ID {stateDto.StateId} exceeds MaxStates limit ({SimulationWorld.MaxStates}).");
+            }
+
+            if (!seenStates.Add(stateDto.StateId))
+            {
+                throw new MapValidationException($"Duplicate StateId {stateDto.StateId} detected in states configuration.");
+            }
+
+            if (!CountryTag.TryParse(stateDto.OwnerTag, out byte ownerTag))
+            {
+                throw new MapValidationException(
+                    $"State {stateDto.StateId} ('{stateDto.Name}') has invalid OwnerTag '{stateDto.OwnerTag}'.");
+            }
+
+            byte controllerTag = ownerTag;
+            if (!string.IsNullOrWhiteSpace(stateDto.ControllerTag))
+            {
+                if (!CountryTag.TryParse(stateDto.ControllerTag, out controllerTag))
+                {
+                    throw new MapValidationException(
+                        $"State {stateDto.StateId} ('{stateDto.Name}') has invalid ControllerTag '{stateDto.ControllerTag}'.");
+                }
+            }
+
+            if (stateDto.Provinces == null || stateDto.Provinces.Count == 0)
+            {
+                throw new MapValidationException($"State {stateDto.StateId} ('{stateDto.Name}') has zero provinces.");
+            }
+
+            ref StateData state = ref world.States[stateDto.StateId];
+            state.StateId = stateDto.StateId;
+            state.OwnerTag = ownerTag;
+            state.ControllerTag = controllerTag;
+            state.CoreTagsMask = 0;
+            foreach (string coreTagStr in stateDto.CoreTags)
+            {
+                if (CountryTag.TryParse(coreTagStr, out byte coreTagId))
+                {
+                    state.AddCore(coreTagId);
+                }
+            }
+
+            state.CivilianFactories = stateDto.CivilianFactories;
+            state.MilitaryFactories = stateDto.MilitaryFactories;
+            state.NavalDockyards = stateDto.NavalDockyards;
+            state.AirbaseLevel = stateDto.AirbaseLevel;
+            state.RadarSamLevel = stateDto.RadarSamLevel;
+            state.InfrastructureLevel = stateDto.InfrastructureLevel;
+            state.Population = stateDto.Population;
+            state.ConstructionProgress = 0f;
+            state.AssignedCivFactories = 0;
+
+            if (stateDto.Resources != null)
+            {
+                state.SetResource(ResourceType.Oil, stateDto.Resources.Oil);
+                state.SetResource(ResourceType.Steel, stateDto.Resources.Steel);
+                state.SetResource(ResourceType.Aluminum, stateDto.Resources.Aluminum);
+                state.SetResource(ResourceType.Semiconductors, stateDto.Resources.Semiconductors);
+            }
+            else
+            {
+                state.SetResource(ResourceType.Oil, 0);
+                state.SetResource(ResourceType.Steel, 0);
+                state.SetResource(ResourceType.Aluminum, 0);
+                state.SetResource(ResourceType.Semiconductors, 0);
+            }
+
+            foreach (ushort provId in stateDto.Provinces)
+            {
+                if (provId >= SimulationWorld.MaxProvinces)
+                {
+                    throw new MapValidationException(
+                        $"State {stateDto.StateId} lists ProvinceId {provId} exceeding MaxProvinces ({SimulationWorld.MaxProvinces}).");
+                }
+                if (!seenProvinces.Add(provId))
+                {
+                    throw new MapValidationException(
+                        $"Duplicate ProvinceId {provId} assigned across states in '{statesJsonPath}'.");
+                }
+
+                ref ProvinceData prov = ref world.Provinces[provId];
+                prov.ProvinceId = provId;
+                prov.StateId = stateDto.StateId;
+                prov.OwnerTag = ownerTag;
+                prov.ControllerTag = controllerTag;
+            }
+        }
+
+        return states;
+    }
+
     private static void LoadAndValidate(
         SimulationWorld world,
         List<StateDto>? states,

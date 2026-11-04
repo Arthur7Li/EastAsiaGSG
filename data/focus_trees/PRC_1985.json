@@ -1,0 +1,190 @@
+{
+  "countryTag": "PRC",
+  "era": "1985_LateColdWar",
+  "focuses": [
+    {
+      "id": "PRC_deng_reform_and_opening",
+      "name": "Deepen Reform and Opening Up",
+      "description": "Expand market-socialist reforms from the rural household responsibility system into urban state-owned enterprises.",
+      "icon": "focus_prc_reform",
+      "gridX": 1,
+      "gridY": 0,
+      "costDays": 35,
+      "prerequisites": [],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 120,
+      "conditions": [],
+      "effects": [
+        { "type": "AddPoliticalPower", "target": "SELF", "value": 100 },
+        { "type": "AddStability", "target": "SELF", "value": 0.05 },
+        { "type": "ModifyConsumerGoods", "target": "SELF", "value": -0.02 }
+      ]
+    },
+    {
+      "id": "PRC_coastal_special_economic_zones",
+      "name": "Coastal Special Economic Zones",
+      "description": "Channel foreign direct investment and electronics assembly into Shenzhen, Zhuhai, Xiamen, and the Yangtze Delta.",
+      "icon": "focus_prc_sez",
+      "gridX": 0,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["PRC_deng_reform_and_opening"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 115,
+      "conditions": [],
+      "effects": [
+        { "type": "AddCivilianFactories", "target": "STATE_GUANGDONG", "value": 4 },
+        { "type": "AddCivilianFactories", "target": "STATE_SHANGHAI", "value": 3 }
+      ]
+    },
+    {
+      "id": "PRC_baoshan_steel_and_energy_grid",
+      "name": "Baoshan Steel & National Energy Grid",
+      "description": "Modernize heavy metallurgy and coal-fired power generation across North China and Manchuria.",
+      "icon": "focus_industry_steel",
+      "gridX": 2,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["PRC_deng_reform_and_opening"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 105,
+      "conditions": [],
+      "effects": [
+        { "type": "AddCivilianFactories", "target": "STATE_BEIJING", "value": 3 },
+        { "type": "AddMilitaryFactories", "target": "STATE_MANCHURIA", "value": 2 }
+      ]
+    },
+    {
+      "id": "PRC_863_high_tech_program",
+      "name": "State High-Tech R&D Program (Plan 863)",
+      "description": "Launch the March 1986 national technology initiative targeting microelectronics, aerospace, and automation.",
+      "icon": "focus_tech_863",
+      "gridX": 1,
+      "gridY": 2,
+      "costDays": 42,
+      "prerequisites": ["PRC_coastal_special_economic_zones", "PRC_baoshan_steel_and_energy_grid"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 120,
+      "conditions": [
+        { "type": "DateAfter", "target": "1986.03.01", "value": 0 }
+      ],
+      "effects": [
+        { "type": "GrantTechBonus", "target": "SupportVehicles:Gen2", "value": 1 },
+        { "type": "GrantTechBonus", "target": "PGM:Gen2", "value": 1 },
+        { "type": "TriggerNewsEvent", "target": "NEWS_PRC_863_PROGRAM", "value": 0 }
+      ]
+    },
+    {
+      "id": "PRC_one_million_troop_reduction",
+      "name": "One-Million-Man PLA Demobilization",
+      "description": "Streamline bloated field armies to fund modern combined-arms Group Armies and high-tech weaponry.",
+      "icon": "focus_prc_pla_reform",
+      "gridX": 5,
+      "gridY": 0,
+      "costDays": 35,
+      "prerequisites": [],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 125,
+      "conditions": [],
+      "effects": [
+        { "type": "ModifyConsumerGoods", "target": "SELF", "value": -0.03 },
+        { "type": "AddPoliticalPower", "target": "SELF", "value": 80 },
+        { "type": "TriggerNewsEvent", "target": "NEWS_PRC_MILLION_TROOP_CUT", "value": 0 }
+      ]
+    },
+    {
+      "id": "PRC_group_army_combined_arms",
+      "name": "Combined-Arms Group Army Reorganization",
+      "description": "Convert legacy infantry corps into integrated Group Armies with mechanized, armor, artillery, and aviation brigades.",
+      "icon": "focus_prc_group_army",
+      "gridX": 4,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["PRC_one_million_troop_reduction"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 115,
+      "conditions": [],
+      "effects": [
+        { "type": "GrantTechBonus", "target": "IFV:Gen2", "value": 1 },
+        { "type": "AddEquipmentStockpile", "target": "IFV:Gen1", "value": 200 },
+        { "type": "SpawnDivisionTemplate", "target": "Mechanized", "value": 1 }
+      ]
+    },
+    {
+      "id": "PRC_type85_and_shenyang_j8ii",
+      "name": "Type 85-II MBT & Shenyang J-8II Program",
+      "description": "Upgrade northern armored spearheads and high-altitude interceptor wings against superpower threats.",
+      "icon": "focus_prc_armor_air",
+      "gridX": 6,
+      "gridY": 1,
+      "costDays": 42,
+      "prerequisites": ["PRC_one_million_troop_reduction"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 110,
+      "conditions": [],
+      "effects": [
+        { "type": "GrantTechBonus", "target": "MBT:Gen2", "value": 1 },
+        { "type": "GrantTechBonus", "target": "TacticalAir:Gen2", "value": 1 },
+        { "type": "AddEquipmentStockpile", "target": "MBT:Gen1", "value": 180 },
+        { "type": "AddEquipmentStockpile", "target": "TacticalAir:Gen1", "value": 60 }
+      ]
+    },
+    {
+      "id": "PRC_offshore_active_defense_navy",
+      "name": "Liu Huaqing's Offshore Active Defense",
+      "description": "Transition the PLAN from coastal brown-water patrol to First Island Chain sea denial and missile frigates.",
+      "icon": "focus_prc_plan_navy",
+      "gridX": 5,
+      "gridY": 2,
+      "costDays": 42,
+      "prerequisites": ["PRC_group_army_combined_arms", "PRC_type85_and_shenyang_j8ii"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 110,
+      "conditions": [],
+      "effects": [
+        { "type": "AddNavalDockyards", "target": "STATE_SHANGHAI", "value": 3 },
+        { "type": "AddRadarSamLevel", "target": "STATE_FUJIAN", "value": 2 },
+        { "type": "AddEquipmentStockpile", "target": "PGM:Gen1", "value": 120 }
+      ]
+    },
+    {
+      "id": "PRC_one_country_two_systems_diplomacy",
+      "name": "One Country, Two Systems Overture",
+      "description": "Prioritize peaceful economic integration and cross-strait trade while focusing on domestic modernization.",
+      "icon": "focus_prc_diplomacy",
+      "gridX": 9,
+      "gridY": 0,
+      "costDays": 35,
+      "prerequisites": [],
+      "mutuallyExclusive": ["PRC_fujian_strait_military_readiness"],
+      "aiBaseWeight": 100,
+      "conditions": [
+        { "type": "AtPeace", "target": "SELF", "value": 0 }
+      ],
+      "effects": [
+        { "type": "AddStability", "target": "SELF", "value": 0.08 },
+        { "type": "AddPoliticalPower", "target": "SELF", "value": 90 },
+        { "type": "AddCivilianFactories", "target": "STATE_FUJIAN", "value": 2 }
+      ]
+    },
+    {
+      "id": "PRC_fujian_strait_military_readiness",
+      "name": "Nanjing Theater Strait Readiness",
+      "description": "Expand amphibious staging ports, coastal radar-SAM batteries, and tactical missile brigades opposite the Taiwan Strait.",
+      "icon": "focus_prc_strait_strike",
+      "gridX": 11,
+      "gridY": 0,
+      "costDays": 35,
+      "prerequisites": [],
+      "mutuallyExclusive": ["PRC_one_country_two_systems_diplomacy"],
+      "aiBaseWeight": 75,
+      "conditions": [],
+      "effects": [
+        { "type": "AddWarSupport", "target": "SELF", "value": 0.10 },
+        { "type": "AddMilitaryFactories", "target": "STATE_FUJIAN", "value": 2 },
+        { "type": "AddRadarSamLevel", "target": "STATE_FUJIAN", "value": 2 },
+        { "type": "AddHomelandEscalation", "target": "USA", "value": 12 }
+      ]
+    }
+  ]
+}

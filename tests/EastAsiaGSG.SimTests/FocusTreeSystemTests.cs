@@ -440,6 +440,90 @@ public sealed class FocusTreeSystemTests
         Assert.True(FocusTreeSystem.CanStartFocus(world, CountryTag.ROK, rokMiracleIdx));
     }
 
+    [Fact]
+    public void Task53_LoadsAllSevenMajorPower1985Content_States_Oobs_And_FocusTrees_AndSimulates90Days()
+    {
+        using SimulationWorld world = new();
+        string repoRoot = FindRepoRoot();
+
+        // 1. Load 1985 East Asian Theatre State Definitions
+        string theatreStatesPath = Path.Combine(repoRoot, "data", "map", "east_asia_1985_states.json");
+        var loadedStates = JsonMapLoader.LoadStatesOnly(world, theatreStatesPath);
+        Assert.True(loadedStates.Count >= 30);
+
+        byte[] majorTags =
+        [
+            CountryTag.PRC,
+            CountryTag.USA,
+            CountryTag.SOV,
+            CountryTag.JPN,
+            CountryTag.ROK,
+            CountryTag.PRK,
+            CountryTag.TWN
+        ];
+
+        // 2. Load 1985 OOBs for all 7 Major Powers and verify templates & spawned field divisions
+        int totalSpawnedDivisions = 0;
+        foreach (byte tag in majorTags)
+        {
+            string code = CountryTag.GetCode(tag);
+            string oobPath = Path.Combine(repoRoot, "data", "oob_1985", $"{code}_oob.json");
+            LoadedOob oob = JsonOobLoader.LoadOob(world, oobPath);
+
+            Assert.Equal(tag, oob.CountryTag);
+            Assert.True(oob.Templates.Count >= 3, $"Expected >= 3 templates for {code}");
+            Assert.True(oob.SpawnedDivisionIds.Count >= 3, $"Expected >= 3 starting divisions for {code}");
+            totalSpawnedDivisions += oob.SpawnedDivisionIds.Count;
+
+            foreach (int divId in oob.SpawnedDivisionIds)
+            {
+                Assert.True(world.TryFindDivisionById(divId, out var divEntity));
+                ref readonly DivisionComponent div = ref world.EcsWorld.Get<DivisionComponent>(divEntity);
+                Assert.Equal(tag, div.CountryTag);
+                Assert.Equal(1.0f, div.Strength, precision: 3);
+            }
+        }
+        Assert.True(totalSpawnedDivisions >= 28);
+
+        // 3. Load Era I Focus Trees for all 7 Major Powers + Generic Focus Tree for the 8 Regional Minors
+        world.SetDate(1985, 9, 15); // Post-Plaza Accord so JPN root focus is immediately available
+        foreach (byte tag in majorTags)
+        {
+            string code = CountryTag.GetCode(tag);
+            string focusPath = Path.Combine(repoRoot, "data", "focus_trees", $"{code}_1985.json");
+            LoadedFocusTree tree = JsonFocusTreeLoader.LoadFocusTree(world, focusPath);
+
+            Assert.Equal(tag, tree.CountryTag);
+            Assert.True(tree.Focuses.Count >= 10, $"Expected >= 10 focuses in {code}_1985.json, got {tree.Focuses.Count}");
+            Assert.Equal(tree.Focuses.Count, world.CountryFocusCounts[tag]);
+
+            // Start each Major Power's root focus (index 0)
+            Assert.True(FocusTreeSystem.CanStartFocus(world, tag, 0), $"Root focus 0 for {code} should be startable");
+            world.EnqueueCommand(SimulationCommand.CreateSelectFocus(tag, 0, costDays: 0));
+        }
+
+        string genericFocusPath = Path.Combine(repoRoot, "data", "focus_trees", "GENERIC_1985.json");
+        for (byte minorTag = CountryTag.VNM; minorTag <= CountryTag.MYS; minorTag++)
+        {
+            LoadedFocusTree minorTree = JsonFocusTreeLoader.LoadFocusTree(world, genericFocusPath, overrideCountryTag: minorTag);
+            Assert.Equal(minorTag, minorTree.CountryTag);
+            Assert.Equal(8, minorTree.Focuses.Count);
+        }
+
+        // 4. Step 40 days (160 six-hour ticks) and verify all 7 Major Powers complete their root 28/35-day focuses
+        for (int t = 0; t < 40 * 4; t++)
+        {
+            world.StepSixHours();
+        }
+
+        foreach (byte tag in majorTags)
+        {
+            string code = CountryTag.GetCode(tag);
+            Assert.True(world.Countries[tag].HasCompletedFocus(0), $"Expected {code} to have completed root focus 0 after 40 days");
+            Assert.Equal(-1, world.Countries[tag].ActiveFocusId);
+        }
+    }
+
     private static string FindRepoRoot()
     {
         string? dir = AppContext.BaseDirectory;

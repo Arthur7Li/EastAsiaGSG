@@ -1,0 +1,187 @@
+{
+  "countryTag": "JPN",
+  "era": "1985_LateColdWar",
+  "focuses": [
+    {
+      "id": "JPN_plaza_accord_response",
+      "name": "Navigate the Plaza Accord",
+      "description": "The surging Yen reshapes our export economy and overseas capital power.",
+      "icon": "focus_economy_yen",
+      "gridX": 1,
+      "gridY": 0,
+      "costDays": 35,
+      "prerequisites": [],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 125,
+      "conditions": [
+        { "type": "DateAfter", "target": "1985.09.01", "value": 0 }
+      ],
+      "effects": [
+        { "type": "AddPoliticalPower", "target": "SELF", "value": 120 },
+        { "type": "AddCivilianFactories", "target": "STATE_KANTO", "value": 3 }
+      ]
+    },
+    {
+      "id": "JPN_miti_fifth_generation_computing",
+      "name": "MITI Fifth Generation Computer Project",
+      "description": "Accelerate VLSI semiconductor dominance, robotics automation, and supercomputing across Tokyo and Osaka.",
+      "icon": "focus_jpn_vlsi",
+      "gridX": 0,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["JPN_plaza_accord_response"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 120,
+      "conditions": [],
+      "effects": [
+        { "type": "GrantTechBonus", "target": "TacticalAir:Gen2", "value": 1 },
+        { "type": "GrantTechBonus", "target": "SupportVehicles:Gen2", "value": 1 },
+        { "type": "AddCivilianFactories", "target": "STATE_KANSAI", "value": 3 }
+      ]
+    },
+    {
+      "id": "JPN_heisei_bubble_capital_boom",
+      "name": "Monetary Easing & Capital Investment Surge",
+      "description": "Bank of Japan low interest rates unleash unprecedented corporate capital expenditure and industrial expansion.",
+      "icon": "focus_jpn_bubble",
+      "gridX": 2,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["JPN_plaza_accord_response"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 115,
+      "conditions": [],
+      "effects": [
+        { "type": "ModifyConsumerGoods", "target": "SELF", "value": -0.04 },
+        { "type": "AddCivilianFactories", "target": "STATE_KANTO", "value": 4 }
+      ]
+    },
+    {
+      "id": "JPN_fsx_and_mitsubishi_aerospace",
+      "name": "FS-X / F-2 & Mitsubishi Heavy Aerospace",
+      "description": "Develop active phased-array radar and composite-wing strike fighters for maritime interdiction.",
+      "icon": "focus_jpn_fsx",
+      "gridX": 1,
+      "gridY": 2,
+      "costDays": 42,
+      "prerequisites": ["JPN_miti_fifth_generation_computing", "JPN_heisei_bubble_capital_boom"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 120,
+      "conditions": [],
+      "effects": [
+        { "type": "GrantTechBonus", "target": "TacticalAir:Gen3", "value": 1 },
+        { "type": "AddMilitaryFactories", "target": "STATE_KANTO", "value": 3 },
+        { "type": "AddEquipmentStockpile", "target": "PGM:Gen2", "value": 150 }
+      ]
+    },
+    {
+      "id": "JPN_mid_term_defense_program_86",
+      "name": "1986 Mid-Term Defense Program (Chukibo)",
+      "description": "Modernize the Self-Defense Forces to defend northern Hokkaido and 1,000-nautical-mile sea lanes.",
+      "icon": "focus_jpn_jsdf",
+      "gridX": 5,
+      "gridY": 0,
+      "costDays": 35,
+      "prerequisites": [],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 115,
+      "conditions": [],
+      "effects": [
+        { "type": "AddPoliticalPower", "target": "SELF", "value": 80 },
+        { "type": "AddMilitaryFactories", "target": "STATE_KANTO", "value": 2 }
+      ]
+    },
+    {
+      "id": "JPN_northern_army_type90_armor",
+      "name": "Hokkaido Northern Army & Type 90 MBT",
+      "description": "Equip the 7th Armored Division in Chitose with Mitsubishi Type 90 main battle tanks and Type 89 IFVs.",
+      "icon": "focus_jpn_type90",
+      "gridX": 4,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["JPN_mid_term_defense_program_86"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 110,
+      "conditions": [],
+      "effects": [
+        { "type": "GrantTechBonus", "target": "MBT:Gen3", "value": 1 },
+        { "type": "GrantTechBonus", "target": "IFV:Gen2", "value": 1 },
+        { "type": "AddEquipmentStockpile", "target": "MBT:Gen2", "value": 120 },
+        { "type": "AddRadarSamLevel", "target": "STATE_HOKKAIDO", "value": 2 }
+      ]
+    },
+    {
+      "id": "JPN_jmsdf_1000nm_sea_lane_defense",
+      "name": "JMSDF 1,000-Nautical-Mile Sea Lane Escort",
+      "description": "Expand Eight-Eight Fleet destroyer flotillas, P-3C Orion ASW patrols, and Kongō-class Aegis destroyers.",
+      "icon": "focus_jpn_jmsdf",
+      "gridX": 6,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["JPN_mid_term_defense_program_86"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 115,
+      "conditions": [],
+      "effects": [
+        { "type": "AddNavalDockyards", "target": "STATE_KYUSHU", "value": 3 },
+        { "type": "AddEquipmentStockpile", "target": "TacticalAir:Gen2", "value": 60 },
+        { "type": "AddRadarSamLevel", "target": "STATE_KYUSHU", "value": 2 }
+      ]
+    },
+    {
+      "id": "JPN_uphold_article_9_yoshida_doctrine",
+      "name": "Uphold Article 9 & the Yoshida Doctrine",
+      "description": "Maintain strict constitutional limits on offensive weaponry while maximizing civilian technological prosperity.",
+      "icon": "focus_jpn_article9",
+      "gridX": 9,
+      "gridY": 0,
+      "costDays": 35,
+      "prerequisites": [],
+      "mutuallyExclusive": ["JPN_repeal_one_percent_gdp_defense_cap"],
+      "aiBaseWeight": 105,
+      "conditions": [],
+      "effects": [
+        { "type": "AddStability", "target": "SELF", "value": 0.10 },
+        { "type": "AddPoliticalPower", "target": "SELF", "value": 100 },
+        { "type": "AddCivilianFactories", "target": "STATE_KANSAI", "value": 2 }
+      ]
+    },
+    {
+      "id": "JPN_repeal_one_percent_gdp_defense_cap",
+      "name": "Repeal the 1% GDP Defense Spending Cap",
+      "description": "Nakasone cabinet breaks the 1976 Miki ceiling, authorizing rapid JSDF expansion and active collective defense.",
+      "icon": "focus_jpn_remilitarize",
+      "gridX": 11,
+      "gridY": 0,
+      "costDays": 35,
+      "prerequisites": [],
+      "mutuallyExclusive": ["JPN_uphold_article_9_yoshida_doctrine"],
+      "aiBaseWeight": 90,
+      "conditions": [],
+      "effects": [
+        { "type": "AddWarSupport", "target": "SELF", "value": 0.12 },
+        { "type": "AddMilitaryFactories", "target": "STATE_KANTO", "value": 3 },
+        { "type": "SpawnDivisionTemplate", "target": "Mechanized", "value": 1 },
+        { "type": "TriggerNewsEvent", "target": "NEWS_JPN_BREAKS_1PCT_CAP", "value": 0 }
+      ]
+    },
+    {
+      "id": "JPN_western_army_amphibious_rapid_deployment",
+      "name": "Western Army Island Defense Brigade",
+      "description": "Establish rapid-reaction air-mobile and anti-ship missile regiments in Kyushu to guard the East China Sea.",
+      "icon": "focus_jpn_island_defense",
+      "gridX": 11,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["JPN_repeal_one_percent_gdp_defense_cap"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 95,
+      "conditions": [],
+      "effects": [
+        { "type": "SpawnDivisionTemplate", "target": "AirAssault", "value": 1 },
+        { "type": "AddEquipmentStockpile", "target": "AttackHeli:Gen2", "value": 40 },
+        { "type": "AddEquipmentStockpile", "target": "PGM:Gen2", "value": 120 }
+      ]
+    }
+  ]
+}

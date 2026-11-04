@@ -1,0 +1,183 @@
+{
+  "countryTag": "TWN",
+  "era": "1985_LateColdWar",
+  "focuses": [
+    {
+      "id": "TWN_hsinchu_science_park_expansion",
+      "name": "Hsinchu Science Park & ITRI Expansion",
+      "description": "Scale up the Industrial Technology Research Institute to attract overseas engineers and build Taiwan's high-tech base.",
+      "icon": "focus_twn_hsinchu",
+      "gridX": 1,
+      "gridY": 0,
+      "costDays": 28,
+      "prerequisites": [],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 125,
+      "conditions": [],
+      "effects": [
+        { "type": "AddPoliticalPower", "target": "SELF", "value": 85 },
+        { "type": "AddCivilianFactories", "target": "STATE_TAIPEI", "value": 2 }
+      ]
+    },
+    {
+      "id": "TWN_tsmc_pure_play_foundry_shield",
+      "name": "Found the TSMC Pure-Play Semiconductor Foundry",
+      "description": "Back Morris Chang's 1987 wafer foundry model, forging an indispensable global Silicon Shield in Hsinchu.",
+      "icon": "focus_twn_tsmc",
+      "gridX": 0,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["TWN_hsinchu_science_park_expansion"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 130,
+      "conditions": [],
+      "effects": [
+        { "type": "AddCivilianFactories", "target": "STATE_TAIPEI", "value": 4 },
+        { "type": "ModifyConsumerGoods", "target": "SELF", "value": -0.03 },
+        { "type": "TriggerNewsEvent", "target": "NEWS_TWN_TSMC_FOUNDED", "value": 0 }
+      ]
+    },
+    {
+      "id": "TWN_fourteen_major_development_projects",
+      "name": "Fourteen Major Construction Projects",
+      "description": "Modernize Kaohsiung container terminals, island-wide rail electrification, and petrochemical refineries.",
+      "icon": "focus_twn_infrastructure",
+      "gridX": 2,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["TWN_hsinchu_science_park_expansion"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 110,
+      "conditions": [],
+      "effects": [
+        { "type": "AddCivilianFactories", "target": "STATE_KAOHSIUNG", "value": 2 },
+        { "type": "AddNavalDockyards", "target": "STATE_KAOHSIUNG", "value": 2 }
+      ]
+    },
+    {
+      "id": "TWN_aidc_idf_ching_kuo_fighter",
+      "name": "AIDC F-CK-1 Ching-Kuo Indigenous Fighter",
+      "description": "Develop an indigenous fourth-generation multirole fighter equipped with Sky Sword missiles to defend the Strait.",
+      "icon": "focus_twn_idf",
+      "gridX": 1,
+      "gridY": 2,
+      "costDays": 42,
+      "prerequisites": ["TWN_tsmc_pure_play_foundry_shield", "TWN_fourteen_major_development_projects"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 125,
+      "conditions": [],
+      "effects": [
+        { "type": "GrantTechBonus", "target": "TacticalAir:Gen2", "value": 1 },
+        { "type": "AddEquipmentStockpile", "target": "TacticalAir:Gen2", "value": 60 },
+        { "type": "AddMilitaryFactories", "target": "STATE_TAIPEI", "value": 2 }
+      ]
+    },
+    {
+      "id": "TWN_lift_martial_law_democratization",
+      "name": "Lift Martial Law & Political Liberalization",
+      "description": "Chiang Ching-kuo and Lee Teng-hui end 38 years of martial law, legalizing opposition parties and boosting international standing.",
+      "icon": "focus_twn_democracy",
+      "gridX": 5,
+      "gridY": 0,
+      "costDays": 35,
+      "prerequisites": [],
+      "mutuallyExclusive": ["TWN_maintain_temporary_provisions_garrison"],
+      "aiBaseWeight": 115,
+      "conditions": [],
+      "effects": [
+        { "type": "AddStability", "target": "SELF", "value": 0.10 },
+        { "type": "AddPoliticalPower", "target": "SELF", "value": 110 },
+        { "type": "TriggerNewsEvent", "target": "NEWS_TWN_MARTIAL_LAW_LIFTED", "value": 0 }
+      ]
+    },
+    {
+      "id": "TWN_maintain_temporary_provisions_garrison",
+      "name": "Fortify the Temporary Provisions State",
+      "description": "Preserve wartime mobilization decrees and Garrison Command authority against cross-strait subversion.",
+      "icon": "focus_twn_garrison",
+      "gridX": 7,
+      "gridY": 0,
+      "costDays": 35,
+      "prerequisites": [],
+      "mutuallyExclusive": ["TWN_lift_martial_law_democratization"],
+      "aiBaseWeight": 70,
+      "conditions": [],
+      "effects": [
+        { "type": "AddWarSupport", "target": "SELF", "value": 0.10 },
+        { "type": "AddMilitaryFactories", "target": "STATE_KAOHSIUNG", "value": 2 },
+        { "type": "SpawnDivisionTemplate", "target": "Infantry", "value": 1 }
+      ]
+    },
+    {
+      "id": "TWN_guoshan_plan_underground_command",
+      "name": "Chiashan Underground Airbase & Command",
+      "description": "Hollow out eastern Hualien mountain caverns to shelter up to 200 fighters from preemptive missile strikes.",
+      "icon": "focus_twn_chiashan",
+      "gridX": 9,
+      "gridY": 0,
+      "costDays": 35,
+      "prerequisites": [],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 120,
+      "conditions": [],
+      "effects": [
+        { "type": "AddRadarSamLevel", "target": "STATE_TAIPEI", "value": 2 },
+        { "type": "AddEquipmentStockpile", "target": "TacticalAir:Gen1", "value": 45 }
+      ]
+    },
+    {
+      "id": "TWN_tien_kung_sky_bow_sam_shield",
+      "name": "Tien Kung (Sky Bow) & Hsiung Feng II",
+      "description": "Chung-Shan Institute of Science and Technology deploys indigenous long-range SAMs and sea-skimming anti-ship missiles.",
+      "icon": "focus_twn_sky_bow",
+      "gridX": 8,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["TWN_guoshan_plan_underground_command"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 120,
+      "conditions": [],
+      "effects": [
+        { "type": "GrantTechBonus", "target": "PGM:Gen2", "value": 1 },
+        { "type": "AddRadarSamLevel", "target": "STATE_KAOHSIUNG", "value": 2 },
+        { "type": "AddEquipmentStockpile", "target": "PGM:Gen2", "value": 140 }
+      ]
+    },
+    {
+      "id": "TWN_cm11_brave_tiger_and_kinmen_bastion",
+      "name": "CM-11 Brave Tiger & Offshore Island Bastions",
+      "description": "Equip armored brigades with M1-fire-control hybrid tanks and reinforce Kinmen and Penghu artillery casemates.",
+      "icon": "focus_twn_cm11",
+      "gridX": 10,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["TWN_guoshan_plan_underground_command"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 115,
+      "conditions": [],
+      "effects": [
+        { "type": "GrantTechBonus", "target": "MBT:Gen2", "value": 1 },
+        { "type": "AddEquipmentStockpile", "target": "MBT:Gen2", "value": 100 },
+        { "type": "AddRadarSamLevel", "target": "STATE_KINMEN", "value": 2 },
+        { "type": "SpawnDivisionTemplate", "target": "Mechanized", "value": 1 }
+      ]
+    },
+    {
+      "id": "TWN_kwang_hua_frigate_modernization",
+      "name": "Kwang Hua I & II Naval Frigate Program",
+      "description": "Construct Perry-class and La Fayette-class guided-missile frigates at China Shipbuilding Corporation in Kaohsiung.",
+      "icon": "focus_twn_navy",
+      "gridX": 9,
+      "gridY": 2,
+      "costDays": 42,
+      "prerequisites": ["TWN_tien_kung_sky_bow_sam_shield", "TWN_cm11_brave_tiger_and_kinmen_bastion"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 115,
+      "conditions": [],
+      "effects": [
+        { "type": "AddNavalDockyards", "target": "STATE_KAOHSIUNG", "value": 3 },
+        { "type": "AddEquipmentStockpile", "target": "PGM:Gen2", "value": 120 }
+      ]
+    }
+  ]
+}

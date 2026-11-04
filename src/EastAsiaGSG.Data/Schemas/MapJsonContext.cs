@@ -25,6 +25,11 @@ namespace EastAsiaGSG.Data.Schemas;
 [JsonSerializable(typeof(List<FocusConditionDto>))]
 [JsonSerializable(typeof(FocusEffectDto))]
 [JsonSerializable(typeof(List<FocusEffectDto>))]
+[JsonSerializable(typeof(OobDto))]
+[JsonSerializable(typeof(DivisionTemplateDto))]
+[JsonSerializable(typeof(List<DivisionTemplateDto>))]
+[JsonSerializable(typeof(StartingDivisionDto))]
+[JsonSerializable(typeof(List<StartingDivisionDto>))]
 public partial class MapJsonContext : JsonSerializerContext
 {
 }

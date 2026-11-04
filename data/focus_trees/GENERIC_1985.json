@@ -1,0 +1,143 @@
+{
+  "countryTag": "VNM",
+  "era": "1985_LateColdWar",
+  "focuses": [
+    {
+      "id": "GEN_regional_industrial_development",
+      "name": "National Five-Year Industrial Plan",
+      "description": "Expand domestic light manufacturing, power infrastructure, and transport corridors.",
+      "icon": "focus_generic_industry",
+      "gridX": 1,
+      "gridY": 0,
+      "costDays": 35,
+      "prerequisites": [],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 100,
+      "conditions": [],
+      "effects": [
+        { "type": "AddPoliticalPower", "target": "SELF", "value": 75 },
+        { "type": "AddCivilianFactories", "target": "CAPITAL", "value": 2 }
+      ]
+    },
+    {
+      "id": "GEN_export_processing_corridors",
+      "name": "Export Processing & Maritime Trade Zones",
+      "description": "Attract regional capital and modernize port facilities to boost industrial output.",
+      "icon": "focus_generic_trade",
+      "gridX": 1,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["GEN_regional_industrial_development"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 100,
+      "conditions": [],
+      "effects": [
+        { "type": "ModifyConsumerGoods", "target": "SELF", "value": -0.03 },
+        { "type": "AddCivilianFactories", "target": "CAPITAL", "value": 2 }
+      ]
+    },
+    {
+      "id": "GEN_national_arsenal_modernization",
+      "name": "State Ordnance & Munitions Works",
+      "description": "Establish domestic assembly lines for small arms, mortar shells, and field artillery.",
+      "icon": "focus_generic_arsenal",
+      "gridX": 4,
+      "gridY": 0,
+      "costDays": 35,
+      "prerequisites": [],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 100,
+      "conditions": [],
+      "effects": [
+        { "type": "AddMilitaryFactories", "target": "CAPITAL", "value": 2 },
+        { "type": "AddEquipmentStockpile", "target": "InfantryKit:Gen1", "value": 500 }
+      ]
+    },
+    {
+      "id": "GEN_mechanized_brigade_doctrine",
+      "name": "Combined-Arms Brigade Reorganization",
+      "description": "Integrate armored personnel carriers and mobile artillery into our frontline divisions.",
+      "icon": "focus_generic_army",
+      "gridX": 4,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["GEN_national_arsenal_modernization"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 100,
+      "conditions": [],
+      "effects": [
+        { "type": "GrantTechBonus", "target": "InfantryKit:Gen2", "value": 1 },
+        { "type": "AddEquipmentStockpile", "target": "Artillery:Gen1", "value": 120 },
+        { "type": "SpawnDivisionTemplate", "target": "Infantry", "value": 1 }
+      ]
+    },
+    {
+      "id": "GEN_integrated_air_defense_network",
+      "name": "Coastal & Capital Air Defense Network",
+      "description": "Deploy early-warning radars and surface-to-air missile batteries around key strategic hubs.",
+      "icon": "focus_generic_air_defense",
+      "gridX": 7,
+      "gridY": 0,
+      "costDays": 35,
+      "prerequisites": [],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 95,
+      "conditions": [],
+      "effects": [
+        { "type": "AddRadarSamLevel", "target": "CAPITAL", "value": 2 },
+        { "type": "AddEquipmentStockpile", "target": "TacticalAir:Gen1", "value": 30 }
+      ]
+    },
+    {
+      "id": "GEN_littoral_sea_denial_flotilla",
+      "name": "Littoral Fast-Attack Missile Flotilla",
+      "description": "Acquire missile boats and coastal defense batteries to protect territorial waters.",
+      "icon": "focus_generic_navy",
+      "gridX": 7,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["GEN_integrated_air_defense_network"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 95,
+      "conditions": [],
+      "effects": [
+        { "type": "AddNavalDockyards", "target": "CAPITAL", "value": 2 },
+        { "type": "AddEquipmentStockpile", "target": "PGM:Gen1", "value": 60 }
+      ]
+    },
+    {
+      "id": "GEN_non_aligned_diplomatic_balancing",
+      "name": "Regional Non-Aligned Diplomacy",
+      "description": "Preserve national sovereignty and internal stability amidst superpower competition.",
+      "icon": "focus_generic_neutrality",
+      "gridX": 10,
+      "gridY": 0,
+      "costDays": 35,
+      "prerequisites": [],
+      "mutuallyExclusive": ["GEN_national_defense_mobilization"],
+      "aiBaseWeight": 100,
+      "conditions": [],
+      "effects": [
+        { "type": "AddStability", "target": "SELF", "value": 0.08 },
+        { "type": "AddPoliticalPower", "target": "SELF", "value": 90 }
+      ]
+    },
+    {
+      "id": "GEN_national_defense_mobilization",
+      "name": "National Defense Mobilization Decree",
+      "description": "Place reserve formations on heightened readiness and prioritize military preparedness.",
+      "icon": "focus_generic_mobilize",
+      "gridX": 12,
+      "gridY": 0,
+      "costDays": 35,
+      "prerequisites": [],
+      "mutuallyExclusive": ["GEN_non_aligned_diplomatic_balancing"],
+      "aiBaseWeight": 85,
+      "conditions": [],
+      "effects": [
+        { "type": "AddWarSupport", "target": "SELF", "value": 0.10 },
+        { "type": "AddMilitaryFactories", "target": "CAPITAL", "value": 2 }
+      ]
+    }
+  ]
+}

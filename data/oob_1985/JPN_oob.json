@@ -1,0 +1,60 @@
+{
+  "countryTag": "JPN",
+  "templates": [
+    {
+      "templateId": 23,
+      "name": "JGSDF 7th Armored Division (Type 74/90)",
+      "combatWidth": 20,
+      "battalions": ["MBT", "MBT", "MBT", "IFV", "IFV", "Artillery"],
+      "supportCompanies": ["SupportVehicles", "Artillery", "AttackHeli"]
+    },
+    {
+      "templateId": 24,
+      "name": "JGSDF Regional Mechanized Division",
+      "combatWidth": 20,
+      "battalions": ["IFV", "IFV", "InfantryKit", "InfantryKit", "MBT", "Artillery"],
+      "supportCompanies": ["SupportVehicles", "Artillery"]
+    },
+    {
+      "templateId": 25,
+      "name": "JGSDF 1st Airborne & Heli-Borne Brigade",
+      "combatWidth": 20,
+      "battalions": ["InfantryKit", "InfantryKit", "AttackHeli", "AttackHeli", "Artillery"],
+      "supportCompanies": ["SupportVehicles", "AttackHeli"]
+    }
+  ],
+  "startingDivisions": [
+    {
+      "name": "JGSDF 7th Armored Division (Chitose, Hokkaido)",
+      "templateId": 23,
+      "startingProvinceId": 310,
+      "startingExperience": 0.70,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    },
+    {
+      "name": "JGSDF 1st Division (Nerima, Tokyo Metropolitan)",
+      "templateId": 24,
+      "startingProvinceId": 300,
+      "startingExperience": 0.65,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    },
+    {
+      "name": "JGSDF 4th Division (Fukuoka, Western Army)",
+      "templateId": 24,
+      "startingProvinceId": 330,
+      "startingExperience": 0.60,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    },
+    {
+      "name": "JGSDF 1st Airborne Brigade (Narashino)",
+      "templateId": 25,
+      "startingProvinceId": 301,
+      "startingExperience": 0.75,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    }
+  ]
+}

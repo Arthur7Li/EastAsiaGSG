@@ -332,10 +332,11 @@ public partial class MainView : Node2D
         }
 
         _loadedFocusTrees.Clear();
+        string? genericFocusJsonPath = ResolvePath("data/focus_trees/GENERIC_1985.json");
         for (byte tag = 0; tag < CountryTag.ActiveCount; tag++)
         {
             string code = CountryTag.GetCode(tag);
-            string? focusJsonPath = ResolvePath($"data/focus_trees/{code}_1985.json");
+            string? focusJsonPath = ResolvePath($"data/focus_trees/{code}_1985.json") ?? genericFocusJsonPath;
             if (focusJsonPath == null)
             {
                 continue;

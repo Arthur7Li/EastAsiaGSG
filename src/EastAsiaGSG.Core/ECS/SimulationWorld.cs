@@ -187,7 +187,7 @@ public sealed class SimulationWorld : IDisposable
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal int AllocateNextDivisionId()
+    public int AllocateNextDivisionId()
     {
         return _nextDivisionId++;
     }

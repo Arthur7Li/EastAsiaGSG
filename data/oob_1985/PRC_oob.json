@@ -1,0 +1,83 @@
+{
+  "countryTag": "PRC",
+  "templates": [
+    {
+      "templateId": 11,
+      "name": "PLA Combined-Arms Group Army",
+      "combatWidth": 20,
+      "battalions": ["IFV", "IFV", "MBT", "InfantryKit", "InfantryKit", "Artillery"],
+      "supportCompanies": ["SupportVehicles", "Artillery"]
+    },
+    {
+      "templateId": 12,
+      "name": "PLA Northern Heavy Armored Division",
+      "combatWidth": 20,
+      "battalions": ["MBT", "MBT", "MBT", "IFV", "IFV", "Artillery"],
+      "supportCompanies": ["SupportVehicles", "Artillery"]
+    },
+    {
+      "templateId": 13,
+      "name": "PLA Motor Rifle Infantry Division",
+      "combatWidth": 20,
+      "battalions": ["InfantryKit", "InfantryKit", "InfantryKit", "InfantryKit", "SupportVehicles", "Artillery"],
+      "supportCompanies": ["SupportVehicles", "Artillery"]
+    },
+    {
+      "templateId": 14,
+      "name": "PLAAF 15th Airborne Corps",
+      "combatWidth": 20,
+      "battalions": ["InfantryKit", "InfantryKit", "InfantryKit", "AttackHeli", "Artillery"],
+      "supportCompanies": ["SupportVehicles", "AttackHeli"]
+    }
+  ],
+  "startingDivisions": [
+    {
+      "name": "38th Group Army ('Wan Sui Jun' Mechanized)",
+      "templateId": 11,
+      "startingProvinceId": 200,
+      "startingExperience": 0.65,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    },
+    {
+      "name": "39th Group Army (Shenyang Military Region)",
+      "templateId": 11,
+      "startingProvinceId": 210,
+      "startingExperience": 0.60,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    },
+    {
+      "name": "6th Tank Division (Beijing Military Region)",
+      "templateId": 12,
+      "startingProvinceId": 201,
+      "startingExperience": 0.55,
+      "startingStrength": 1.0,
+      "pgmAuthorized": false
+    },
+    {
+      "name": "1st Group Army (Nanjing Amphibious Spearhead)",
+      "templateId": 11,
+      "startingProvinceId": 230,
+      "startingExperience": 0.60,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    },
+    {
+      "name": "31st Group Army (Xiamen Strait Sector)",
+      "templateId": 13,
+      "startingProvinceId": 240,
+      "startingExperience": 0.55,
+      "startingStrength": 1.0,
+      "pgmAuthorized": false
+    },
+    {
+      "name": "42nd Group Army (Guangzhou Southern Command)",
+      "templateId": 13,
+      "startingProvinceId": 250,
+      "startingExperience": 0.55,
+      "startingStrength": 1.0,
+      "pgmAuthorized": false
+    }
+  ]
+}

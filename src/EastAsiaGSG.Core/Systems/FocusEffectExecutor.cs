@@ -368,8 +368,17 @@ public static class FocusEffectExecutor
     {
         if (requestedStateId < SimulationWorld.MaxStates)
         {
-            resolvedStateId = requestedStateId;
-            return true;
+            ref readonly StateData reqState = ref world.States[requestedStateId];
+            if (requestedStateId == 0 ||
+                reqState.OwnerTag != CountryTag.None ||
+                reqState.ControllerTag != CountryTag.None ||
+                reqState.Population > 0 ||
+                reqState.CivilianFactories > 0 ||
+                reqState.MilitaryFactories > 0)
+            {
+                resolvedStateId = requestedStateId;
+                return true;
+            }
         }
 
         // Fallback 1: State containing the country's capital province

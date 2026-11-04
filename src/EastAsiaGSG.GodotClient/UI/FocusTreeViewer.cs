@@ -52,11 +52,23 @@ public partial class FocusTreeViewer : PanelContainer
         }
     }
 
+    private static readonly byte[] MajorTags =
+    [
+        CountryTag.ROK,
+        CountryTag.PRK,
+        CountryTag.PRC,
+        CountryTag.USA,
+        CountryTag.SOV,
+        CountryTag.JPN,
+        CountryTag.TWN
+    ];
+
     private SimulationWorld? _world;
     private byte _activeCountryTag = CountryTag.ROK;
     private readonly Dictionary<byte, LoadedFocusTree> _treesByCountry = [];
     private readonly Dictionary<byte, short> _selectedFocusByCountry = [];
     private readonly Dictionary<byte, short> _pendingFocusByCountry = [];
+    private readonly Dictionary<byte, Button> _countryPillButtons = [];
 
     private Label? _titleLabel;
     private Label? _activeFocusBannerLabel;
@@ -157,6 +169,30 @@ public partial class FocusTreeViewer : PanelContainer
         _titleLabel.AddThemeFontSizeOverride("font_size", 14);
         _titleLabel.AddThemeColorOverride("font_color", new Color(0.96f, 0.86f, 0.42f));
         headerHBox.AddChild(_titleLabel);
+
+        var tagPillsHBox = new HBoxContainer();
+        tagPillsHBox.AddThemeConstantOverride("separation", 3);
+        headerHBox.AddChild(tagPillsHBox);
+
+        _countryPillButtons.Clear();
+        foreach (byte mTag in MajorTags)
+        {
+            string code = CountryTag.GetCode(mTag);
+            var pillBtn = new Button
+            {
+                Text = code,
+                ToggleMode = true,
+                ButtonPressed = mTag == _activeCountryTag,
+                FocusMode = FocusModeEnum.None,
+                CustomMinimumSize = new Vector2(38, 24),
+                TooltipText = $"Inspect [{code}] 1985 Era I Focus Tree"
+            };
+            pillBtn.AddThemeFontSizeOverride("font_size", 10);
+            byte capturedTag = mTag;
+            pillBtn.Pressed += () => SetActiveCountry(capturedTag);
+            tagPillsHBox.AddChild(pillBtn);
+            _countryPillButtons[mTag] = pillBtn;
+        }
 
         var closeBtn = new Button
         {
@@ -587,6 +623,11 @@ public partial class FocusTreeViewer : PanelContainer
 
         string countryCode = CountryTag.GetCode(_activeCountryTag);
         ref readonly CountryState country = ref _world.Countries[_activeCountryTag];
+
+        foreach (var (pillTag, pillBtn) in _countryPillButtons)
+        {
+            pillBtn.SetPressedNoSignal(pillTag == _activeCountryTag);
+        }
 
         if (!_treesByCountry.TryGetValue(_activeCountryTag, out LoadedFocusTree? tree))
         {

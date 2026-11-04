@@ -340,6 +340,15 @@ public sealed class SimulationWorldTests
         Assert.Equal(1, world.CurrentDay);
         Assert.Equal(0, world.CurrentHour);
 
+        // Warm up JIT compilation of all Tier 1 / Tier 2 / Tier 3 systems before timing
+        using (SimulationWorld warmupWorld = new())
+        {
+            for (int w = 0; w < 64; w++)
+            {
+                warmupWorld.StepSixHours();
+            }
+        }
+
         const int ticksPerYear = 1460; // 365 days * 4 six-hour ticks/day
         Stopwatch sw = Stopwatch.StartNew();
 

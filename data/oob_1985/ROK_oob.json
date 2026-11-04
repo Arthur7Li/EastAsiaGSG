@@ -1,0 +1,75 @@
+{
+  "countryTag": "ROK",
+  "templates": [
+    {
+      "templateId": 1,
+      "name": "ROKA Mechanized Infantry Division",
+      "combatWidth": 20,
+      "battalions": ["IFV", "IFV", "IFV", "MBT", "Artillery", "InfantryKit"],
+      "supportCompanies": ["SupportVehicles", "Artillery"]
+    },
+    {
+      "templateId": 2,
+      "name": "ROKA Frontline Infantry Division",
+      "combatWidth": 20,
+      "battalions": ["InfantryKit", "InfantryKit", "InfantryKit", "InfantryKit", "Artillery", "Artillery"],
+      "supportCompanies": ["SupportVehicles", "Artillery"]
+    },
+    {
+      "templateId": 5,
+      "name": "ROKA Independent Armored Brigade",
+      "combatWidth": 20,
+      "battalions": ["MBT", "MBT", "MBT", "IFV", "IFV", "Artillery"],
+      "supportCompanies": ["SupportVehicles", "AttackHeli"]
+    },
+    {
+      "templateId": 6,
+      "name": "ROKMC Amphibious Marine Division",
+      "combatWidth": 20,
+      "battalions": ["InfantryKit", "InfantryKit", "IFV", "IFV", "MBT", "Artillery"],
+      "supportCompanies": ["SupportVehicles", "Artillery"]
+    }
+  ],
+  "startingDivisions": [
+    {
+      "name": "Capital Mechanized Infantry Division ('Tiger')",
+      "templateId": 1,
+      "startingProvinceId": 6,
+      "startingExperience": 0.65,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    },
+    {
+      "name": "1st Infantry Division ('Forward')",
+      "templateId": 2,
+      "startingProvinceId": 0,
+      "startingExperience": 0.55,
+      "startingStrength": 1.0,
+      "pgmAuthorized": false
+    },
+    {
+      "name": "20th Mechanized Infantry Division ('Yangpyeong')",
+      "templateId": 1,
+      "startingProvinceId": 8,
+      "startingExperience": 0.60,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    },
+    {
+      "name": "3rd Infantry Division ('White Skull')",
+      "templateId": 2,
+      "startingProvinceId": 12,
+      "startingExperience": 0.60,
+      "startingStrength": 1.0,
+      "pgmAuthorized": false
+    },
+    {
+      "name": "1st Marine Division ('Sea Dragon')",
+      "templateId": 6,
+      "startingProvinceId": 56,
+      "startingExperience": 0.65,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    }
+  ]
+}

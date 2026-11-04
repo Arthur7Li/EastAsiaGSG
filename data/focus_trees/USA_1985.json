@@ -1,0 +1,185 @@
+{
+  "countryTag": "USA",
+  "era": "1985_LateColdWar",
+  "focuses": [
+    {
+      "id": "USA_pacom_forward_posture",
+      "name": "USPACOM Forward Defense Posture",
+      "description": "Reinforce Seventh Fleet, Fifth Air Force, and Eighth US Army readiness across the Western Pacific rim.",
+      "icon": "focus_usa_pacom",
+      "gridX": 1,
+      "gridY": 0,
+      "costDays": 28,
+      "prerequisites": [],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 120,
+      "conditions": [],
+      "effects": [
+        { "type": "AddPoliticalPower", "target": "SELF", "value": 90 },
+        { "type": "AddWarSupport", "target": "SELF", "value": 0.05 },
+        { "type": "AddHomelandEscalation", "target": "USA", "value": 5 }
+      ]
+    },
+    {
+      "id": "USA_lehman_600_ship_navy",
+      "name": "Lehman's 600-Ship Maritime Strategy",
+      "description": "Forward-deploy Ticonderoga Aegis cruisers and Los Angeles attack submarines to contest Soviet Pacific bastions.",
+      "icon": "focus_usa_600_ship",
+      "gridX": 0,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["USA_pacom_forward_posture"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 115,
+      "conditions": [],
+      "effects": [
+        { "type": "AddNavalDockyards", "target": "STATE_OKINAWA", "value": 2 },
+        { "type": "AddEquipmentStockpile", "target": "PGM:Gen2", "value": 180 },
+        { "type": "AddHomelandEscalation", "target": "USA", "value": 8 }
+      ]
+    },
+    {
+      "id": "USA_kadena_and_misawa_f15_wings",
+      "name": "Kadena & Misawa Tactical Air Surge",
+      "description": "Deploy F-15C/D Eagle air superiority wings and E-3 AWACS squadrons to dominate First Island Chain airspace.",
+      "icon": "focus_usa_f15_eagle",
+      "gridX": 2,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["USA_pacom_forward_posture"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 115,
+      "conditions": [],
+      "effects": [
+        { "type": "AddEquipmentStockpile", "target": "TacticalAir:Gen2", "value": 80 },
+        { "type": "AddRadarSamLevel", "target": "STATE_OKINAWA", "value": 2 }
+      ]
+    },
+    {
+      "id": "USA_tomahawk_and_jdam_revolution",
+      "name": "Precision Strike & Tomahawk Integration",
+      "description": "Stockpile BGM-109 Tomahawk cruise missiles and laser-guided munitions in Guam and Okinawa magazines.",
+      "icon": "focus_usa_pgm",
+      "gridX": 1,
+      "gridY": 2,
+      "costDays": 42,
+      "prerequisites": ["USA_lehman_600_ship_navy", "USA_kadena_and_misawa_f15_wings"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 120,
+      "conditions": [],
+      "effects": [
+        { "type": "GrantTechBonus", "target": "PGM:Gen3", "value": 1 },
+        { "type": "AddEquipmentStockpile", "target": "PGM:Gen2", "value": 250 }
+      ]
+    },
+    {
+      "id": "USA_airland_battle_eight_army",
+      "name": "Eighth US Army AirLand Battle Doctrine",
+      "description": "Equip the 2nd Infantry Division ('Indianhead') north of Seoul with M1A1 Abrams, M2 Bradley, and AH-64 Apache.",
+      "icon": "focus_usa_airland",
+      "gridX": 5,
+      "gridY": 0,
+      "costDays": 35,
+      "prerequisites": [],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 120,
+      "conditions": [],
+      "effects": [
+        { "type": "GrantTechBonus", "target": "MBT:Gen2", "value": 1 },
+        { "type": "GrantTechBonus", "target": "AttackHeli:Gen2", "value": 1 },
+        { "type": "AddEquipmentStockpile", "target": "MBT:Gen2", "value": 120 },
+        { "type": "AddEquipmentStockpile", "target": "AttackHeli:Gen2", "value": 48 }
+      ]
+    },
+    {
+      "id": "USA_team_spirit_joint_exercises",
+      "name": "Team Spirit Joint Combined Exercises",
+      "description": "Conduct annual US-ROK Combined Forces Command corps-level maneuvers and REFORGER-style sealift drills.",
+      "icon": "focus_usa_team_spirit",
+      "gridX": 4,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["USA_airland_battle_eight_army"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 110,
+      "conditions": [],
+      "effects": [
+        { "type": "AddWarSupport", "target": "SELF", "value": 0.05 },
+        { "type": "AddWarSupport", "target": "ROK", "value": 0.05 },
+        { "type": "AddEquipmentStockpile", "target": "IFV:Gen2", "value": 140 }
+      ]
+    },
+    {
+      "id": "USA_patriot_pac2_theater_shield",
+      "name": "Patriot PAC-2 Theater Air Defense",
+      "description": "Establish integrated surface-to-air missile defense umbrellas over Osan, Kunsan, Kadena, and Yokota.",
+      "icon": "focus_usa_patriot",
+      "gridX": 6,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["USA_airland_battle_eight_army"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 105,
+      "conditions": [],
+      "effects": [
+        { "type": "AddRadarSamLevel", "target": "STATE_SEOUL", "value": 1 },
+        { "type": "AddRadarSamLevel", "target": "STATE_OKINAWA", "value": 1 },
+        { "type": "AddMilitaryFactories", "target": "STATE_GUAM", "value": 2 }
+      ]
+    },
+    {
+      "id": "USA_strategic_alliance_deterrence",
+      "name": "San Francisco Alliance Diplomacy",
+      "description": "Coordinate technology sharing and burden-sharing pacts with Tokyo, Seoul, and Taipei to deter aggression.",
+      "icon": "focus_usa_allies",
+      "gridX": 9,
+      "gridY": 0,
+      "costDays": 35,
+      "prerequisites": [],
+      "mutuallyExclusive": ["USA_pentagon_westpac_war_plan_surge"],
+      "aiBaseWeight": 110,
+      "conditions": [],
+      "effects": [
+        { "type": "AddStability", "target": "SELF", "value": 0.06 },
+        { "type": "AddPoliticalPower", "target": "SELF", "value": 100 },
+        { "type": "AddCivilianFactories", "target": "STATE_OKINAWA", "value": 2 }
+      ]
+    },
+    {
+      "id": "USA_pentagon_westpac_war_plan_surge",
+      "name": "OPLAN 5027 & WestPac Mobilization Surge",
+      "description": "Authorize Pentagon emergency war reserve drawdowns and surge Carrier Strike Groups into the Western Pacific.",
+      "icon": "focus_usa_carrier_surge",
+      "gridX": 11,
+      "gridY": 0,
+      "costDays": 35,
+      "prerequisites": [],
+      "mutuallyExclusive": ["USA_strategic_alliance_deterrence"],
+      "aiBaseWeight": 85,
+      "conditions": [],
+      "effects": [
+        { "type": "AddHomelandEscalation", "target": "USA", "value": 20 },
+        { "type": "ShiftDefcon", "target": "USA", "value": -1 },
+        { "type": "SpawnDivisionTemplate", "target": "AirAssault", "value": 1 }
+      ]
+    },
+    {
+      "id": "USA_taiwan_relations_act_package",
+      "name": "Taiwan Relations Act Defense Package",
+      "description": "Approve advanced avionics, air-defense radars, and anti-ship missile technology transfers across the Pacific.",
+      "icon": "focus_usa_tra",
+      "gridX": 10,
+      "gridY": 1,
+      "costDays": 35,
+      "prerequisites": ["USA_strategic_alliance_deterrence"],
+      "mutuallyExclusive": [],
+      "aiBaseWeight": 100,
+      "conditions": [],
+      "effects": [
+        { "type": "AddPoliticalPower", "target": "SELF", "value": 60 },
+        { "type": "AddEquipmentStockpile", "target": "TacticalAir:Gen2", "value": 45 },
+        { "type": "TriggerNewsEvent", "target": "NEWS_USA_TRA_PACKAGE", "value": 0 }
+      ]
+    }
+  ]
+}

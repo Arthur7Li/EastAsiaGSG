@@ -32,6 +32,7 @@ public static class JsonFocusTreeLoader
 {
     private static readonly Dictionary<string, ushort> SymbolicStateAliases = new(StringComparer.OrdinalIgnoreCase)
     {
+        // Korean Peninsula (States 0..9 in Korean Micro-Sandbox & Theatre Dataset)
         ["STATE_SEOUL"] = 0,
         ["STATE_GYEONGGI"] = 0,
         ["STATE_GANGWON_SOUTH"] = 1,
@@ -40,16 +41,49 @@ public static class JsonFocusTreeLoader
         ["STATE_GYEONGSANG"] = 4,
         ["STATE_BUSAN"] = 4,
         ["STATE_PYONGYANG"] = 5,
-        ["STATE_HWANGHAE"] = 6,
-        ["STATE_GANGWON_NORTH"] = 7,
-        ["STATE_PYONGAN"] = 8,
+        ["STATE_PYONGAN"] = 6,
+        ["STATE_HWANGHAE"] = 7,
+        ["STATE_GANGWON_NORTH"] = 8,
         ["STATE_HAMGYONG"] = 9,
-        ["STATE_KANTO"] = 0,
-        ["STATE_TOKYO"] = 0,
-        ["STATE_BEIJING"] = 0,
-        ["STATE_TAIPEI"] = 0,
-        ["STATE_VLADIVOSTOK"] = 0,
-        ["STATE_OKINAWA"] = 0
+
+        // Soviet Far East & Trans-Siberian Artery
+        ["STATE_IRKUTSK"] = 0,
+        ["STATE_TRANS_SIBERIAN"] = 0,
+        ["STATE_KHABAROVSK"] = 10,
+        ["STATE_VLADIVOSTOK"] = 11,
+        ["STATE_PRIMORYE"] = 11,
+        ["STATE_SAKHALIN"] = 12,
+
+        // People's Republic of China
+        ["STATE_BEIJING"] = 20,
+        ["STATE_HEBEI"] = 20,
+        ["STATE_MANCHURIA"] = 21,
+        ["STATE_SHENYANG"] = 21,
+        ["STATE_SHANDONG"] = 22,
+        ["STATE_SHANGHAI"] = 23,
+        ["STATE_JIANGSU"] = 23,
+        ["STATE_FUJIAN"] = 24,
+        ["STATE_GUANGDONG"] = 25,
+        ["STATE_SHENZHEN"] = 25,
+
+        // Japan
+        ["STATE_KANTO"] = 30,
+        ["STATE_TOKYO"] = 30,
+        ["STATE_HOKKAIDO"] = 31,
+        ["STATE_KANSAI"] = 32,
+        ["STATE_OSAKA"] = 32,
+        ["STATE_KYUSHU"] = 33,
+
+        // Taiwan (ROC)
+        ["STATE_TAIPEI"] = 40,
+        ["STATE_HSINCHU"] = 40,
+        ["STATE_KAOHSIUNG"] = 41,
+        ["STATE_KINMEN"] = 42,
+
+        // United States Pacific Command (USPACOM)
+        ["STATE_OKINAWA"] = 50,
+        ["STATE_GUAM"] = 51,
+        ["STATE_SUBIC"] = 52
     };
 
     /// <summary>
