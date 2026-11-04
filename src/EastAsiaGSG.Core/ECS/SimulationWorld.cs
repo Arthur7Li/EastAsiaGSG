@@ -18,6 +18,8 @@ public sealed class SimulationWorld : IDisposable
     public const int MaxCountries = 16;
     public const int MaxStrategicRegions = 18;
     public const int MaxDivisionTemplates = 64;
+    public const int MaxFocusesPerCountry = 128;
+    public const int MaxTriggeredNewsEvents = 64;
     public const int DefaultStartingManpower = 250_000;
 
     public const int StartYear = 1985;
@@ -29,6 +31,7 @@ public sealed class SimulationWorld : IDisposable
     private static readonly QueryDescription DivisionQuery = new QueryDescription().WithAll<DivisionComponent>();
     private static readonly QueryDescription CombatQuery = new QueryDescription().WithAll<ActiveCombatComponent>();
     private static readonly QueryDescription ProductionLineQuery = new QueryDescription().WithAll<ProductionLineComponent>();
+    private static readonly FocusNodeData EmptyFocusNode = default;
 
     // Flat Contiguous State Arrays (Index == ID)
     public readonly ProvinceData[] Provinces = new ProvinceData[MaxProvinces];
@@ -36,8 +39,16 @@ public sealed class SimulationWorld : IDisposable
     public readonly CountryState[] Countries = new CountryState[MaxCountries];
     public readonly StrategicRegionData[] Regions = new StrategicRegionData[MaxStrategicRegions];
     public readonly DivisionTemplateRecord[] Templates = new DivisionTemplateRecord[MaxDivisionTemplates];
+    public readonly FocusNodeData[] FocusTrees = new FocusNodeData[MaxCountries * MaxFocusesPerCountry];
+    public readonly ushort[] CountryFocusCounts = new ushort[MaxCountries];
     public readonly ushort[] CountryCapitals = new ushort[MaxCountries];
     public readonly float[] CountryHomelandEscalation = new float[MaxCountries];
+    public readonly ushort[] CountryWarMasks = new ushort[MaxCountries];
+    public readonly ushort[] CountryWargoalMasks = new ushort[MaxCountries];
+    public readonly byte[] CountryUnlockedTechGen = new byte[MaxCountries * CountryState.ArchetypeCount];
+    public readonly byte[] CountryTechBonuses = new byte[MaxCountries * CountryState.ArchetypeCount];
+    public readonly int[] TriggeredNewsEventHashes = new int[MaxTriggeredNewsEvents];
+    public readonly byte[] TriggeredNewsEventCountries = new byte[MaxTriggeredNewsEvents];
 
     // Global CSR Adjacency Graph for Provinces
     public readonly ProvinceGraph Graph = new();
@@ -58,6 +69,7 @@ public sealed class SimulationWorld : IDisposable
     public int DailyTicksExecuted { get; private set; }
     public int MonthlyTicksExecuted { get; private set; }
     public int CommandsProcessedCount { get; private set; }
+    public int TriggeredNewsEventCount { get; private set; }
 
     public int CurrentYear { get; private set; } = StartYear;
     public int CurrentMonth { get; private set; } = StartMonth;
@@ -65,6 +77,7 @@ public sealed class SimulationWorld : IDisposable
     public int CurrentHour { get; private set; } = StartHour;
 
     private int _nextCombatId = 1;
+    private int _nextDivisionId = 10_000;
     private bool _disposed;
 
     public SimulationWorld()
@@ -116,6 +129,11 @@ public sealed class SimulationWorld : IDisposable
             Regions[i].WeatherEfficiencyModifier = 1.0f;
         }
 
+        for (int i = 0; i < CountryUnlockedTechGen.Length; i++)
+        {
+            CountryUnlockedTechGen[i] = (byte)TechGeneration.Gen1_1980Baseline;
+        }
+
         for (byte i = 0; i < MaxCountries; i++)
         {
             CountryCapitals[i] = ushort.MaxValue;
@@ -124,6 +142,28 @@ public sealed class SimulationWorld : IDisposable
         CountryCapitals[CountryTag.PRK] = 60;  // Pyongyang
         CountryCapitals[CountryTag.SOV] = 0;   // Trans-Siberian Irkutsk/Chita Artery Entry Node
         CountryCapitals[CountryTag.USA] = 3;   // PACOM Naval Entry Port
+    }
+
+    /// <summary>
+    /// Returns the current simulation date encoded as an 8-digit integer YYYYMMDD (e.g. 19850101).
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int GetCurrentDateInt()
+    {
+        return (CurrentYear * 10000) + (CurrentMonth * 100) + CurrentDay;
+    }
+
+    /// <summary>
+    /// Sets the simulation calendar date and hour directly (used by scenario setup and historical date tests).
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetDate(int year, int month, int day, int hour = 0)
+    {
+        CurrentYear = year;
+        CurrentMonth = System.Math.Clamp(month, 1, 12);
+        int maxDays = GetDaysInMonth(CurrentYear, CurrentMonth);
+        CurrentDay = System.Math.Clamp(day, 1, maxDays);
+        CurrentHour = (hour / 6) * 6 % 24;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -144,6 +184,217 @@ public sealed class SimulationWorld : IDisposable
     internal int AllocateNextCombatId()
     {
         return _nextCombatId++;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal int AllocateNextDivisionId()
+    {
+        return _nextDivisionId++;
+    }
+
+    /// <summary>
+    /// Registers or updates a FocusNodeData entry in the flat FocusTrees table.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void RegisterFocusNode(in FocusNodeData node)
+    {
+        if (node.CountryTag < MaxCountries && (uint)node.FocusIndex < MaxFocusesPerCountry)
+        {
+            int slot = (node.CountryTag * MaxFocusesPerCountry) + node.FocusIndex;
+            FocusTrees[slot] = node;
+            FocusTrees[slot].IsConfigured = 1;
+
+            ushort nextCount = (ushort)(node.FocusIndex + 1);
+            if (nextCount > CountryFocusCounts[node.CountryTag])
+            {
+                CountryFocusCounts[node.CountryTag] = nextCount;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Returns a read-only reference to a country's FocusNodeData by index (0..127).
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ref readonly FocusNodeData GetFocusNode(byte countryTag, int focusIndex)
+    {
+        if (countryTag < MaxCountries && (uint)focusIndex < MaxFocusesPerCountry)
+        {
+            return ref FocusTrees[(countryTag * MaxFocusesPerCountry) + focusIndex];
+        }
+        return ref EmptyFocusNode;
+    }
+
+    /// <summary>
+    /// Searches a country's configured focus nodes for a matching FocusIdHash with zero heap allocations.
+    /// </summary>
+    public bool TryFindFocusIndexByHash(byte countryTag, int focusIdHash, out short focusIndex)
+    {
+        if (countryTag < MaxCountries)
+        {
+            int baseOffset = countryTag * MaxFocusesPerCountry;
+            int limit = CountryFocusCounts[countryTag];
+            for (short i = 0; i < limit; i++)
+            {
+                ref readonly FocusNodeData node = ref FocusTrees[baseOffset + i];
+                if (node.IsConfigured != 0 && node.FocusIdHash == focusIdHash)
+                {
+                    focusIndex = i;
+                    return true;
+                }
+            }
+        }
+
+        focusIndex = -1;
+        return false;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DeclareWar(byte tagA, byte tagB)
+    {
+        if (tagA < MaxCountries && tagB < MaxCountries && tagA != tagB)
+        {
+            CountryWarMasks[tagA] |= (ushort)(1 << tagB);
+            CountryWarMasks[tagB] |= (ushort)(1 << tagA);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void MakePeace(byte tagA, byte tagB)
+    {
+        if (tagA < MaxCountries && tagB < MaxCountries)
+        {
+            CountryWarMasks[tagA] &= (ushort)~(1 << tagB);
+            CountryWarMasks[tagB] &= (ushort)~(1 << tagA);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsAtWarWith(byte tagA, byte tagB)
+    {
+        if (tagA < MaxCountries && tagB < MaxCountries)
+        {
+            return (CountryWarMasks[tagA] & (1 << tagB)) != 0;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Returns true if the country has an active diplomatic war bitmask or is engaged in an ongoing combat.
+    /// </summary>
+    public bool IsAtWar(byte countryTag)
+    {
+        if (countryTag >= MaxCountries)
+        {
+            return false;
+        }
+
+        if (CountryWarMasks[countryTag] != 0)
+        {
+            return true;
+        }
+
+        Query query = EcsWorld.Query(in CombatQuery);
+        foreach (ref Chunk chunk in query)
+        {
+            Span<ActiveCombatComponent> combats = chunk.GetSpan<ActiveCombatComponent>();
+            int count = chunk.Count;
+            for (int i = 0; i < count; i++)
+            {
+                ref readonly ActiveCombatComponent combat = ref combats[i];
+                if (combat.Outcome == CombatOutcome.Ongoing &&
+                    (combat.AttackerTag == countryTag || combat.DefenderTag == countryTag))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GrantWargoal(byte actorTag, byte targetTag)
+    {
+        if (actorTag < MaxCountries && targetTag < MaxCountries && actorTag != targetTag)
+        {
+            CountryWargoalMasks[actorTag] |= (ushort)(1 << targetTag);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool HasWargoal(byte actorTag, byte targetTag)
+    {
+        if (actorTag < MaxCountries && targetTag < MaxCountries)
+        {
+            return (CountryWargoalMasks[actorTag] & (1 << targetTag)) != 0;
+        }
+        return false;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public TechGeneration GetUnlockedTechGeneration(byte countryTag, EquipmentType archetype)
+    {
+        if (countryTag < MaxCountries && (uint)archetype < CountryState.ArchetypeCount)
+        {
+            return (TechGeneration)CountryUnlockedTechGen[(countryTag << 3) | (int)archetype];
+        }
+        return TechGeneration.Gen1_1980Baseline;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetUnlockedTechGeneration(byte countryTag, EquipmentType archetype, TechGeneration generation)
+    {
+        if (countryTag < MaxCountries && (uint)archetype < CountryState.ArchetypeCount)
+        {
+            byte clamped = (byte)System.Math.Clamp((int)generation, 0, CountryState.TechGenerationCount - 1);
+            CountryUnlockedTechGen[(countryTag << 3) | (int)archetype] = clamped;
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public byte GetTechBonusCount(byte countryTag, EquipmentType archetype)
+    {
+        if (countryTag < MaxCountries && (uint)archetype < CountryState.ArchetypeCount)
+        {
+            return CountryTechBonuses[(countryTag << 3) | (int)archetype];
+        }
+        return 0;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void IncrementTechBonusCount(byte countryTag, EquipmentType archetype, byte count = 1)
+    {
+        if (countryTag < MaxCountries && (uint)archetype < CountryState.ArchetypeCount)
+        {
+            int idx = (countryTag << 3) | (int)archetype;
+            int updated = CountryTechBonuses[idx] + count;
+            CountryTechBonuses[idx] = (byte)(updated > 255 ? 255 : updated);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void RecordNewsEvent(int eventIdHash, byte countryTag)
+    {
+        int slot = TriggeredNewsEventCount % MaxTriggeredNewsEvents;
+        TriggeredNewsEventHashes[slot] = eventIdHash;
+        TriggeredNewsEventCountries[slot] = countryTag;
+        TriggeredNewsEventCount++;
+    }
+
+    public bool HasTriggeredNewsEvent(int eventIdHash)
+    {
+        int count = TriggeredNewsEventCount < MaxTriggeredNewsEvents
+            ? TriggeredNewsEventCount
+            : MaxTriggeredNewsEvents;
+        for (int i = 0; i < count; i++)
+        {
+            if (TriggeredNewsEventHashes[i] == eventIdHash)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     /// <summary>
@@ -375,9 +626,7 @@ public sealed class SimulationWorld : IDisposable
             {
                 case CommandType.SelectFocus:
                 {
-                    ref CountryState country = ref Countries[cmd.CountryTag];
-                    country.ActiveFocusId = (short)cmd.TargetId;
-                    country.FocusDaysRemaining = (short)cmd.IntParam0;
+                    FocusTreeSystem.TryStartFocus(this, cmd.CountryTag, (short)cmd.TargetId, (short)cmd.IntParam0);
                     break;
                 }
                 case CommandType.ShiftDefcon:
@@ -477,23 +726,8 @@ public sealed class SimulationWorld : IDisposable
         // 3. ReinforcementSystem (Phase 3.2 - field division equipment/manpower reinforcement & daily Org recovery):
         ReinforcementSystem.Execute(this);
 
-        // 4. FocusAndResearchSystem baseline daily progress:
-        Span<CountryState> countries = Countries.AsSpan();
-        for (int i = 0; i < countries.Length; i++)
-        {
-            ref CountryState country = ref countries[i];
-            country.PoliticalPower += 1.0f;
-
-            if (country.ActiveFocusId >= 0 && country.FocusDaysRemaining > 0)
-            {
-                country.FocusDaysRemaining--;
-                if (country.FocusDaysRemaining == 0)
-                {
-                    country.MarkFocusCompleted(country.ActiveFocusId);
-                    country.ActiveFocusId = -1;
-                }
-            }
-        }
+        // 4. FocusTreeSystem (Phase 5.1 - daily Political Power, Focus countdown & FocusEffectExecutor):
+        FocusTreeSystem.Execute(this);
 
         // 5. TacticalFrontlineAISystem hook (Phase 6.1)
     }

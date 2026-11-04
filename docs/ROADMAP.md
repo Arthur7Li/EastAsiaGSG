@@ -23,7 +23,7 @@
 - [x] **Task 4.3:** Implement US PACOM `HomelandEscalation` and DEFCON thresholds.
 
 ## Phase 5: JSON Focus Engine, Tech Tree & 1985 Content Generation
-- [ ] **Task 5.1:** Implement `FocusTreeSystem` and `FocusEffectExecutor` handling all 15 enum `EffectType` actions.
+- [x] **Task 5.1:** Implement `FocusTreeSystem` and `FocusEffectExecutor` handling all 15 enum `EffectType` actions.
 - [ ] **Task 5.2:** Build the procedural Godot `FocusTreeViewer.tscn` that auto-lays out nodes and prerequisite lines from `/data/focus_trees/*.json`.
 - [ ] **Task 5.3:** Batch-generate 1985 OOBs, State definitions, and Era I Focus Trees for `PRC`, `USA`, `SOV`, `JPN`, `ROK`, `PRK`, and `TWN`.
 

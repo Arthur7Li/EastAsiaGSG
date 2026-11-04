@@ -18,6 +18,13 @@ namespace EastAsiaGSG.Data.Schemas;
 [JsonSerializable(typeof(List<ProvinceDto>))]
 [JsonSerializable(typeof(ProvinceAdjacencyDto))]
 [JsonSerializable(typeof(ResourcesDto))]
+[JsonSerializable(typeof(FocusTreeDto))]
+[JsonSerializable(typeof(FocusNodeDto))]
+[JsonSerializable(typeof(List<FocusNodeDto>))]
+[JsonSerializable(typeof(FocusConditionDto))]
+[JsonSerializable(typeof(List<FocusConditionDto>))]
+[JsonSerializable(typeof(FocusEffectDto))]
+[JsonSerializable(typeof(List<FocusEffectDto>))]
 public partial class MapJsonContext : JsonSerializerContext
 {
 }

@@ -181,6 +181,38 @@ public static class SupplyGraphSystem
             }
         }
 
+        // Precompute fallback best-hub per country and active port list in a single O(N) pass over provinces
+        Span<ushort> fallbackCapitalProv = stackalloc ushort[SimulationWorld.MaxCountries];
+        Span<int> fallbackBestScore = stackalloc int[SimulationWorld.MaxCountries];
+        for (int c = 0; c < SimulationWorld.MaxCountries; c++)
+        {
+            fallbackCapitalProv[c] = ushort.MaxValue;
+            fallbackBestScore[c] = -1;
+        }
+
+        Span<ushort> portProvinces = stackalloc ushort[SimulationWorld.MaxProvinces];
+        int totalPortProvinces = 0;
+        ReadOnlySpan<ProvinceData> allProvinces = world.Provinces.AsSpan();
+        for (ushort p = 0; p < allProvinces.Length; p++)
+        {
+            ref readonly ProvinceData prov = ref allProvinces[p];
+            byte ctrl = prov.ControllerTag;
+            if (ctrl < SimulationWorld.MaxCountries)
+            {
+                int score = (prov.SupplyHubLevel * 10) + prov.InfrastructureLevel;
+                if (score > fallbackBestScore[ctrl])
+                {
+                    fallbackBestScore[ctrl] = score;
+                    fallbackCapitalProv[ctrl] = p;
+                }
+
+                if (prov.PortLevel > 0)
+                {
+                    portProvinces[totalPortProvinces++] = p;
+                }
+            }
+        }
+
         // 2. Pass 2: Rail & Port backbone from national capitals/sources
         for (byte countryTag = 0; countryTag < CountryTag.ActiveCount; countryTag++)
         {
@@ -188,27 +220,13 @@ public static class SupplyGraphSystem
             ushort sourceProvId = ushort.MaxValue;
 
             if (capitalProvId < SimulationWorld.MaxProvinces
-                && DivisionMovementSystem.IsFriendlyOrAllied(world, countryTag, world.Provinces[capitalProvId].ControllerTag))
+                && DivisionMovementSystem.IsFriendlyOrAllied(world, countryTag, allProvinces[capitalProvId].ControllerTag))
             {
                 sourceProvId = capitalProvId;
             }
             else
             {
-                // Fallback to highest capacity controlled hub/city as temporary supply center
-                int bestScore = -1;
-                for (ushort p = 0; p < SimulationWorld.MaxProvinces; p++)
-                {
-                    ref readonly ProvinceData prov = ref world.Provinces[p];
-                    if (prov.ControllerTag == countryTag)
-                    {
-                        int score = (prov.SupplyHubLevel * 10) + prov.InfrastructureLevel;
-                        if (score > bestScore)
-                        {
-                            bestScore = score;
-                            sourceProvId = p;
-                        }
-                    }
-                }
+                sourceProvId = fallbackCapitalProv[countryTag];
             }
 
             if (sourceProvId >= SimulationWorld.MaxProvinces)
@@ -313,11 +331,11 @@ public static class SupplyGraphSystem
                     }
                 }
 
-                for (ushort p = 0; p < SimulationWorld.MaxProvinces; p++)
+                for (int portIdx = 0; portIdx < totalPortProvinces; portIdx++)
                 {
-                    ref readonly ProvinceData prov = ref world.Provinces[p];
-                    if (prov.PortLevel > 0
-                        && DivisionMovementSystem.IsFriendlyOrAllied(world, countryTag, prov.ControllerTag)
+                    ushort p = portProvinces[portIdx];
+                    ref readonly ProvinceData prov = ref allProvinces[p];
+                    if (DivisionMovementSystem.IsFriendlyOrAllied(world, countryTag, prov.ControllerTag)
                         && ctx.RailVisited[p] != ctx.RailToken)
                     {
                         // Overseas import port
