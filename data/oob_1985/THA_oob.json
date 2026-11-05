@@ -1,0 +1,63 @@
+{
+  "countryTag": "THA",
+  "templates": [
+    {
+      "templateId": 36,
+      "name": "RTA Infantry Division",
+      "combatWidth": 20,
+      "battalions": [
+        "InfantryKit",
+        "InfantryKit",
+        "InfantryKit",
+        "SupportVehicles",
+        "Artillery",
+        "IFV"
+      ],
+      "supportCompanies": [
+        "SupportVehicles",
+        "Artillery"
+      ]
+    },
+    {
+      "templateId": 37,
+      "name": "RTA Cavalry Division",
+      "combatWidth": 18,
+      "battalions": [
+        "MBT",
+        "IFV",
+        "SupportVehicles",
+        "InfantryKit",
+        "Artillery"
+      ],
+      "supportCompanies": [
+        "SupportVehicles"
+      ]
+    }
+  ],
+  "startingDivisions": [
+    {
+      "name": "1st Division ('King's Guard')",
+      "templateId": 36,
+      "startingProvinceId": 630,
+      "startingExperience": 0.55,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    },
+    {
+      "name": "2nd Cavalry Division",
+      "templateId": 37,
+      "startingProvinceId": 631,
+      "startingExperience": 0.5,
+      "startingStrength": 1.0,
+      "pgmAuthorized": false
+    },
+    {
+      "name": "6th Infantry Division",
+      "templateId": 36,
+      "startingProvinceId": 632,
+      "startingExperience": 0.45,
+      "startingStrength": 1.0,
+      "pgmAuthorized": false
+    }
+  ]
+}

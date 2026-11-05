@@ -214,6 +214,11 @@ public partial class CombatTelemetryPopup : PanelContainer
                 if (_titleLabel != null) _titleLabel.Text = $"Battle Concluded ({outcomeText})";
                 if (_progressBar != null) _progressBar.Value = foundCombat.Outcome == CombatOutcome.AttackerVictory ? 100 : 0;
             }
+            else
+            {
+                _currentCombatId = -1;
+                Visible = false;
+            }
             return;
         }
 

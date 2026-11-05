@@ -1,0 +1,62 @@
+{
+  "countryTag": "MYS",
+  "templates": [
+    {
+      "templateId": 42,
+      "name": "Royal Malay Infantry Division",
+      "combatWidth": 20,
+      "battalions": [
+        "InfantryKit",
+        "InfantryKit",
+        "InfantryKit",
+        "IFV",
+        "Artillery",
+        "SupportVehicles"
+      ],
+      "supportCompanies": [
+        "SupportVehicles",
+        "Artillery"
+      ]
+    },
+    {
+      "templateId": 43,
+      "name": "Malaysian Armored Corps Brigade",
+      "combatWidth": 16,
+      "battalions": [
+        "IFV",
+        "IFV",
+        "MBT",
+        "SupportVehicles"
+      ],
+      "supportCompanies": [
+        "SupportVehicles"
+      ]
+    }
+  ],
+  "startingDivisions": [
+    {
+      "name": "1st Royal Malay Division",
+      "templateId": 42,
+      "startingProvinceId": 670,
+      "startingExperience": 0.5,
+      "startingStrength": 1.0,
+      "pgmAuthorized": false
+    },
+    {
+      "name": "2nd Armored Brigade",
+      "templateId": 43,
+      "startingProvinceId": 671,
+      "startingExperience": 0.55,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    },
+    {
+      "name": "3rd Infantry Brigade",
+      "templateId": 42,
+      "startingProvinceId": 672,
+      "startingExperience": 0.45,
+      "startingStrength": 1.0,
+      "pgmAuthorized": false
+    }
+  ]
+}

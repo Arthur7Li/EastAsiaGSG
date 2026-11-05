@@ -1,0 +1,70 @@
+{
+  "countryTag": "VNM",
+  "templates": [
+    {
+      "templateId": 30,
+      "name": "PAVN Motorized Infantry Division",
+      "combatWidth": 20,
+      "battalions": [
+        "InfantryKit",
+        "InfantryKit",
+        "InfantryKit",
+        "IFV",
+        "Artillery",
+        "SupportVehicles"
+      ],
+      "supportCompanies": [
+        "SupportVehicles",
+        "Artillery"
+      ]
+    },
+    {
+      "templateId": 31,
+      "name": "PAVN Armored Brigade",
+      "combatWidth": 16,
+      "battalions": [
+        "MBT",
+        "MBT",
+        "IFV",
+        "Artillery"
+      ],
+      "supportCompanies": [
+        "SupportVehicles"
+      ]
+    }
+  ],
+  "startingDivisions": [
+    {
+      "name": "308th Division ('Quan Tien')",
+      "templateId": 30,
+      "startingProvinceId": 600,
+      "startingExperience": 0.55,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    },
+    {
+      "name": "312th Division ('Song Lam')",
+      "templateId": 30,
+      "startingProvinceId": 601,
+      "startingExperience": 0.5,
+      "startingStrength": 1.0,
+      "pgmAuthorized": false
+    },
+    {
+      "name": "203rd Tank Brigade",
+      "templateId": 31,
+      "startingProvinceId": 602,
+      "startingExperience": 0.6,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    },
+    {
+      "name": "9th Division ('Dong Nai')",
+      "templateId": 30,
+      "startingProvinceId": 603,
+      "startingExperience": 0.45,
+      "startingStrength": 1.0,
+      "pgmAuthorized": false
+    }
+  ]
+}

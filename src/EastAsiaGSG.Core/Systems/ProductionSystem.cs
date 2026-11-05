@@ -251,6 +251,11 @@ public static class ProductionSystem
         // Aggregate controlled Military Factories per country tag
         Span<int> remainingMilFactories = stackalloc int[SimulationWorld.MaxCountries];
         Span<int> controlledStatesCount = stackalloc int[SimulationWorld.MaxCountries];
+        Span<int> availOil = stackalloc int[SimulationWorld.MaxCountries];
+        Span<int> availSteel = stackalloc int[SimulationWorld.MaxCountries];
+        Span<int> availAlum = stackalloc int[SimulationWorld.MaxCountries];
+        Span<int> availSemi = stackalloc int[SimulationWorld.MaxCountries];
+        Span<int> totalCountryResources = stackalloc int[SimulationWorld.MaxCountries];
 
         Span<CountryState> countries = world.Countries.AsSpan();
         for (int tag = 0; tag < SimulationWorld.MaxCountries; tag++)
@@ -267,6 +272,15 @@ public static class ProductionSystem
             {
                 controlledStatesCount[controller]++;
                 remainingMilFactories[controller] += s.MilitaryFactories;
+                int rOil = s.GetResource(ResourceType.Oil);
+                int rSteel = s.GetResource(ResourceType.Steel);
+                int rAlum = s.GetResource(ResourceType.Aluminum);
+                int rSemi = s.GetResource(ResourceType.Semiconductors);
+                availOil[controller] += rOil;
+                availSteel[controller] += rSteel;
+                availAlum[controller] += rAlum;
+                availSemi[controller] += rSemi;
+                totalCountryResources[controller] += rOil + rSteel + rAlum + rSemi;
             }
         }
 
@@ -299,6 +313,36 @@ public static class ProductionSystem
             if (active <= 0)
             {
                 continue;
+            }
+
+            if (totalCountryResources[tag] > 0)
+            {
+                EquipmentResourceCost req = ProductionLineComponent.GetResourceRequirementPerFactory(line.Archetype, line.Generation);
+                int reqOil = req.Oil * active;
+                int reqSteel = req.Steel * active;
+                int reqAlum = req.Aluminum * active;
+                int reqSemi = req.Semiconductors * active;
+                int totalRequired = reqOil + reqSteel + reqAlum + reqSemi;
+
+                if (totalRequired > 0)
+                {
+                    int usedOil = availOil[tag] < reqOil ? availOil[tag] : reqOil;
+                    int usedSteel = availSteel[tag] < reqSteel ? availSteel[tag] : reqSteel;
+                    int usedAlum = availAlum[tag] < reqAlum ? availAlum[tag] : reqAlum;
+                    int usedSemi = availSemi[tag] < reqSemi ? availSemi[tag] : reqSemi;
+
+                    availOil[tag] -= usedOil;
+                    availSteel[tag] -= usedSteel;
+                    availAlum[tag] -= usedAlum;
+                    availSemi[tag] -= usedSemi;
+
+                    int totalFulfilled = usedOil + usedSteel + usedAlum + usedSemi;
+                    line.ResourcePenalty = System.Math.Clamp((float)(totalRequired - totalFulfilled) / totalRequired, 0.0f, 1.0f);
+                }
+                else
+                {
+                    line.ResourcePenalty = 0.0f;
+                }
             }
 
             ref CountryState country = ref countries[tag];

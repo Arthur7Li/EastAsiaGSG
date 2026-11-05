@@ -37,17 +37,19 @@ EastAsiaGSG/
 │   └── ROADMAP.md                   # Phased execution roadmap (Phases 1–6)
 ├── data/
 │   ├── focus_trees/                 # 1985 Era I Focus Trees (PRC, USA, SOV, JPN, ROK, PRK, TWN, GENERIC)
-│   ├── oob_1985/                    # 1985 Historical OOBs & Division Templates (PRC, USA, SOV, JPN, ROK, PRK, TWN)
+│   ├── oob_1985/                    # 1985 Historical OOBs & Division Templates (All 15 Playable Nations)
 │   └── map/
 │       ├── states.json              # 10-state Korean Peninsula sandbox definitions
-│       ├── east_asia_1985_states.json # 28-state East Asia theatre definitions across all 15 tags
+│       ├── east_asia_1985_states.json # 36-state East Asia theatre definitions across all 15 tags
 │       ├── provinces.json           # 120-province Korean Peninsula graph & coordinates
-│       └── provinces.png            # Lossless 1024x1024 16-bit RG encoded province ID map
+│       ├── provinces.png            # Lossless 1024x1024 16-bit RG encoded province ID map
+│       ├── east_asia_1985_provinces.json # 232-province full East Asian theatre graph
+│       └── east_asia_1985_provinces.png  # Full theatre 1024x1024 16-bit RG province ID texture
 ├── src/
 │   ├── EastAsiaGSG.Core/            # Headless Data-Oriented simulation kernel (zero engine deps)
 │   │   ├── Components/              # Blittable fixed-size structs & domain enums (DivisionComponent, ActiveCombatComponent, ProductionLineComponent, DivisionTemplateRecord, FocusNodeData, etc.)
 │   │   ├── Math/                    # Compressed Sparse Row (CSR) ProvinceGraph & zero-allocation A* ProvincePathfinder
-│   │   ├── Commands/                # Unmanaged SimulationCommand & CommandRingBuffer
+│   │   ├── Commands/                # Unmanaged SimulationCommand & CommandRingBuffer (Move, TogglePGM, AssignCiv, AssignMil, ShiftDefcon, SelectFocus, DeclareWar, RecruitDivision)
 │   │   ├── Systems/                 # Pure simulation systems (DivisionMovementSystem, CombatResolutionSystem, AirAndNavalRegionSystem, SupplyGraphSystem, ConstructionSystem, ProductionSystem, ReinforcementSystem, SuperpowerEscalationSystem, FocusTreeSystem, FocusEffectExecutor, TacticalFrontlineAISystem, MacroEconomySystem, StrategicMinisterAISystem)
 │   │   └── ECS/                     # SimulationWorld & stratified StepSixHours() pipeline
 │   ├── EastAsiaGSG.Data/            # Source-generated JSON loaders & CPU map/LUT buffers
@@ -61,7 +63,7 @@ EastAsiaGSG/
 │       ├── MainView.cs              # Root scene controller wiring world, map, camera, overlay, AI & HOI4 Side-Drawer HUD
 │       └── MainView.tscn            # Main Godot 4 presentation scene
 └── tests/
-    └── EastAsiaGSG.SimTests/        # Headless xUnit verification & benchmark suite (97 tests)
+    └── EastAsiaGSG.SimTests/        # Headless xUnit verification & benchmark suite (102 tests)
         ├── CombatSystemTests.cs     # 72-hour ROK/PRK battle sims, width capping, PGM & zero-allocation checks
         ├── SupplyGraphSystemTests.cs # Overland Dijkstra supply, Trans-Siberian bottleneck & island sea lanes
         ├── AirAndNavalRegionSystemTests.cs # Contested air/sea superiority, A2/AD & strait crossing gates
@@ -182,14 +184,14 @@ This script verifies:
 2. **Zero Hot-Path LINQ Allocations:** Zero `System.Linq` usage in `src/EastAsiaGSG.Core/Systems`.
 3. **Strict One-Way Project Dependencies:** `Core` $\leftarrow$ `Data` $\leftarrow$ `GodotClient`.
 4. **Zero-Warning Solution Build:** `dotnet build EastAsiaGSG.sln --warnaserror` (`0 Warning(s)`, `0 Error(s)`).
-5. **Headless xUnit Suite:** Runs all **97** unit, integration, and soak tests in `tests/EastAsiaGSG.SimTests` across all modules:
+5. **Headless xUnit Suite:** Runs all **102** unit, integration, and soak tests in `tests/EastAsiaGSG.SimTests` across all modules:
    - `CombatSystemTests` (15 tests: 72-hour ROK vs PRK historical battles, combat width & reserve filling, encirclement shattering, PGM depletion, zero-heap allocation checks, and 1,000-battle throughput benchmark in $< 100\text{ ms}$).
    - `SupplyGraphSystemTests` (8 tests: Two-tier Dijkstra overland supply, Trans-Siberian Artery bottleneck, island port-to-port sea lanes, local state factory trickle, zero-allocation daily loop checks, and $< 1\text{ ms}$ throughput benchmark).
    - `AirAndNavalRegionSystemTests` (13 tests: Contested air superiority, weather attenuation, coastal A2/AD missile suppression, generational scarcity enforcement across multiple airbases, Strait & Amphibious Control Gates, sea zone dynamic LUT rendering, and zero-allocation 6-hour loop checks).
    - `SuperpowerEscalationSystemTests` (6 tests: PACOM threat scoring, Homeland Escalation scaling, DEFCON transitions, CONUS off-map military factories, peacetime decay, Carrier Strike Group deployments, and $< 1\text{ ms}$ throughput benchmark).
    - `FocusTreeSystemTests` (5 tests: JSON loading & FK validation, prerequisites & mutual-exclusion enforcement, all 11 `FocusConditionType` gates, all 15 `FocusEffectType` actions, and zero-allocation daily tick verification).
    - `Content1985BatchTests` (3 tests: All 7 Major Power + Generic 1985 Era I Focus Trees, all 7 Major Power 1985 OOB files & 38 starting divisions, and 360-tick multi-nation simulation across the 28-state East Asia dataset).
-   - `TwoTierAiAndSoakTests` (4 tests: `StrategicMinisterAISystem` monthly focus/construction/factory scoring, `TacticalFrontlineAISystem` peacetime garrisoning & wartime offensive execution, and the **15-year / 21,912-tick headless soak test** from `1985-01-01` to `2000-01-01` verifying zero exceptions, bounded memory, and $> 1,000\text{ ticks/sec}$ throughput).
+   - `TwoTierAiAndSoakTests` (9 tests: `StrategicMinisterAISystem` monthly focus/construction/factory scoring, `TacticalFrontlineAISystem` peacetime garrisoning & wartime offensive execution, automatic daily resource shortage evaluation, state province capture & factory transfer, deterministic declare war & division recruitment commands, full 232-province theatre bijective validation, focus tree prerequisite cycle & duplicate coordinate validation, and the **15-year / 21,912-tick headless soak test** from `1985-01-01` to `2000-01-01` verifying zero exceptions, bounded memory, and $> 1,000\text{ ticks/sec}$ throughput).
    - `ProductionSystemTests` (7 tests: 32-byte blittable layouts, $C_{\text{free}}$ & Consumer Goods formulas, State construction queue & 15-factory cap, hyperbolic efficiency growth, resource shortage penalties, equipment switch retention, and zero-allocation daily loop checks).
    - `ReinforcementSystemTests` (5 tests: 24-byte `DivisionTemplateRecord` layout, newest-generation-first equipment draw & experience dilution, partial stockpile/manpower/supply gates, end-to-end production-to-frontline reinforcement + PGM resupply, and zero-allocation daily loop checks).
    - `PathfinderTests` (10 tests: zero-allocation verification, $< 5\ \mu\text{s}$ A* performance, DMZ cross-border gating, strait access control, multi-thread safety).
@@ -241,3 +243,11 @@ Open `src/EastAsiaGSG.GodotClient/project.godot` in Godot 4 (.NET) or launch dir
 - [x] **Phase 6: Two-Tier Utility AI & Polish**
   - [x] **Task 6.1:** Implement `StrategicMinisterAISystem` (monthly focus/production scoring) and `TacticalFrontlineAISystem` (daily frontline assignment & attack execution).
   - [x] **Task 6.2:** Run 15-year headless soak tests (21,900 six-hour ticks) to verify zero exceptions, zero memory leaks, and historical plausibility.
+
+- [x] **Post-Roadmap Audit & Theatre Expansion (Verified)**
+  - [x] **WP-1 (Core Mechanics & Mathematical Balance):** Implemented `CommandType.DeclareWar` and `CommandType.RecruitDivision`; added weighted `RecalculateStateController` based on urban and supply hub levels; applied experience multiplier scaling (`0.90 + 0.20 * Exp`); enabled automatic daily resource shortage evaluation; unified division combat stat calculation with generational scaling (`tpl.ComputeCombatStats`).
+  - [x] **WP-2 (Data Layer Robustness & Validation):** Fixed symbolic state aliases (`STATE_IRKUTSK` -> `10`, `STATE_SUBIC` -> `61`); added focus tree DAG acyclicity (3-color DFS) and coordinate collision validation; auto-discovered capitals for all 15 nations; set `IsSeaZone = 1` for ocean regions; updated MapLutBuffer political mode to render ocean provinces in deep ocean blue.
+  - [x] **WP-3 (Theatre Topology Expansion):** Generated full 232-province, 36-state, 18-region East Asian Theatre dataset (`east_asia_1985_states.json`, `east_asia_1985_provinces.json`, `east_asia_1985_provinces.png`); verified bijective bidirectional adjacency with degree $\ge 2$ and 100% collision-free $O(1)$ picking; authored historical starting OOBs for all 8 regional minors (`VNM`, `PHL`, `MNG`, `THA`, `LAO`, `KHM`, `MMR`, `MYS`).
+  - [x] **WP-4 (Godot Client Bug & Performance Fixes):** Safe ocean province selection & strategic region reporting in `ProvinceInfoPanel.cs`; gated division movement to player's active country (`ActivePlayerCountryTag`); eliminated redraw churn and GC allocations with pooled collections and pre-allocated polygon buffers in `TacticalMapOverlay.cs`; prevented key repeat stutter in `TimeControlsToolbar.cs`; cleaned up despawned battles in `CombatTelemetryPopup.cs`.
+  - [x] **WP-5 (Full Theatre Boot & Player Agency UI):** Integrated 15-country tag switcher with capital camera centering; added compact "➕ Deploy" and "⚔ War" agency actions; wired active news event indicators; rendered state names for all 36 theatre states; included all 15 nations in `FocusTreeViewer.cs`.
+  - [x] **WP-6 (Verification & Regression Suite):** Expanded test suite to **102 passing tests** (100% passing with 0 warnings); verified full 15-year soak test across the 232-province theatre; confirmed headless Godot 4.x boot.

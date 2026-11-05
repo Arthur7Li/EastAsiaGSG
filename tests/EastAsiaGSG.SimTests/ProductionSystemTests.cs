@@ -337,7 +337,7 @@ public sealed class ProductionSystemTests
         world.States[1].ControllerTag = CountryTag.ROK;
         world.States[1].CivilianFactories = 15;
         world.States[1].MilitaryFactories = 12;
-        ConstructionSystem.QueueConstruction(ref world.States[1], BuildingType.CivilianFactory, levels: 5, requestedCivFactories: 15);
+        ConstructionSystem.QueueConstruction(ref world.States[1], BuildingType.CivilianFactory, levels: 20, requestedCivFactories: 15);
 
         world.SpawnProductionLine(ProductionLineComponent.Create(
             lineId: 1,

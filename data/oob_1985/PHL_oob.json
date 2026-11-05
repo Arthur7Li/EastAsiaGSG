@@ -1,0 +1,61 @@
+{
+  "countryTag": "PHL",
+  "templates": [
+    {
+      "templateId": 32,
+      "name": "Philippine Army Infantry Division",
+      "combatWidth": 20,
+      "battalions": [
+        "InfantryKit",
+        "InfantryKit",
+        "InfantryKit",
+        "InfantryKit",
+        "SupportVehicles",
+        "Artillery"
+      ],
+      "supportCompanies": [
+        "SupportVehicles"
+      ]
+    },
+    {
+      "templateId": 33,
+      "name": "Philippine Light Armored Division",
+      "combatWidth": 16,
+      "battalions": [
+        "IFV",
+        "IFV",
+        "SupportVehicles",
+        "InfantryKit"
+      ],
+      "supportCompanies": [
+        "SupportVehicles"
+      ]
+    }
+  ],
+  "startingDivisions": [
+    {
+      "name": "1st Infantry Division ('Tabak')",
+      "templateId": 32,
+      "startingProvinceId": 610,
+      "startingExperience": 0.4,
+      "startingStrength": 1.0,
+      "pgmAuthorized": false
+    },
+    {
+      "name": "2nd Infantry Division ('Jungle Fighter')",
+      "templateId": 32,
+      "startingProvinceId": 611,
+      "startingExperience": 0.45,
+      "startingStrength": 1.0,
+      "pgmAuthorized": false
+    },
+    {
+      "name": "Light Armor Brigade",
+      "templateId": 33,
+      "startingProvinceId": 612,
+      "startingExperience": 0.5,
+      "startingStrength": 1.0,
+      "pgmAuthorized": true
+    }
+  ]
+}

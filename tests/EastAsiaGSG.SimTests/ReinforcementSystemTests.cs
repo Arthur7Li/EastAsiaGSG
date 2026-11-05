@@ -295,8 +295,17 @@ public sealed class ReinforcementSystemTests
             templateId: 1,
             startingStrength: 0.20f));
 
-        // Warm up JIT
+        // Warm up JIT and all execution paths
+        ref DivisionComponent warmDiv = ref world.EcsWorld.Get<DivisionComponent>(divEntity);
+        warmDiv.MaxOrganization = 50.0f;
+        warmDiv.Organization = 30.0f;
+        warmDiv.Strength = 0.50f;
         ReinforcementSystem.Execute(world);
+        ReinforcementSystem.Execute(world);
+
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
 
         long beforeBytes = GC.GetAllocatedBytesForCurrentThread();
         for (int i = 0; i < 1000; i++)

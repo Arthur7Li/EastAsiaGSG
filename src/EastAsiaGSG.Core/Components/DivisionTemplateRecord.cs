@@ -233,4 +233,42 @@ public unsafe struct DivisionTemplateRecord
 
         return tpl;
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly void ComputeCombatStats(
+        TechGeneration techGen,
+        out float softAttack,
+        out float hardAttack,
+        out float defense,
+        out float breakthrough,
+        out float armor,
+        out float piercing,
+        out float hardness,
+        out float speed)
+    {
+        int infReq = GetRequired(EquipmentType.InfantryKit);
+        int supReq = GetRequired(EquipmentType.SupportVehicles);
+        int ifvReq = GetRequired(EquipmentType.IFV);
+        int mbtReq = GetRequired(EquipmentType.MBT);
+        int artReq = GetRequired(EquipmentType.Artillery);
+        int heliReq = GetRequired(EquipmentType.AttackHeli);
+
+        float genMod = techGen switch
+        {
+            TechGeneration.Gen0_1970Reserve => 0.85f,
+            TechGeneration.Gen1_1980Baseline => 1.00f,
+            TechGeneration.Gen2_1988LateColdWar => 1.15f,
+            TechGeneration.Gen3_1995DigitalStealth => 1.30f,
+            _ => 1.00f
+        };
+
+        softAttack = (20.0f + (infReq * 0.05f) + (ifvReq * 0.12f) + (mbtReq * 0.10f) + (artReq * 0.35f) + (heliReq * 0.25f)) * genMod;
+        hardAttack = (10.0f + (ifvReq * 0.10f) + (mbtReq * 0.35f) + (heliReq * 0.50f) + (artReq * 0.08f)) * genMod;
+        defense = (35.0f + (infReq * 0.06f) + (ifvReq * 0.10f) + (artReq * 0.15f) + (supReq * 0.08f)) * genMod;
+        breakthrough = (20.0f + (ifvReq * 0.12f) + (mbtReq * 0.35f) + (heliReq * 0.30f) + (supReq * 0.05f)) * genMod;
+        armor = (mbtReq > 0 ? 45.0f + (mbtReq * 0.15f) : (ifvReq > 0 ? 22.0f : 5.0f)) * genMod;
+        piercing = (mbtReq > 0 ? 55.0f : (ifvReq > 0 || heliReq > 0 ? 38.0f : 22.0f)) * genMod;
+        hardness = mbtReq >= 80 ? 0.65f : (ifvReq >= 80 ? 0.45f : 0.15f);
+        speed = heliReq > 0 ? 42.0f : (ifvReq > 0 || mbtReq > 0 ? 32.0f : (supReq > 0 ? 26.0f : 22.0f));
+    }
 }

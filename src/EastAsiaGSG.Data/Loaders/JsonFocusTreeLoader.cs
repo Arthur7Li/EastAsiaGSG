@@ -47,8 +47,8 @@ public static class JsonFocusTreeLoader
         ["STATE_HAMGYONG"] = 9,
 
         // Soviet Far East & Trans-Siberian Artery
-        ["STATE_IRKUTSK"] = 0,
-        ["STATE_TRANS_SIBERIAN"] = 0,
+        ["STATE_IRKUTSK"] = 10,
+        ["STATE_TRANS_SIBERIAN"] = 10,
         ["STATE_KHABAROVSK"] = 10,
         ["STATE_VLADIVOSTOK"] = 11,
         ["STATE_PRIMORYE"] = 11,
@@ -83,7 +83,7 @@ public static class JsonFocusTreeLoader
         // United States Pacific Command (USPACOM)
         ["STATE_OKINAWA"] = 50,
         ["STATE_GUAM"] = 51,
-        ["STATE_SUBIC"] = 52
+        ["STATE_SUBIC"] = 61
     };
 
     /// <summary>
@@ -195,6 +195,29 @@ public static class JsonFocusTreeLoader
             {
                 throw new MapValidationException(
                     $"Focus '{nodeDto.Id}' has invalid costDays ({nodeDto.CostDays}); must be > 0.");
+            }
+        }
+
+        // Validate (GridX, GridY) coordinate uniqueness across all nodes
+        var gridCoords = new HashSet<long>(dto.Focuses.Count);
+        for (int i = 0; i < dto.Focuses.Count; i++)
+        {
+            FocusNodeDto nodeDto = dto.Focuses[i];
+            long coordKey = ((long)nodeDto.GridX << 32) | (uint)nodeDto.GridY;
+            if (!gridCoords.Add(coordKey))
+            {
+                throw new MapValidationException(
+                    $"Duplicate grid coordinates (GridX={nodeDto.GridX}, GridY={nodeDto.GridY}) detected on focus '{nodeDto.Id}' in '{dto.CountryTag}'.");
+            }
+        }
+
+        // Validate DAG acyclicity using 3-color DFS (0 = unvisited, 1 = visiting, 2 = visited)
+        Span<byte> visitState = stackalloc byte[dto.Focuses.Count];
+        for (int i = 0; i < dto.Focuses.Count; i++)
+        {
+            if (visitState[i] == 0)
+            {
+                CheckCycleDfs(i, dto.Focuses, indexById, visitState);
             }
         }
 
@@ -794,5 +817,34 @@ public static class JsonFocusTreeLoader
 
         throw new MapValidationException(
             $"Focus '{focusId}' has invalid division template target '{target}'.");
+    }
+
+    private static void CheckCycleDfs(
+        int current,
+        List<FocusNodeDto> focuses,
+        Dictionary<string, short> indexById,
+        Span<byte> visitState)
+    {
+        visitState[current] = 1; // visiting
+        List<string>? prereqs = focuses[current].Prerequisites;
+        if (prereqs != null)
+        {
+            for (int p = 0; p < prereqs.Count; p++)
+            {
+                if (indexById.TryGetValue(prereqs[p], out short nextIdx))
+                {
+                    if (visitState[nextIdx] == 1)
+                    {
+                        throw new MapValidationException(
+                            $"Prerequisite cycle detected involving focus '{focuses[current].Id}' and '{prereqs[p]}'.");
+                    }
+                    if (visitState[nextIdx] == 0)
+                    {
+                        CheckCycleDfs(nextIdx, focuses, indexById, visitState);
+                    }
+                }
+            }
+        }
+        visitState[current] = 2; // visited
     }
 }

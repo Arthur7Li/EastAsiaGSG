@@ -224,6 +224,10 @@ public static class DivisionMovementSystem
             if (!targetIsFriendly)
             {
                 toProv.ControllerTag = div.CountryTag;
+                if (toProv.StateId < SimulationWorld.MaxStates)
+                {
+                    world.RecalculateStateController(toProv.StateId);
+                }
             }
 
             int nextIndex = div.CurrentWaypointIndex + 1;

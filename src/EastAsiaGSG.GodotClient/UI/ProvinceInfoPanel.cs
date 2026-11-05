@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Text;
 using Arch.Core;
 using EastAsiaGSG.Core.Components;
 using EastAsiaGSG.Core.ECS;
@@ -14,6 +15,8 @@ namespace EastAsiaGSG.GodotClient.UI;
 public partial class ProvinceInfoPanel : PanelContainer
 {
     private static readonly QueryDescription DivisionQuery = new QueryDescription().WithAll<DivisionComponent>();
+
+    private readonly StringBuilder _stationedSb = new(256);
 
     private SimulationWorld? _world;
 
@@ -200,7 +203,10 @@ public partial class ProvinceInfoPanel : PanelContainer
 
         _currentProvinceId = provinceId;
 
-        if (provinceId >= SimulationWorld.MaxProvinces || provinceId == ProvinceMapBuffer.OceanProvinceId)
+        bool isOutOrOceanSentinel = provinceId >= SimulationWorld.MaxProvinces || provinceId == ProvinceMapBuffer.OceanProvinceId;
+        bool isSeaProvince = !isOutOrOceanSentinel && _world != null && _world.Provinces[provinceId].Terrain == TerrainType.Ocean;
+
+        if (isOutOrOceanSentinel || isSeaProvince)
         {
             _headerLabel.Text = "Ocean / International Waters";
             _stateLabel!.Text = "State: None (Sea Zone)";
@@ -211,7 +217,7 @@ public partial class ProvinceInfoPanel : PanelContainer
             _resourcesLabel!.Text = "Steel: 0 | Semi: 0 | Oil: 0 | Alum: 0";
             _stationedDivLabel!.Text = "Units: None";
 
-            if (provinceId < SimulationWorld.MaxProvinces && _world != null)
+            if (!isOutOrOceanSentinel && _world != null)
             {
                 ref readonly ProvinceData seaProv = ref _world.Provinces[provinceId];
                 if (seaProv.StrategicRegionId < SimulationWorld.MaxStrategicRegions)
@@ -238,6 +244,10 @@ public partial class ProvinceInfoPanel : PanelContainer
 
         ref readonly ProvinceData prov = ref _world.Provinces[provinceId];
         ushort stateId = prov.StateId;
+        if (stateId >= SimulationWorld.MaxStates)
+        {
+            stateId = 0;
+        }
         ref readonly StateData state = ref _world.States[stateId];
 
         string ownerTag = CountryTag.GetCode(prov.OwnerTag);
@@ -274,7 +284,7 @@ public partial class ProvinceInfoPanel : PanelContainer
         }
 
         // Query stationed divisions in this province
-        string stationedText = "";
+        _stationedSb.Clear();
         Query divQuery = _world.EcsWorld.Query(in DivisionQuery);
         foreach (ref Chunk chunk in divQuery)
         {
@@ -284,11 +294,17 @@ public partial class ProvinceInfoPanel : PanelContainer
             {
                 if (divs[i].CurrentProvinceId == provinceId && divs[i].State != DivisionState.Shattered)
                 {
+                    if (_stationedSb.Length > 0)
+                    {
+                        _stationedSb.Append(", ");
+                    }
                     string tag = CountryTag.GetCode(divs[i].CountryTag);
-                    stationedText += (stationedText.Length > 0 ? ", " : "") + $"[{tag}] #{divs[i].DivisionId} ({divs[i].State})";
+                    _stationedSb.Append('[').Append(tag).Append("] #")
+                                .Append(divs[i].DivisionId).Append(" (")
+                                .Append(divs[i].State).Append(')');
                 }
             }
         }
-        _stationedDivLabel!.Text = stationedText.Length > 0 ? $"Units: {stationedText}" : "Units: None";
+        _stationedDivLabel!.Text = _stationedSb.Length > 0 ? $"Units: {_stationedSb}" : "Units: None";
     }
 }

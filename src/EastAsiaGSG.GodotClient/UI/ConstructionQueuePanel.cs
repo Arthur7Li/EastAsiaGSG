@@ -22,20 +22,6 @@ public partial class ConstructionQueuePanel : PanelContainer
         public ProgressBar ProgressBar = null!;
     }
 
-    private static readonly string[] KoreanStateNames =
-    [
-        "Gyeonggi-Seoul Capital Area",
-        "Gangwon Eastern Mountains",
-        "Chungcheong Central Corridor",
-        "Jeolla Southwestern Plains",
-        "Gyeongsang-Busan Industrial Belt",
-        "Pyongyang-Nampo Capital District",
-        "Hwanghae Forward DMZ Sector",
-        "Chagang-Kanggye Northern Arsenal",
-        "South Hamgyong-Wonsan Coast",
-        "North Hamgyong-Chongjin Steel Zone"
-    ];
-
     private SimulationWorld? _world;
     private byte _activeCountryTag = CountryTag.ROK;
 
@@ -364,12 +350,46 @@ public partial class ConstructionQueuePanel : PanelContainer
         }
     }
 
-    private static string GetStateDisplayName(ushort stateId)
+    private static string GetStateDisplayName(ushort stateId) => stateId switch
     {
-        return stateId < KoreanStateNames.Length
-            ? $"State #{stateId}: {KoreanStateNames[stateId]}"
-            : $"State #{stateId}";
-    }
+        0 => "State #0: Gyeonggi-Seoul Metro",
+        1 => "State #1: Gangwon-South (Taebaek)",
+        2 => "State #2: Chungcheong Transit Hub",
+        3 => "State #3: Jeolla Maritime South",
+        4 => "State #4: Gyeongsang-Busan Industrial Titan",
+        5 => "State #5: Pyongyang-Nampo Capital",
+        6 => "State #6: North Pyongan Border Artery",
+        7 => "State #7: Hwanghae-Kaesong Corridor",
+        8 => "State #8: Gangwon-North Coastal Redoubt",
+        9 => "State #9: Hamgyong Industrial Complex",
+        10 => "State #10: Khabarovsk-Amur BAM Rail",
+        11 => "State #11: Primorye-Vladivostok Bastion",
+        12 => "State #12: Sakhalin & Kuril Islands",
+        20 => "State #20: Beijing-Hebei Capital",
+        21 => "State #21: Manchuria-Shenyang Arsenal",
+        22 => "State #22: Shandong Peninsula & Qingdao",
+        23 => "State #23: Shanghai-Yangtze Delta",
+        24 => "State #24: Fujian Strait Frontline",
+        25 => "State #25: Guangdong-Shenzhen SEZ",
+        30 => "State #30: Tokyo-Kanto Megalopolis",
+        31 => "State #31: Hokkaido Northern Frontier",
+        32 => "State #32: Kansai-Chubu Heartland",
+        33 => "State #33: Kyushu-Sasebo Maritime Gate",
+        40 => "State #40: Taipei-Hsinchu Silicon Corridor",
+        41 => "State #41: Kaohsiung-Tsoying Arsenal",
+        42 => "State #42: Kinmen & Penghu Bastions",
+        50 => "State #50: Okinawa USPACOM Keystone",
+        51 => "State #51: Guam & Mariana Hub",
+        60 => "State #60: Red River Delta & Cam Ranh",
+        61 => "State #61: Luzon-Manila & Subic Bay",
+        62 => "State #62: Ulaanbaatar & Steppe",
+        63 => "State #63: Chao Phraya Basin & Bangkok",
+        64 => "State #64: Vientiane & Mekong Highlands",
+        65 => "State #65: Phnom Penh & Tonle Sap",
+        66 => "State #66: Irrawaddy Valley & Yangon",
+        67 => "State #67: Malaya Peninsula & Malacca",
+        _ => $"State #{stateId}"
+    };
 
     /// <summary>
     /// Refreshes all state construction telemetry from SimulationWorld (one-way read).

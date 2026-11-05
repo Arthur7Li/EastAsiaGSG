@@ -448,6 +448,63 @@ public static class JsonMapLoader
         }
 
         world.Graph.BuildCsr(world.Provinces.AsSpan(), directedEdges.AsSpan());
+
+        // 8. Auto-discover Country Capitals and configure Strategic Sea-Zones
+        Span<int> bestCapScores = stackalloc int[SimulationWorld.MaxCountries];
+        for (int i = 0; i < SimulationWorld.MaxCountries; i++)
+        {
+            bestCapScores[i] = -1;
+        }
+
+        Span<int> regionOceanCount = stackalloc int[SimulationWorld.MaxStrategicRegions];
+        Span<int> regionTotalCount = stackalloc int[SimulationWorld.MaxStrategicRegions];
+
+        for (int p = 0; p < provinces.Count; p++)
+        {
+            ref readonly ProvinceData prov = ref world.Provinces[provinces[p].ProvinceId];
+            byte regId = prov.StrategicRegionId;
+            if (regId < SimulationWorld.MaxStrategicRegions)
+            {
+                regionTotalCount[regId]++;
+                if (prov.Terrain == TerrainType.Ocean)
+                {
+                    regionOceanCount[regId]++;
+                }
+            }
+
+            byte owner = prov.OwnerTag;
+            if (owner < SimulationWorld.MaxCountries && prov.Terrain != TerrainType.Ocean)
+            {
+                // Preserve canonical 0 for ROK and 60 for PRK if present
+                if (owner == CountryTag.ROK && prov.ProvinceId == 0)
+                {
+                    world.CountryCapitals[owner] = 0;
+                    bestCapScores[owner] = int.MaxValue;
+                    continue;
+                }
+                if (owner == CountryTag.PRK && prov.ProvinceId == 60)
+                {
+                    world.CountryCapitals[owner] = 60;
+                    bestCapScores[owner] = int.MaxValue;
+                    continue;
+                }
+
+                int score = (prov.SupplyHubLevel * 10) + (prov.Terrain == TerrainType.Urban ? 5 : 0) + prov.InfrastructureLevel;
+                if (score > bestCapScores[owner])
+                {
+                    bestCapScores[owner] = score;
+                    world.CountryCapitals[owner] = prov.ProvinceId;
+                }
+            }
+        }
+
+        for (int r = 0; r < SimulationWorld.MaxStrategicRegions; r++)
+        {
+            if (regionTotalCount[r] > 0 && (regionOceanCount[r] * 2) >= regionTotalCount[r])
+            {
+                world.Regions[r].IsSeaZone = 1;
+            }
+        }
     }
 
     public static AdjacencyEdgeFlags ParseEdgeFlags(string? flagsStr)

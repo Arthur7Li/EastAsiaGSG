@@ -549,6 +549,149 @@ public sealed class SimulationWorld : IDisposable
     }
 
     /// <summary>
+    /// Recalculates and updates States[stateId].ControllerTag based on the majority controller of provinces in stateId.
+    /// Urban and SupplyHub provinces carry higher strategic weight. Zero heap allocations.
+    /// </summary>
+    public void RecalculateStateController(ushort stateId)
+    {
+        if (stateId >= MaxStates)
+        {
+            return;
+        }
+
+        Span<int> tagWeights = stackalloc int[MaxCountries];
+        int bestWeight = 0;
+        byte bestController = States[stateId].ControllerTag;
+
+        for (ushort p = 0; p < MaxProvinces; p++)
+        {
+            ref readonly ProvinceData prov = ref Provinces[p];
+            if (prov.StateId != stateId || prov.OwnerTag == CountryTag.None || prov.Terrain == TerrainType.Ocean)
+            {
+                continue;
+            }
+
+            byte ctrl = prov.ControllerTag;
+            if (ctrl < MaxCountries)
+            {
+                int weight = 1 + (prov.SupplyHubLevel * 2) + (prov.Terrain == TerrainType.Urban ? 3 : 0);
+                tagWeights[ctrl] += weight;
+                if (tagWeights[ctrl] > bestWeight)
+                {
+                    bestWeight = tagWeights[ctrl];
+                    bestController = ctrl;
+                }
+            }
+        }
+
+        if (bestWeight > 0)
+        {
+            States[stateId].ControllerTag = bestController;
+        }
+    }
+
+    /// <summary>
+    /// Recruits a new division from national manpower and equipment stockpile, deploying it at requestedProvinceId or nation's capital.
+    /// </summary>
+    public bool TryRecruitDivisionFromStockpile(byte countryTag, ushort templateId, ushort requestedProvinceId, out Entity spawnedEntity)
+    {
+        spawnedEntity = default;
+        if (countryTag >= MaxCountries)
+        {
+            return false;
+        }
+
+        ref CountryState country = ref Countries[countryTag];
+        if (templateId >= MaxDivisionTemplates || Templates[templateId].IsConfigured == 0)
+        {
+            templateId = DivisionTemplateRecord.DefaultInfantryTemplateId;
+            if (Templates[templateId].IsConfigured == 0)
+            {
+                Templates[templateId] = DivisionTemplateRecord.CreateInfantryDivision(templateId);
+            }
+        }
+
+        ref readonly DivisionTemplateRecord tpl = ref Templates[templateId];
+        int reqManpower = tpl.TotalManpower > 0 ? tpl.TotalManpower : 10_000;
+        if (country.Manpower < reqManpower / 2)
+        {
+            return false;
+        }
+
+        int manpowerToDeduct = country.Manpower >= reqManpower ? reqManpower : country.Manpower;
+        country.Manpower -= manpowerToDeduct;
+
+        for (int a = 0; a < DivisionTemplateRecord.LandArchetypeCount; a++)
+        {
+            EquipmentType arch = (EquipmentType)a;
+            ushort required = tpl.GetRequired(arch);
+            if (required > 0)
+            {
+                ReinforcementSystem.ConsumeArchetypeFromStockpile(ref country, arch, required);
+            }
+        }
+
+        ushort spawnProv = requestedProvinceId;
+        if (spawnProv >= MaxProvinces || Provinces[spawnProv].ControllerTag != countryTag)
+        {
+            spawnProv = GetCapitalProvince(countryTag);
+        }
+        if (spawnProv >= MaxProvinces)
+        {
+            for (ushort p = 0; p < MaxProvinces; p++)
+            {
+                if (Provinces[p].ControllerTag == countryTag && Provinces[p].Terrain != TerrainType.Ocean)
+                {
+                    spawnProv = p;
+                    break;
+                }
+            }
+        }
+        if (spawnProv >= MaxProvinces)
+        {
+            spawnProv = 0;
+        }
+
+        TechGeneration techGen = GetUnlockedTechGeneration(countryTag, EquipmentType.InfantryKit);
+        tpl.ComputeCombatStats(techGen,
+            out float softAttack,
+            out float hardAttack,
+            out float defense,
+            out float breakthrough,
+            out float armor,
+            out float piercing,
+            out float hardness,
+            out float speed);
+
+        ushort mbtReq = tpl.GetRequired(EquipmentType.MBT);
+        ushort ifvReq = tpl.GetRequired(EquipmentType.IFV);
+        ushort heliReq = tpl.GetRequired(EquipmentType.AttackHeli);
+
+        int divId = AllocateNextDivisionId();
+        DivisionComponent div = DivisionComponent.Create(
+            divisionId: divId,
+            countryTag: countryTag,
+            startingProvinceId: spawnProv,
+            templateId: templateId,
+            combatWidth: tpl.CombatWidth,
+            softAttack: softAttack,
+            hardAttack: hardAttack,
+            defense: defense,
+            breakthrough: breakthrough,
+            armor: armor,
+            piercing: piercing,
+            hardness: hardness,
+            maxOrganization: 60.0f,
+            startingStrength: 1.0f,
+            startingExperience: 0.30f,
+            speed: speed,
+            pgmAuthorized: mbtReq > 0 || ifvReq > 0 || heliReq > 0);
+
+        spawnedEntity = SpawnDivision(in div);
+        return true;
+    }
+
+    /// <summary>
     /// Enqueues a deterministic command to be executed at the start of the next 6-hour tick.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -705,6 +848,24 @@ public sealed class SimulationWorld : IDisposable
                             line.AssignedMilitaryFactories = (ushort)clamped;
                         }
                     }
+                    break;
+                }
+                case CommandType.DeclareWar:
+                {
+                    byte targetTag = (byte)cmd.TargetId;
+                    if (targetTag < MaxCountries && targetTag != cmd.CountryTag)
+                    {
+                        DeclareWar(cmd.CountryTag, targetTag);
+                    }
+                    break;
+                }
+                case CommandType.RecruitDivision:
+                {
+                    ushort tplId = cmd.TargetId > 0 ? cmd.TargetId : DivisionTemplateRecord.DefaultInfantryTemplateId;
+                    ushort spawnProv = cmd.IntParam0 is >= 0 and < MaxProvinces
+                        ? (ushort)cmd.IntParam0
+                        : GetCapitalProvince(cmd.CountryTag);
+                    TryRecruitDivisionFromStockpile(cmd.CountryTag, tplId, spawnProv, out _);
                     break;
                 }
                 case CommandType.None:

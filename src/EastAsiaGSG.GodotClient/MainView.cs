@@ -50,14 +50,14 @@ public partial class MainView : Node2D
         // 1. Initialize Headless Simulation World
         _world = new SimulationWorld();
 
-        string? statesPath = ResolvePath("data/map/states.json");
-        string? provincesPath = ResolvePath("data/map/provinces.json");
-        string? provincesPngPath = ResolvePath("data/map/provinces.png");
+        string? statesPath = ResolvePath("data/map/east_asia_1985_states.json") ?? ResolvePath("data/map/states.json");
+        string? provincesPath = ResolvePath("data/map/east_asia_1985_provinces.json") ?? ResolvePath("data/map/provinces.json");
+        string? provincesPngPath = ResolvePath("data/map/east_asia_1985_provinces.png") ?? ResolvePath("data/map/provinces.png");
 
         if (statesPath != null && provincesPath != null)
         {
             JsonMapLoader.LoadMap(_world, statesPath, provincesPath);
-            GD.Print($"[MainView] Loaded Korean Peninsula Micro-Sandbox from: {statesPath}");
+            GD.Print($"[MainView] Loaded Map dataset from: {statesPath}");
         }
         else
         {
@@ -125,7 +125,7 @@ public partial class MainView : Node2D
         _stockpileTopBar.GrowVertical = Control.GrowDirection.End;
         _stockpileTopBar.OffsetLeft = 16;
         _stockpileTopBar.OffsetTop = 12;
-        _stockpileTopBar.OffsetRight = 516;
+        _stockpileTopBar.OffsetRight = 620;
         _stockpileTopBar.OffsetBottom = 58;
         _stockpileTopBar.Initialize(_world, CountryTag.ROK);
 
@@ -192,7 +192,7 @@ public partial class MainView : Node2D
         _focusTreeViewer.GrowVertical = Control.GrowDirection.End;
         _focusTreeViewer.OffsetLeft = 16;
         _focusTreeViewer.OffsetTop = 106;
-        _focusTreeViewer.OffsetRight = 760;
+        _focusTreeViewer.OffsetRight = 665;
         _focusTreeViewer.OffsetBottom = 704;
         foreach (LoadedFocusTree loadedTree in _loadedFocusTrees)
         {
@@ -256,6 +256,16 @@ public partial class MainView : Node2D
             _focusTreeViewer.SetActiveCountry(tag);
             _constructionPanel.SetActiveCountry(tag);
             _productionPanel.SetActiveCountry(tag);
+            if (_tacticalOverlay != null)
+            {
+                _tacticalOverlay.ActivePlayerCountryTag = tag;
+            }
+            ushort capitalProvId = _world.GetCapitalProvince(tag);
+            if (capitalProvId < SimulationWorld.MaxProvinces)
+            {
+                ref readonly ProvinceData capProv = ref _world.Provinces[capitalProvId];
+                _camera?.FocusOnPosition(new Vector2(capProv.CenterX, capProv.CenterY), 1.0f);
+            }
         };
         _stockpileTopBar.MapInfoTabRequested += () => SetActiveDrawerTab(SideDrawerTab.None);
         _stockpileTopBar.ToggleFocusTreeRequested += () =>
@@ -511,29 +521,47 @@ public partial class MainView : Node2D
             return;
         }
 
-        // Grant ROK & PRK starting 1985 equipment stockpiles and manpower
-        ref CountryState rok = ref _world.Countries[CountryTag.ROK];
-        rok.Manpower = 420_000;
-        rok.SetStockpile(EquipmentType.InfantryKit, TechGeneration.Gen1_1980Baseline, 2_400);
-        rok.SetStockpile(EquipmentType.SupportVehicles, TechGeneration.Gen1_1980Baseline, 450);
-        rok.SetStockpile(EquipmentType.IFV, TechGeneration.Gen1_1980Baseline, 320);
-        rok.SetStockpile(EquipmentType.MBT, TechGeneration.Gen1_1980Baseline, 180);
-        rok.SetStockpile(EquipmentType.Artillery, TechGeneration.Gen1_1980Baseline, 260);
-        rok.SetStockpile(EquipmentType.AttackHeli, TechGeneration.Gen1_1980Baseline, 45);
-        rok.SetStockpile(EquipmentType.TacticalAir, TechGeneration.Gen1_1980Baseline, 90);
-        rok.SetStockpile(EquipmentType.PGM, TechGeneration.Gen2_1988LateColdWar, 120);
+        // 1. Load starting OOB files for all 15 nations if available
+        bool loadedAnyOob = false;
+        for (byte tag = 0; tag < CountryTag.ActiveCount; tag++)
+        {
+            string code = CountryTag.GetCode(tag);
+            string? oobPath = ResolvePath($"data/oob_1985/{code}_oob.json");
+            if (oobPath != null && File.Exists(oobPath))
+            {
+                try
+                {
+                    JsonOobLoader.LoadOob(_world, oobPath);
+                    loadedAnyOob = true;
+                }
+                catch (Exception ex)
+                {
+                    GD.PushWarning($"[MainView] Failed to load OOB '{oobPath}': {ex.Message}");
+                }
+            }
+        }
 
-        ref CountryState prk = ref _world.Countries[CountryTag.PRK];
-        prk.Manpower = 580_000;
-        prk.SetStockpile(EquipmentType.InfantryKit, TechGeneration.Gen1_1980Baseline, 3_800);
-        prk.SetStockpile(EquipmentType.SupportVehicles, TechGeneration.Gen1_1980Baseline, 380);
-        prk.SetStockpile(EquipmentType.IFV, TechGeneration.Gen1_1980Baseline, 240);
-        prk.SetStockpile(EquipmentType.MBT, TechGeneration.Gen1_1980Baseline, 290);
-        prk.SetStockpile(EquipmentType.Artillery, TechGeneration.Gen1_1980Baseline, 520);
-        prk.SetStockpile(EquipmentType.TacticalAir, TechGeneration.Gen1_1980Baseline, 110);
-        prk.SetStockpile(EquipmentType.PGM, TechGeneration.Gen1_1980Baseline, 40);
+        // 2. Initialize starting stockpiles & manpower for all 15 nations
+        for (byte tag = 0; tag < CountryTag.ActiveCount; tag++)
+        {
+            ref CountryState country = ref _world.Countries[tag];
+            if (country.Manpower == 0)
+            {
+                country.Manpower = tag <= CountryTag.TWN ? 500_000 : 200_000;
+            }
+            if (country.GetTotalArchetypeStockpile(EquipmentType.InfantryKit) == 0)
+            {
+                country.SetStockpile(EquipmentType.InfantryKit, TechGeneration.Gen1_1980Baseline, 2_500);
+                country.SetStockpile(EquipmentType.SupportVehicles, TechGeneration.Gen1_1980Baseline, 400);
+                country.SetStockpile(EquipmentType.IFV, TechGeneration.Gen1_1980Baseline, 300);
+                country.SetStockpile(EquipmentType.MBT, TechGeneration.Gen1_1980Baseline, 200);
+                country.SetStockpile(EquipmentType.Artillery, TechGeneration.Gen1_1980Baseline, 300);
+                country.SetStockpile(EquipmentType.TacticalAir, TechGeneration.Gen1_1980Baseline, 80);
+                country.SetStockpile(EquipmentType.PGM, TechGeneration.Gen1_1980Baseline, 60);
+            }
+        }
 
-        // Spawn 1985 ROK Military Production Lines (23 Military Factories across States 0..4)
+        // 3. Spawn 1985 ROK Military Production Lines (23 Military Factories across States 0..4)
         _world.SpawnProductionLine(ProductionLineComponent.Create(
             lineId: 101,
             countryTag: CountryTag.ROK,
@@ -580,7 +608,7 @@ public partial class MainView : Node2D
             initialEfficiency: 0.50f,
             efficiencyCap: 0.85f));
 
-        // Spawn 1985 PRK Military Production Lines (34 Military Factories across States 5..9)
+        // 4. Spawn 1985 PRK Military Production Lines (34 Military Factories across States 5..9)
         _world.SpawnProductionLine(ProductionLineComponent.Create(
             lineId: 201,
             countryTag: CountryTag.PRK,
@@ -618,87 +646,91 @@ public partial class MainView : Node2D
             initialEfficiency: 0.55f,
             efficiencyCap: 0.80f));
 
-        // 1. ROK Capital Mechanized Infantry Division ('Tiger') at Paju / Munsan (Province 6)
-        _world.SpawnDivision(DivisionComponent.Create(
-            divisionId: 101,
-            countryTag: CountryTag.ROK,
-            startingProvinceId: 6,
-            templateId: 1,
-            combatWidth: 20,
-            softAttack: 65f,
-            hardAttack: 40f,
-            defense: 50f,
-            breakthrough: 50f,
-            armor: 45f,
-            piercing: 50f,
-            hardness: 0.50f,
-            maxOrganization: 60f,
-            startingStrength: 1.0f,
-            startingExperience: 0.65f,
-            speed: 28f,
-            pgmAuthorized: true));
+        if (!loadedAnyOob)
+        {
+            // Fallback starting divisions if no OOB files found
+            _world.SpawnDivision(DivisionComponent.Create(
+                divisionId: 101,
+                countryTag: CountryTag.ROK,
+                startingProvinceId: 6,
+                templateId: 1,
+                combatWidth: 20,
+                softAttack: 65f,
+                hardAttack: 40f,
+                defense: 50f,
+                breakthrough: 50f,
+                armor: 45f,
+                piercing: 50f,
+                hardness: 0.50f,
+                maxOrganization: 60f,
+                startingStrength: 1.0f,
+                startingExperience: 0.65f,
+                speed: 28f,
+                pgmAuthorized: true));
 
-        // 2. ROK 1st Infantry Division ('Forward') at Seoul Metropolitan (Province 0)
-        _world.SpawnDivision(DivisionComponent.Create(
-            divisionId: 102,
-            countryTag: CountryTag.ROK,
-            startingProvinceId: 0,
-            templateId: 2,
-            combatWidth: 20,
-            softAttack: 45f,
-            hardAttack: 20f,
-            defense: 55f,
-            breakthrough: 30f,
-            armor: 20f,
-            piercing: 45f,
-            hardness: 0.20f,
-            maxOrganization: 55f,
-            startingStrength: 1.0f,
-            startingExperience: 0.50f,
-            speed: 16f,
-            pgmAuthorized: false));
+            _world.SpawnDivision(DivisionComponent.Create(
+                divisionId: 102,
+                countryTag: CountryTag.ROK,
+                startingProvinceId: 0,
+                templateId: 2,
+                combatWidth: 20,
+                softAttack: 45f,
+                hardAttack: 20f,
+                defense: 55f,
+                breakthrough: 30f,
+                armor: 20f,
+                piercing: 45f,
+                hardness: 0.20f,
+                maxOrganization: 55f,
+                startingStrength: 1.0f,
+                startingExperience: 0.50f,
+                speed: 16f,
+                pgmAuthorized: false));
 
-        // 3. PRK 6th Infantry Division at Kaesong City (Province 92)
-        _world.SpawnDivision(DivisionComponent.Create(
-            divisionId: 201,
-            countryTag: CountryTag.PRK,
-            startingProvinceId: 92,
-            templateId: 3,
-            combatWidth: 20,
-            softAttack: 40f,
-            hardAttack: 15f,
-            defense: 45f,
-            breakthrough: 20f,
-            armor: 10f,
-            piercing: 20f,
-            hardness: 0.15f,
-            maxOrganization: 45f,
-            startingStrength: 1.0f,
-            startingExperience: 0.45f,
-            speed: 16f,
-            pgmAuthorized: false));
+            _world.SpawnDivision(DivisionComponent.Create(
+                divisionId: 201,
+                countryTag: CountryTag.PRK,
+                startingProvinceId: 92,
+                templateId: 3,
+                combatWidth: 20,
+                softAttack: 40f,
+                hardAttack: 15f,
+                defense: 45f,
+                breakthrough: 20f,
+                armor: 10f,
+                piercing: 20f,
+                hardness: 0.15f,
+                maxOrganization: 45f,
+                startingStrength: 1.0f,
+                startingExperience: 0.45f,
+                speed: 16f,
+                pgmAuthorized: false));
 
-        // 4. PRK 820th Armored Division at Sariwon Redoubt (Province 91)
-        _world.SpawnDivision(DivisionComponent.Create(
-            divisionId: 202,
-            countryTag: CountryTag.PRK,
-            startingProvinceId: 91,
-            templateId: 4,
-            combatWidth: 20,
-            softAttack: 45f,
-            hardAttack: 45f,
-            defense: 40f,
-            breakthrough: 45f,
-            armor: 35f,
-            piercing: 35f,
-            hardness: 0.65f,
-            maxOrganization: 40f,
-            startingStrength: 1.0f,
-            startingExperience: 0.50f,
-            speed: 24f,
-            pgmAuthorized: false));
+            _world.SpawnDivision(DivisionComponent.Create(
+                divisionId: 202,
+                countryTag: CountryTag.PRK,
+                startingProvinceId: 91,
+                templateId: 4,
+                combatWidth: 20,
+                softAttack: 45f,
+                hardAttack: 45f,
+                defense: 40f,
+                breakthrough: 45f,
+                armor: 35f,
+                piercing: 35f,
+                hardness: 0.65f,
+                maxOrganization: 40f,
+                startingStrength: 1.0f,
+                startingExperience: 0.50f,
+                speed: 24f,
+                pgmAuthorized: false));
 
-        GD.Print("[MainView] Spawned 1985 Korean Peninsula starting divisions (ROK 101, 102 vs. PRK 201, 202).");
+            GD.Print("[MainView] Spawned fallback 1985 Korean Peninsula starting divisions.");
+        }
+        else
+        {
+            GD.Print("[MainView] Spawned 1985 East Asia Theatre starting divisions from OOB JSON files.");
+        }
     }
 
     private static string? ResolvePath(string relativePath)

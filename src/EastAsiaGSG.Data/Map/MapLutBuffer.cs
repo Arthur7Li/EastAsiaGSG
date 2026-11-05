@@ -129,6 +129,10 @@ public sealed class MapLutBuffer
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static Color32 ComputePoliticalColor(in ProvinceData prov)
     {
+        if (prov.Terrain == TerrainType.Ocean)
+        {
+            return TerrainPalette[(int)TerrainType.Ocean].WithAlpha(CountryTag.None);
+        }
         return GetPoliticalColor(prov.ControllerTag);
     }
 

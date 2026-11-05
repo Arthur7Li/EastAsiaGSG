@@ -202,20 +202,21 @@ public static class JsonOobLoader
                 }
 
                 ref readonly DivisionTemplateRecord tpl = ref world.Templates[divDto.TemplateId];
-                ushort infReq = tpl.GetRequired(EquipmentType.InfantryKit);
+                TechGeneration techGen = world.GetUnlockedTechGeneration(countryTag, EquipmentType.InfantryKit);
+                tpl.ComputeCombatStats(
+                    techGen,
+                    out float softAttack,
+                    out float hardAttack,
+                    out float defense,
+                    out float breakthrough,
+                    out float armor,
+                    out float piercing,
+                    out float hardness,
+                    out float speed);
+
                 ushort ifvReq = tpl.GetRequired(EquipmentType.IFV);
                 ushort mbtReq = tpl.GetRequired(EquipmentType.MBT);
-                ushort artReq = tpl.GetRequired(EquipmentType.Artillery);
                 ushort heliReq = tpl.GetRequired(EquipmentType.AttackHeli);
-
-                float softAttack = 25.0f + (infReq * 0.05f) + (ifvReq * 0.12f) + (artReq * 0.45f) + (heliReq * 0.35f);
-                float hardAttack = 10.0f + (ifvReq * 0.10f) + (mbtReq * 0.35f) + (heliReq * 0.50f);
-                float defense = 35.0f + (infReq * 0.06f) + (ifvReq * 0.10f) + (artReq * 0.15f);
-                float breakthrough = 20.0f + (ifvReq * 0.12f) + (mbtReq * 0.35f) + (heliReq * 0.30f);
-                float armor = mbtReq > 0 ? 45.0f + (mbtReq * 0.15f) : (ifvReq > 0 ? 22.0f : 5.0f);
-                float piercing = mbtReq > 0 ? 55.0f : (ifvReq > 0 || heliReq > 0 ? 38.0f : 22.0f);
-                float hardness = mbtReq >= 80 ? 0.65f : (ifvReq >= 80 ? 0.45f : 0.15f);
-                float speed = heliReq > 0 ? 42.0f : (ifvReq > 0 || mbtReq > 0 ? 32.0f : 22.0f);
 
                 int divId = world.AllocateNextDivisionId();
                 DivisionComponent div = DivisionComponent.Create(

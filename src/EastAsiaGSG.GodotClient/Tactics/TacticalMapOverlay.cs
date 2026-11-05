@@ -23,6 +23,7 @@ public partial class TacticalMapOverlay : Node2D
     private CameraController? _camera;
 
     // Selection & Hover State
+    public byte ActivePlayerCountryTag { get; set; } = CountryTag.ROK;
     public int SelectedDivisionId { get; private set; } = -1;
     public Entity? SelectedDivisionEntity { get; private set; }
     public int HoveredDivisionId { get; private set; } = -1;
@@ -42,6 +43,14 @@ public partial class TacticalMapOverlay : Node2D
     // Pre-allocated click targets for hit-testing
     private readonly List<(Rect2 rect, DivisionComponent div, Entity entity)> _counterClickTargets = [];
     private readonly List<(Vector2 center, float radius, ActiveCombatComponent combat)> _bubbleClickTargets = [];
+
+    // Pre-allocated buffers to prevent GC allocations during draw
+    private readonly Vector2[] _arrowTriBuffer = new Vector2[3];
+    private readonly Vector2[] _arrowPolyBuffer = new Vector2[4];
+
+    private Vector2 _lastCameraPos;
+    private Vector2 _lastCameraZoom;
+    private int _lastTick = -1;
 
     private Font? _defaultFont;
 
@@ -64,7 +73,17 @@ public partial class TacticalMapOverlay : Node2D
             return;
         }
 
-        QueueRedraw();
+        Vector2 camPos = _camera?.Position ?? Vector2.Zero;
+        Vector2 camZoom = _camera?.Zoom ?? Vector2.One;
+        int currentTick = _world.TotalSixHourTicks;
+
+        if (camPos != _lastCameraPos || camZoom != _lastCameraZoom || currentTick != _lastTick)
+        {
+            _lastCameraPos = camPos;
+            _lastCameraZoom = camZoom;
+            _lastTick = currentTick;
+            QueueRedraw();
+        }
     }
 
     public override void _Draw()
@@ -95,7 +114,10 @@ public partial class TacticalMapOverlay : Node2D
     {
         _activeDivisions.Clear();
         _activeCombats.Clear();
-        _provincesToDivisions.Clear();
+        foreach (var list in _provincesToDivisions.Values)
+        {
+            list.Clear();
+        }
         _counterClickTargets.Clear();
         _bubbleClickTargets.Clear();
 
@@ -299,9 +321,16 @@ public partial class TacticalMapOverlay : Node2D
         Vector2 p2 = to - dir * size + normal * (size * 0.55f);
         Vector2 p3 = to - dir * size - normal * (size * 0.55f);
 
-        Vector2[] triangle = [p1, p2, p3];
-        DrawColoredPolygon(triangle, color);
-        DrawPolyline([p1, p2, p3, p1], new Color(0, 0, 0, 0.7f), 1.0f);
+        _arrowTriBuffer[0] = p1;
+        _arrowTriBuffer[1] = p2;
+        _arrowTriBuffer[2] = p3;
+        DrawColoredPolygon(_arrowTriBuffer, color);
+
+        _arrowPolyBuffer[0] = p1;
+        _arrowPolyBuffer[1] = p2;
+        _arrowPolyBuffer[2] = p3;
+        _arrowPolyBuffer[3] = p1;
+        DrawPolyline(_arrowPolyBuffer, new Color(0, 0, 0, 0.7f), 1.0f);
     }
 
     #endregion
@@ -352,7 +381,10 @@ public partial class TacticalMapOverlay : Node2D
                     Vector2 tip = new(counterCenter.X, counterRect.Position.Y - 2.0f * counterScale);
                     Vector2 b1 = new(counterCenter.X - 5.0f * counterScale, counterRect.Position.Y - 9.0f * counterScale);
                     Vector2 b2 = new(counterCenter.X + 5.0f * counterScale, counterRect.Position.Y - 9.0f * counterScale);
-                    DrawColoredPolygon([tip, b1, b2], new Color(1.0f, 0.84f, 0.0f));
+                    _arrowTriBuffer[0] = tip;
+                    _arrowTriBuffer[1] = b1;
+                    _arrowTriBuffer[2] = b2;
+                    DrawColoredPolygon(_arrowTriBuffer, new Color(1.0f, 0.84f, 0.0f));
                 }
                 else if (isHovered)
                 {
@@ -577,14 +609,19 @@ public partial class TacticalMapOverlay : Node2D
                 // Right Click with selected division: Issue Move / Attack Order
                 if (SelectedDivisionId != -1 && SelectedDivisionEntity.HasValue && _world.EcsWorld.IsAlive(SelectedDivisionEntity.Value))
                 {
+                    ref DivisionComponent div = ref _world.EcsWorld.Get<DivisionComponent>(SelectedDivisionEntity.Value);
+                    if (div.CountryTag != ActivePlayerCountryTag)
+                    {
+                        return;
+                    }
+
                     ushort targetProvinceId = _mapRenderer.PickProvinceAtGlobalPosition(mouseGlobal);
                     if (targetProvinceId < SimulationWorld.MaxProvinces)
                     {
-                        ref DivisionComponent div = ref _world.EcsWorld.Get<DivisionComponent>(SelectedDivisionEntity.Value);
                         if (targetProvinceId != div.CurrentProvinceId)
                         {
                             _pendingOrders[div.DivisionId] = targetProvinceId;
-                            _world.EnqueueCommand(SimulationCommand.CreateMoveDivision(div.CountryTag, div.DivisionId, targetProvinceId));
+                            _world.EnqueueCommand(SimulationCommand.CreateMoveDivision(ActivePlayerCountryTag, div.DivisionId, targetProvinceId));
                             MoveOrderIssued?.Invoke(targetProvinceId);
                             GetViewport().SetInputAsHandled();
                             QueueRedraw();

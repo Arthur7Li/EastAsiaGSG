@@ -318,8 +318,8 @@ public static class CombatResolutionSystem
             float terrainMod = baseTerrainAttackMod * edgePenalty;
             float airMod = ComputeAirModifier(world, targetProv.StrategicRegionId, att.CountryTag, def.CountryTag);
 
-            float strFactor = System.Math.Clamp(att.Strength, 0.10f, 1.0f);
-            float defStrFactor = System.Math.Clamp(def.Strength, 0.10f, 1.0f);
+            float strFactor = System.Math.Clamp(att.Strength, 0.10f, 1.0f) * (0.90f + (0.20f * System.Math.Clamp(att.Experience, 0.0f, 1.0f)));
+            float defStrFactor = System.Math.Clamp(def.Strength, 0.10f, 1.0f) * (0.90f + (0.20f * System.Math.Clamp(def.Experience, 0.0f, 1.0f)));
             float defEntrenchmentMod = 1.0f + def.Entrenchment;
 
             CombatExchangeResult exchange = CalculateExchange(
@@ -353,8 +353,8 @@ public static class CombatResolutionSystem
             ref DivisionComponent att = ref world.EcsWorld.Get<DivisionComponent>(attackers[targetIdx]);
 
             float airMod = ComputeAirModifier(world, targetProv.StrategicRegionId, def.CountryTag, att.CountryTag);
-            float defStrFactor = System.Math.Clamp(def.Strength, 0.10f, 1.0f);
-            float attStrFactor = System.Math.Clamp(att.Strength, 0.10f, 1.0f);
+            float defStrFactor = System.Math.Clamp(def.Strength, 0.10f, 1.0f) * (0.90f + (0.20f * System.Math.Clamp(def.Experience, 0.0f, 1.0f)));
+            float attStrFactor = System.Math.Clamp(att.Strength, 0.10f, 1.0f) * (0.90f + (0.20f * System.Math.Clamp(att.Experience, 0.0f, 1.0f)));
             float defEntrenchmentMod = 1.0f + def.Entrenchment;
 
             CombatExchangeResult exchange = CalculateExchange(
@@ -554,6 +554,11 @@ public static class CombatResolutionSystem
 
         ushort capturedProvinceId = combat.TargetProvinceId;
         world.Provinces[capturedProvinceId].ControllerTag = combat.AttackerTag;
+        ushort capturedStateId = world.Provinces[capturedProvinceId].StateId;
+        if (capturedStateId < SimulationWorld.MaxStates)
+        {
+            world.RecalculateStateController(capturedStateId);
+        }
 
         for (int i = 0; i < attackerEntities.Length; i++)
         {

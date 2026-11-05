@@ -177,7 +177,7 @@ public partial class TimeControlsToolbar : PanelContainer
 
     public override void _UnhandledInput(InputEvent @event)
     {
-        if (@event is InputEventKey { Pressed: true } keyEvent)
+        if (@event is InputEventKey { Pressed: true, Echo: false } keyEvent)
         {
             if (keyEvent.Keycode == Key.Space)
             {

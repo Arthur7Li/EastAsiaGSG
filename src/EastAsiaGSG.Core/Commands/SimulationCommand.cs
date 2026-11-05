@@ -16,7 +16,9 @@ public enum CommandType : byte
     SelectFocus = 4,
     ShiftDefcon = 5,
     QueueConstruction = 6,
-    AssignProductionFactories = 7
+    AssignProductionFactories = 7,
+    DeclareWar = 8,
+    RecruitDivision = 9
 }
 
 /// <summary>
@@ -101,5 +103,25 @@ public struct SimulationCommand
         CountryTag = countryTag,
         EntityId = lineId,
         IntParam0 = militaryFactories
+    };
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static SimulationCommand CreateDeclareWar(byte actorCountryTag, byte targetCountryTag) => new()
+    {
+        Type = CommandType.DeclareWar,
+        CountryTag = actorCountryTag,
+        TargetId = targetCountryTag
+    };
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static SimulationCommand CreateRecruitDivision(
+        byte countryTag,
+        ushort templateId,
+        ushort spawnProvinceId = ushort.MaxValue) => new()
+    {
+        Type = CommandType.RecruitDivision,
+        CountryTag = countryTag,
+        TargetId = templateId,
+        IntParam0 = spawnProvinceId
     };
 }

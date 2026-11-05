@@ -1,3 +1,4 @@
+using EastAsiaGSG.Core.Commands;
 using EastAsiaGSG.Core.Components;
 using EastAsiaGSG.Core.ECS;
 using EastAsiaGSG.Core.Systems;
@@ -8,13 +9,24 @@ namespace EastAsiaGSG.GodotClient.UI;
 /// <summary>
 /// Compact Top-Left HUD Bar displaying the active country's macro-industrial indicators
 /// (PP, Stability, War Support, Manpower, Civilian/Military factories), key equipment stockpiles,
-/// and a country tag switcher (ROK / PRK). Sized to ~490px width so it never overlaps TimeControlsToolbar.
+/// player agency actions (Deploy Division, Declare War), and a 15-country tag switcher.
 /// </summary>
 public partial class NationalStockpileTopBar : PanelContainer
 {
+    private static readonly byte[] PlayableCountryTags =
+    [
+        CountryTag.ROK, CountryTag.PRK, CountryTag.PRC, CountryTag.USA,
+        CountryTag.SOV, CountryTag.JPN, CountryTag.TWN, CountryTag.VNM,
+        CountryTag.PHL, CountryTag.MNG, CountryTag.THA, CountryTag.LAO,
+        CountryTag.KHM, CountryTag.MMR, CountryTag.MYS
+    ];
+
     private SimulationWorld? _world;
 
     private Button? _countrySwitchButton;
+    private Button? _deployDivButton;
+    private Button? _declareWarButton;
+    private Label? _newsLabel;
     private Label? _macroStatsLabel;
     private Label? _stockpileStatsLabel;
 
@@ -76,13 +88,13 @@ public partial class NationalStockpileTopBar : PanelContainer
         hbox.AddThemeConstantOverride("separation", 10);
         AddChild(hbox);
 
-        // 1. Country Tag Switcher Button (ROK <-> PRK)
+        // 1. Country Tag Switcher Button (Cycles 15 nations)
         _countrySwitchButton = new Button
         {
             Text = "ROK ⇄",
             CustomMinimumSize = new Vector2(68, 34),
             FocusMode = FocusModeEnum.None,
-            TooltipText = "Switch inspected nation between South Korea (ROK) and North Korea (PRK) [Hotkey: Tab]"
+            TooltipText = "Switch inspected nation between 15 theatre powers [Hotkey: Tab]"
         };
         _countrySwitchButton.AddThemeFontSizeOverride("font_size", 12);
         _countrySwitchButton.Pressed += CycleActiveCountry;
@@ -90,7 +102,7 @@ public partial class NationalStockpileTopBar : PanelContainer
 
         hbox.AddChild(new VSeparator());
 
-        // 2. Two-row compact telemetry container (~400px width)
+        // 2. Two-row compact telemetry container (~380px width)
         var telemetryVBox = new VBoxContainer
         {
             SizeFlagsHorizontal = SizeFlags.ExpandFill,
@@ -114,13 +126,80 @@ public partial class NationalStockpileTopBar : PanelContainer
         _stockpileStatsLabel.AddThemeFontSizeOverride("font_size", 11);
         _stockpileStatsLabel.AddThemeColorOverride("font_color", new Color(0.72f, 0.86f, 0.98f));
         telemetryVBox.AddChild(_stockpileStatsLabel);
+
+        hbox.AddChild(new VSeparator());
+
+        // 3. Compact Player Agency Actions: Deploy Division, Declare War, and News Indicator
+        var actionsHBox = new HBoxContainer();
+        actionsHBox.AddThemeConstantOverride("separation", 4);
+        hbox.AddChild(actionsHBox);
+
+        _deployDivButton = new Button
+        {
+            Text = "➕ Deploy",
+            FocusMode = FocusModeEnum.None,
+            TooltipText = "Deploy field division at capital province from national manpower & equipment stockpile"
+        };
+        _deployDivButton.AddThemeFontSizeOverride("font_size", 11);
+        _deployDivButton.Pressed += OnDeployDivisionPressed;
+        actionsHBox.AddChild(_deployDivButton);
+
+        _declareWarButton = new Button
+        {
+            Text = "⚔ War",
+            FocusMode = FocusModeEnum.None,
+            TooltipText = "Issue diplomatic wargoal / declare war on theatre rival"
+        };
+        _declareWarButton.AddThemeFontSizeOverride("font_size", 11);
+        _declareWarButton.Pressed += OnDeclareWarPressed;
+        actionsHBox.AddChild(_declareWarButton);
+
+        _newsLabel = new Label
+        {
+            Text = "📰 0",
+            Visible = false,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+        _newsLabel.AddThemeFontSizeOverride("font_size", 11);
+        _newsLabel.AddThemeColorOverride("font_color", new Color(0.40f, 0.85f, 1.0f));
+        actionsHBox.AddChild(_newsLabel);
     }
 
     private void CycleActiveCountry()
     {
-        byte nextTag = ActiveCountryTag == CountryTag.ROK ? CountryTag.PRK : CountryTag.ROK;
-        SetActiveCountry(nextTag);
+        int currentIndex = Array.IndexOf(PlayableCountryTags, ActiveCountryTag);
+        if (currentIndex < 0) currentIndex = 0;
+        int nextIndex = (currentIndex + 1) % PlayableCountryTags.Length;
+        SetActiveCountry(PlayableCountryTags[nextIndex]);
     }
+
+    private void OnDeployDivisionPressed()
+    {
+        if (_world == null) return;
+        ushort capitalProv = _world.GetCapitalProvince(ActiveCountryTag);
+        _world.EnqueueCommand(SimulationCommand.CreateRecruitDivision(ActiveCountryTag, DivisionTemplateRecord.DefaultInfantryTemplateId, capitalProv));
+    }
+
+    private void OnDeclareWarPressed()
+    {
+        if (_world == null) return;
+        byte rivalTag = GetDefaultRivalTag(ActiveCountryTag);
+        _world.EnqueueCommand(SimulationCommand.CreateDeclareWar(ActiveCountryTag, rivalTag));
+    }
+
+    private static byte GetDefaultRivalTag(byte tag) => tag switch
+    {
+        CountryTag.ROK => CountryTag.PRK,
+        CountryTag.PRK => CountryTag.ROK,
+        CountryTag.TWN => CountryTag.PRC,
+        CountryTag.PRC => CountryTag.TWN,
+        CountryTag.USA => CountryTag.SOV,
+        CountryTag.SOV => CountryTag.USA,
+        CountryTag.JPN => CountryTag.SOV,
+        CountryTag.VNM => CountryTag.KHM,
+        CountryTag.KHM => CountryTag.VNM,
+        _ => CountryTag.PRC
+    };
 
     public override void _UnhandledKeyInput(InputEvent @event)
     {
@@ -169,6 +248,32 @@ public partial class NationalStockpileTopBar : PanelContainer
         if (_countrySwitchButton != null)
         {
             _countrySwitchButton.Text = $"{code} ⇄";
+        }
+
+        if (_declareWarButton != null)
+        {
+            byte rival = GetDefaultRivalTag(tag);
+            _declareWarButton.TooltipText = $"Declare War on theatre rival [{CountryTag.GetCode(rival)}]";
+        }
+
+        if (_deployDivButton != null)
+        {
+            _deployDivButton.TooltipText = $"Deploy 1 Division at capital ({_world.GetCapitalProvince(tag)}) using national manpower & stockpile";
+        }
+
+        if (_newsLabel != null)
+        {
+            int newsCount = _world.TriggeredNewsEventCount;
+            if (newsCount > 0)
+            {
+                _newsLabel.Visible = true;
+                _newsLabel.Text = $"📰 {newsCount}";
+                _newsLabel.TooltipText = $"{newsCount} active news events recorded in simulation";
+            }
+            else
+            {
+                _newsLabel.Visible = false;
+            }
         }
 
         ref readonly CountryState country = ref _world.Countries[tag];

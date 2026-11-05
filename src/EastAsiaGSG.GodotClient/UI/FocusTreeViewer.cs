@@ -60,7 +60,15 @@ public partial class FocusTreeViewer : PanelContainer
         CountryTag.USA,
         CountryTag.SOV,
         CountryTag.JPN,
-        CountryTag.TWN
+        CountryTag.TWN,
+        CountryTag.VNM,
+        CountryTag.PHL,
+        CountryTag.MNG,
+        CountryTag.THA,
+        CountryTag.LAO,
+        CountryTag.KHM,
+        CountryTag.MMR,
+        CountryTag.MYS
     ];
 
     private SimulationWorld? _world;
