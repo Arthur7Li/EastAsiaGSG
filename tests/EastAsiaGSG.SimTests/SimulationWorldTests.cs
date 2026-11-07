@@ -14,7 +14,7 @@ public sealed class SimulationWorldTests
     [Fact]
     public unsafe void UnmanagedStructs_HaveExactBlittableSizesAndFixedBufferAccess()
     {
-        Assert.Equal(24, sizeof(ProvinceData));
+        Assert.Equal(32, sizeof(ProvinceData));
         Assert.Equal(32, sizeof(StateData));
         Assert.Equal(184, sizeof(CountryState));
         Assert.Equal(40, sizeof(StrategicRegionData));
@@ -438,6 +438,26 @@ public sealed class SimulationWorldTests
         bool foundFallback = world.TryFindDivisionById(fallbackEntityId, out Entity fallbackEntity);
         Assert.True(foundFallback);
         Assert.Equal(entityB, fallbackEntity);
+    }
+
+    [Fact]
+    public void DirtyRevisionCounters_IncrementCorrectlyOnInvalidation()
+    {
+        using SimulationWorld world = new();
+        Assert.Equal(1u, world.OwnershipRevision);
+        Assert.Equal(1u, world.SupplyRevision);
+        Assert.Equal(1u, world.EconomyRevision);
+        Assert.Equal(1u, world.AirNavalRevision);
+
+        world.InvalidateOwnership();
+        world.InvalidateSupply();
+        world.InvalidateEconomy();
+        world.InvalidateAirNaval();
+
+        Assert.Equal(2u, world.OwnershipRevision);
+        Assert.Equal(2u, world.SupplyRevision);
+        Assert.Equal(2u, world.EconomyRevision);
+        Assert.Equal(2u, world.AirNavalRevision);
     }
 
     private static void PopulateMockEastAsiaGraph(SimulationWorld world)

@@ -233,6 +233,7 @@ public static class ConstructionSystem
                 state.ConstructionProgress -= costIc;
                 IncrementBuildingLevel(ref state, state.ActiveBuildingType);
                 state.QueuedBuildingLevels--;
+                world.InvalidateEconomy();
             }
 
             if (state.QueuedBuildingLevels == 0)

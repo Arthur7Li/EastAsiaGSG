@@ -284,5 +284,7 @@ public static class AirAndNavalRegionSystem
                 }
             }
         }
+
+        world.InvalidateAirNaval();
     }
 }

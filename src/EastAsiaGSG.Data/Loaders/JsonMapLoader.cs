@@ -2,6 +2,7 @@ using System.Text.Json;
 using EastAsiaGSG.Core.Components;
 using EastAsiaGSG.Core.ECS;
 using EastAsiaGSG.Core.Math;
+using EastAsiaGSG.Data.Map;
 using EastAsiaGSG.Data.Schemas;
 
 namespace EastAsiaGSG.Data.Loaders;
@@ -15,7 +16,11 @@ public static class JsonMapLoader
     /// <summary>
     /// Loads map states and provinces from JSON files on disk.
     /// </summary>
-    public static void LoadMap(SimulationWorld world, string statesJsonPath, string provincesJsonPath)
+    public static MapMetadataRegistry LoadMap(
+        SimulationWorld world,
+        string statesJsonPath,
+        string provincesJsonPath,
+        MapMetadataRegistry? metadata = null)
     {
         ArgumentNullException.ThrowIfNull(world);
         ArgumentException.ThrowIfNullOrWhiteSpace(statesJsonPath);
@@ -33,13 +38,17 @@ public static class JsonMapLoader
 
         using FileStream statesStream = File.OpenRead(statesJsonPath);
         using FileStream provincesStream = File.OpenRead(provincesJsonPath);
-        LoadMap(world, statesStream, provincesStream);
+        return LoadMap(world, statesStream, provincesStream, metadata);
     }
 
     /// <summary>
     /// Loads map states and provinces from IO Streams.
     /// </summary>
-    public static void LoadMap(SimulationWorld world, Stream statesStream, Stream provincesStream)
+    public static MapMetadataRegistry LoadMap(
+        SimulationWorld world,
+        Stream statesStream,
+        Stream provincesStream,
+        MapMetadataRegistry? metadata = null)
     {
         ArgumentNullException.ThrowIfNull(world);
         ArgumentNullException.ThrowIfNull(statesStream);
@@ -48,20 +57,24 @@ public static class JsonMapLoader
         List<StateDto>? states = JsonSerializer.Deserialize(statesStream, MapJsonContext.Default.ListStateDto);
         List<ProvinceDto>? provinces = JsonSerializer.Deserialize(provincesStream, MapJsonContext.Default.ListProvinceDto);
 
-        LoadAndValidate(world, states, provinces);
+        return LoadAndValidate(world, states, provinces, metadata);
     }
 
     /// <summary>
     /// Loads map states and provinces from in-memory UTF-8 JSON byte spans.
     /// </summary>
-    public static void LoadMap(SimulationWorld world, ReadOnlySpan<byte> statesUtf8Json, ReadOnlySpan<byte> provincesUtf8Json)
+    public static MapMetadataRegistry LoadMap(
+        SimulationWorld world,
+        ReadOnlySpan<byte> statesUtf8Json,
+        ReadOnlySpan<byte> provincesUtf8Json,
+        MapMetadataRegistry? metadata = null)
     {
         ArgumentNullException.ThrowIfNull(world);
 
         List<StateDto>? states = JsonSerializer.Deserialize(statesUtf8Json, MapJsonContext.Default.ListStateDto);
         List<ProvinceDto>? provinces = JsonSerializer.Deserialize(provincesUtf8Json, MapJsonContext.Default.ListProvinceDto);
 
-        LoadAndValidate(world, states, provinces);
+        return LoadAndValidate(world, states, provinces, metadata);
     }
 
     /// <summary>
@@ -184,11 +197,14 @@ public static class JsonMapLoader
         return states;
     }
 
-    private static void LoadAndValidate(
+    private static MapMetadataRegistry LoadAndValidate(
         SimulationWorld world,
         List<StateDto>? states,
-        List<ProvinceDto>? provinces)
+        List<ProvinceDto>? provinces,
+        MapMetadataRegistry? metadata = null)
     {
+        metadata ??= new MapMetadataRegistry();
+
         if (states == null || states.Count == 0)
         {
             throw new MapValidationException("State definition list is empty or could not be deserialized.");
@@ -361,6 +377,8 @@ public static class JsonMapLoader
         // 5. Populate SimulationWorld.States
         foreach (StateDto stateDto in states)
         {
+            metadata.RegisterStateName(stateDto.StateId, stateDto.Name);
+
             ref StateData state = ref world.States[stateDto.StateId];
             CountryTag.TryParse(stateDto.OwnerTag, out byte ownerTag);
             byte controllerTag = ownerTag;
@@ -410,6 +428,8 @@ public static class JsonMapLoader
         // 6. Populate SimulationWorld.Provinces
         foreach (ProvinceDto provDto in provinces)
         {
+            metadata.RegisterProvinceName(provDto.ProvinceId, provDto.Name);
+
             ref ProvinceData prov = ref world.Provinces[provDto.ProvinceId];
             ref readonly StateData parentState = ref world.States[provDto.StateId];
 
@@ -436,6 +456,9 @@ public static class JsonMapLoader
             prov.InfrastructureLevel = provDto.InfrastructureLevel;
             prov.CenterX = provDto.CenterX;
             prov.CenterY = provDto.CenterY;
+            prov.VictoryPoints = provDto.VictoryPoints;
+            prov.AirfieldLevel = provDto.AirfieldLevel;
+            prov.FortificationLevel = provDto.FortificationLevel;
             prov.SupplyRatio = 1.0f;
         }
 
@@ -505,6 +528,8 @@ public static class JsonMapLoader
                 world.Regions[r].IsSeaZone = 1;
             }
         }
+
+        return metadata;
     }
 
     public static AdjacencyEdgeFlags ParseEdgeFlags(string? flagsStr)

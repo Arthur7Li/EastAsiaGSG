@@ -19,6 +19,7 @@ public partial class ProvinceInfoPanel : PanelContainer
     private readonly StringBuilder _stationedSb = new(256);
 
     private SimulationWorld? _world;
+    private MapMetadataRegistry? _metadata;
 
     private Label? _headerLabel;
     private Label? _stateLabel;
@@ -39,9 +40,10 @@ public partial class ProvinceInfoPanel : PanelContainer
         BuildUi();
     }
 
-    public void Initialize(SimulationWorld world)
+    public void Initialize(SimulationWorld world, MapMetadataRegistry? metadata = null)
     {
         _world = world;
+        _metadata = metadata;
     }
 
     private void BuildUi()
@@ -162,6 +164,7 @@ public partial class ProvinceInfoPanel : PanelContainer
         {
             DivisionComponent d = div.Value;
             string tag = CountryTag.GetCode(d.CountryTag);
+            string templateName = _metadata != null ? _metadata.GetTemplateName(d.TemplateId) : $"Template #{d.TemplateId}";
             string stateStr = d.State switch
             {
                 DivisionState.Attacking => "⚔ ATTACKING",
@@ -171,7 +174,7 @@ public partial class ProvinceInfoPanel : PanelContainer
                 _ => "● IDLE"
             };
 
-            _selectedDivLabel.Text = $"★ [{tag}] Division #{d.DivisionId} ({stateStr})\n" +
+            _selectedDivLabel.Text = $"★ [{tag}] {templateName} (#{d.DivisionId}, {stateStr})\n" +
                                      $"Org: {d.Organization:F0}/{d.MaxOrganization:F0} | Str: {d.Strength:P0} | Speed: {d.Speed:F0}km/h\n" +
                                      $"👉 Right-Click map to Move or Attack!";
             _selectedDivLabel.AddThemeColorOverride("font_color", new Color(1.0f, 0.90f, 0.40f));
@@ -253,11 +256,15 @@ public partial class ProvinceInfoPanel : PanelContainer
         string ownerTag = CountryTag.GetCode(prov.OwnerTag);
         string ctrlTag = CountryTag.GetCode(prov.ControllerTag);
 
-        _headerLabel.Text = $"Province #{provinceId} ({prov.Terrain})";
-        _stateLabel!.Text = $"State #{stateId} (Region #{prov.StrategicRegionId})";
+        string provName = _metadata != null ? _metadata.GetProvinceName(provinceId) : $"Province #{provinceId}";
+        string stateName = _metadata != null ? _metadata.GetStateName(stateId) : $"State #{stateId}";
+        string regionName = _metadata != null ? _metadata.GetRegionName(prov.StrategicRegionId) : $"Region #{prov.StrategicRegionId}";
+
+        _headerLabel.Text = $"{provName} ({prov.Terrain})";
+        _stateLabel!.Text = $"{stateName} ({regionName})";
         _nationLabel!.Text = $"Owner: {ownerTag} | Controller: {ctrlTag}";
         _terrainLabel!.Text = $"Terrain: {prov.Terrain} (Supply Ratio: {prov.SupplyRatio:P0})";
-        _infraLabel!.Text = $"Hub: Lv.{prov.SupplyHubLevel} | Port: Lv.{prov.PortLevel} | Infra: Lv.{prov.InfrastructureLevel}";
+        _infraLabel!.Text = $"VP: {prov.VictoryPoints} | Hub: Lv.{prov.SupplyHubLevel} | Port: Lv.{prov.PortLevel} | Infra: Lv.{prov.InfrastructureLevel} | Fort: Lv.{prov.FortificationLevel}";
         _economyLabel!.Text = $"Civ: {state.CivilianFactories} | Mil: {state.MilitaryFactories} | Dock: {state.NavalDockyards} | Pop: {state.Population:N0}";
         _resourcesLabel!.Text = $"Steel: {state.GetResource(ResourceType.Steel)} | Semi: {state.GetResource(ResourceType.Semiconductors)} | Oil: {state.GetResource(ResourceType.Oil)} | Alum: {state.GetResource(ResourceType.Aluminum)}";
 
@@ -276,7 +283,7 @@ public partial class ProvinceInfoPanel : PanelContainer
                 ? $" | A2/AD: -{region.CoastalRadarSamPenaltyBps / 100.0f:F0}%"
                 : "";
 
-            _strategicRegionLabel!.Text = $"Reg #{prov.StrategicRegionId}: Air {blueAir:P0}B/{redAir:P0}R | Nav {blueNaval:P0}B/{redNaval:P0}R | {straitStatus}{a2adStatus}";
+            _strategicRegionLabel!.Text = $"{regionName}: Air {blueAir:P0}B/{redAir:P0}R | Nav {blueNaval:P0}B/{redNaval:P0}R | {straitStatus}{a2adStatus}";
         }
         else
         {

@@ -2,6 +2,7 @@ using System.Text;
 using EastAsiaGSG.Core.Components;
 using EastAsiaGSG.Core.ECS;
 using EastAsiaGSG.Data.Loaders;
+using EastAsiaGSG.Data.Map;
 using Xunit;
 
 namespace EastAsiaGSG.SimTests;
@@ -440,5 +441,31 @@ public sealed class MapLoaderTests
             JsonMapLoader.LoadMap(world, statesBytes, provBytes));
 
         Assert.Contains("invalid OwnerTag", ex.Message);
+    }
+
+    [Fact]
+    public void LoadMap_PopulatesMapMetadataRegistry_AndProvinceMetadataFields()
+    {
+        string root = FindRepositoryRoot();
+        string statesPath = Path.Combine(root, "data", "map", "east_asia_1985_states.json");
+        string provincesPath = Path.Combine(root, "data", "map", "east_asia_1985_provinces.json");
+        string oobPath = Path.Combine(root, "data", "oob_1985", "ROK_oob.json");
+
+        using var world = new SimulationWorld();
+        MapMetadataRegistry metadata = JsonMapLoader.LoadMap(world, statesPath, provincesPath);
+
+        Assert.NotNull(metadata);
+        Assert.Equal("Capital & Frontline Command (Seoul-Gyeonggi-Gangwon Frontier)", metadata.GetStateName(0));
+        Assert.Equal("Yellow Sea & Bohai Gulf", metadata.GetRegionName(0));
+        Assert.NotEmpty(metadata.GetProvinceName(0));
+
+        // Load OOB with metadata
+        LoadedOob oob = JsonOobLoader.LoadOob(world, oobPath, metadata: metadata);
+        Assert.NotEmpty(metadata.GetTemplateName(1));
+
+        // Verify fallback formatting
+        Assert.Equal("Province #999", metadata.GetProvinceName(999));
+        Assert.Equal("State #99", metadata.GetStateName(99));
+        Assert.Equal("Global Flashpoint #1234ABCD", metadata.GetNewsEventTitle(0x1234ABCD));
     }
 }

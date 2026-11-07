@@ -1,6 +1,7 @@
 using System.Text.Json;
 using EastAsiaGSG.Core.Components;
 using EastAsiaGSG.Core.ECS;
+using EastAsiaGSG.Data.Map;
 using EastAsiaGSG.Data.Schemas;
 
 namespace EastAsiaGSG.Data.Loaders;
@@ -29,7 +30,8 @@ public static class JsonOobLoader
     public static LoadedOob LoadOob(
         SimulationWorld world,
         string jsonFilePath,
-        byte? overrideCountryTag = null)
+        byte? overrideCountryTag = null,
+        MapMetadataRegistry? metadata = null)
     {
         ArgumentNullException.ThrowIfNull(world);
         ArgumentException.ThrowIfNullOrWhiteSpace(jsonFilePath);
@@ -40,36 +42,39 @@ public static class JsonOobLoader
         }
 
         using FileStream stream = File.OpenRead(jsonFilePath);
-        return LoadOob(world, stream, overrideCountryTag);
+        return LoadOob(world, stream, overrideCountryTag, metadata);
     }
 
     public static LoadedOob LoadOob(
         SimulationWorld world,
         Stream stream,
-        byte? overrideCountryTag = null)
+        byte? overrideCountryTag = null,
+        MapMetadataRegistry? metadata = null)
     {
         ArgumentNullException.ThrowIfNull(world);
         ArgumentNullException.ThrowIfNull(stream);
 
         OobDto? dto = JsonSerializer.Deserialize(stream, MapJsonContext.Default.OobDto);
-        return CompileAndRegister(world, dto, overrideCountryTag);
+        return CompileAndRegister(world, dto, overrideCountryTag, metadata);
     }
 
     public static LoadedOob LoadOob(
         SimulationWorld world,
         ReadOnlySpan<byte> utf8Json,
-        byte? overrideCountryTag = null)
+        byte? overrideCountryTag = null,
+        MapMetadataRegistry? metadata = null)
     {
         ArgumentNullException.ThrowIfNull(world);
 
         OobDto? dto = JsonSerializer.Deserialize(utf8Json, MapJsonContext.Default.OobDto);
-        return CompileAndRegister(world, dto, overrideCountryTag);
+        return CompileAndRegister(world, dto, overrideCountryTag, metadata);
     }
 
     public static LoadedOob CompileAndRegister(
         SimulationWorld world,
         OobDto? dto,
-        byte? overrideCountryTag = null)
+        byte? overrideCountryTag = null,
+        MapMetadataRegistry? metadata = null)
     {
         ArgumentNullException.ThrowIfNull(world);
 
@@ -167,6 +172,7 @@ public static class JsonOobLoader
                 supportSpan[..sCount]);
 
             world.RegisterDivisionTemplate(in record);
+            metadata?.RegisterTemplateName(tplDto.TemplateId, tplDto.Name);
         }
 
         // 2. Validate & Spawn Starting Divisions

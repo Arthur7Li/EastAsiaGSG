@@ -2,6 +2,7 @@ using EastAsiaGSG.Core.Commands;
 using EastAsiaGSG.Core.Components;
 using EastAsiaGSG.Core.ECS;
 using EastAsiaGSG.Core.Systems;
+using EastAsiaGSG.Data.Map;
 using Godot;
 
 namespace EastAsiaGSG.GodotClient.UI;
@@ -23,6 +24,7 @@ public partial class ConstructionQueuePanel : PanelContainer
     }
 
     private SimulationWorld? _world;
+    private MapMetadataRegistry? _metadata;
     private byte _activeCountryTag = CountryTag.ROK;
 
     private Label? _titleLabel;
@@ -42,10 +44,11 @@ public partial class ConstructionQueuePanel : PanelContainer
         Refresh();
     }
 
-    public void Initialize(SimulationWorld world, byte activeCountryTag = CountryTag.ROK)
+    public void Initialize(SimulationWorld world, byte activeCountryTag = CountryTag.ROK, MapMetadataRegistry? metadata = null)
     {
         _world = world;
         _activeCountryTag = activeCountryTag;
+        _metadata = metadata;
         RebuildStateRows();
         Refresh();
     }
@@ -350,51 +353,14 @@ public partial class ConstructionQueuePanel : PanelContainer
         }
     }
 
-    private static string GetStateDisplayName(ushort stateId) => stateId switch
+    private string GetStateDisplayName(ushort stateId)
     {
-        0 => "State #0: Seoul-Gyeonggi-Gangwon Frontier",
-        1 => "State #1: Yeongnam Industrial Titan (Busan)",
-        2 => "State #2: Hoseo-Honam Transit & Coast",
-        5 => "State #5: Pyongyang-Hwanghae Fortress",
-        6 => "State #6: Pyongan-Chagang Yalu Frontier",
-        7 => "State #7: Hamgyong-Gangwon Bastion",
-        10 => "State #10: Khabarovsk-Amur BAM Rail",
-        11 => "State #11: Primorye-Vladivostok Bastion",
-        12 => "State #12: Sakhalin & Kuril Islands",
-        20 => "State #20: Beijing-Tianjin Direct Municipality",
-        21 => "State #21: Hebei Province",
-        22 => "State #22: Liaoning Province & Dalian",
-        23 => "State #23: Jilin & Heilongjiang Frontier",
-        24 => "State #24: Shandong Province & Qingdao",
-        25 => "State #25: Jiangsu & Shanghai Megalopolis",
-        26 => "State #26: Zhejiang Province & Ningbo",
-        27 => "State #27: Fujian Strait Frontline",
-        28 => "State #28: Guangdong & Shenzhen SEZ",
-        29 => "State #29: Hainan & Leizhou South Sea Bastion",
-        30 => "State #30: Tokyo-Kanto Megalopolis",
-        31 => "State #31: Hokkaido Northern Frontier",
-        32 => "State #32: Kansai-Chubu Heartland",
-        33 => "State #33: Kyushu-Sasebo Maritime Gate",
-        40 => "State #40: Taipei-Hsinchu Silicon Corridor",
-        41 => "State #41: Kaohsiung-Tsoying Arsenal",
-        42 => "State #42: Kinmen & Penghu Bastions",
-        50 => "State #50: Okinawa USPACOM Keystone",
-        51 => "State #51: Guam & Mariana Strategic Hub",
-        60 => "State #60: Tonkin / Red River Delta",
-        61 => "State #61: Luzon & Capital Bay Archipelago",
-        62 => "State #62: Ulaanbaatar & Steppe",
-        63 => "State #63: Central Thailand & Bangkok",
-        64 => "State #64: Vientiane & Mekong Highlands",
-        65 => "State #65: Phnom Penh & Tonle Sap",
-        66 => "State #66: Lower Myanmar & Irrawaddy Delta",
-        67 => "State #67: Malaya Peninsula & Malacca",
-        68 => "State #68: Annam / Central Coastal Corridor",
-        69 => "State #69: Cochinchina / Cam Ranh Bay",
-        70 => "State #70: Visayas & Southern Straits",
-        71 => "State #71: Khorat Plateau & Southern Peninsula",
-        72 => "State #72: Upper Myanmar & Mandalay Heartland",
-        _ => $"State #{stateId}"
-    };
+        if (_metadata != null)
+        {
+            return $"State #{stateId}: {_metadata.GetStateName(stateId)}";
+        }
+        return $"State #{stateId}";
+    }
 
     /// <summary>
     /// Refreshes all state construction telemetry from SimulationWorld (one-way read).

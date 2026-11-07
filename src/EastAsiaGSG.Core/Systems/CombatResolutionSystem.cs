@@ -559,6 +559,7 @@ public static class CombatResolutionSystem
         {
             world.RecalculateStateController(capturedStateId);
         }
+        world.InvalidateOwnership();
 
         for (int i = 0; i < attackerEntities.Length; i++)
         {

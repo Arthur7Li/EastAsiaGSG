@@ -228,6 +228,7 @@ public static class DivisionMovementSystem
                 {
                     world.RecalculateStateController(toProv.StateId);
                 }
+                world.InvalidateOwnership();
             }
 
             int nextIndex = div.CurrentWaypointIndex + 1;

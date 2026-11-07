@@ -41,7 +41,7 @@ public partial class TacticalMapOverlay : Node2D
     private readonly Dictionary<int, ushort> _pendingOrders = [];
 
     // Pre-allocated click targets for hit-testing
-    private readonly List<(Rect2 rect, DivisionComponent div, Entity entity)> _counterClickTargets = [];
+    private readonly List<(Rect2 rect, List<int> divIndices)> _counterClickTargets = [];
     private readonly List<(Vector2 center, float radius, ActiveCombatComponent combat)> _bubbleClickTargets = [];
 
     // Pre-allocated buffers to prevent GC allocations during draw
@@ -51,6 +51,7 @@ public partial class TacticalMapOverlay : Node2D
     private Vector2 _lastCameraPos;
     private Vector2 _lastCameraZoom;
     private int _lastTick = -1;
+    private bool _entitiesDirty = true;
 
     private Font? _defaultFont;
 
@@ -64,6 +65,13 @@ public partial class TacticalMapOverlay : Node2D
         _mapRenderer = mapRenderer;
         _camera = camera;
         _defaultFont = ThemeDB.FallbackFont;
+        _entitiesDirty = true;
+    }
+
+    public void OnTick()
+    {
+        _entitiesDirty = true;
+        QueueRedraw();
     }
 
     public override void _Process(double delta)
@@ -77,11 +85,16 @@ public partial class TacticalMapOverlay : Node2D
         Vector2 camZoom = _camera?.Zoom ?? Vector2.One;
         int currentTick = _world.TotalSixHourTicks;
 
-        if (camPos != _lastCameraPos || camZoom != _lastCameraZoom || currentTick != _lastTick)
+        if (currentTick != _lastTick)
+        {
+            _lastTick = currentTick;
+            _entitiesDirty = true;
+        }
+
+        if (camPos != _lastCameraPos || camZoom != _lastCameraZoom || _entitiesDirty)
         {
             _lastCameraPos = camPos;
             _lastCameraZoom = camZoom;
-            _lastTick = currentTick;
             QueueRedraw();
         }
     }
@@ -130,27 +143,41 @@ public partial class TacticalMapOverlay : Node2D
             return;
         }
 
-        float zoom = _camera?.Zoom.X ?? 1.0f;
+        if (_entitiesDirty)
+        {
+            CollectDynamicEntities();
+            _entitiesDirty = false;
+        }
+
+        Vector2 camPos = _camera?.Position ?? Vector2.Zero;
+        Vector2 camZoom = _camera?.Zoom ?? Vector2.One;
+        Vector2 viewSize = GetViewportRect().Size;
+        Vector2 halfViewWorld = (viewSize * 0.5f) / camZoom;
+        Rect2 visibleWorldRect = new(camPos - halfViewWorld, halfViewWorld * 2.0f);
+        Rect2 cullRect = visibleWorldRect.Grow(100.0f);
+
+        float zoom = camZoom.X;
         float counterScale = Mathf.Clamp(0.85f / zoom, 0.55f, 1.4f);
         float lineScale = Mathf.Clamp(1.0f / zoom, 0.7f, 1.3f);
         Font font = _defaultFont ?? ThemeDB.FallbackFont;
 
-        CollectDynamicEntities();
+        _counterClickTargets.Clear();
+        _bubbleClickTargets.Clear();
 
         // 0. Draw Strategic Landmarks & Capital Labels
-        DrawStrategicLandmarks(zoom, font);
+        DrawStrategicLandmarks(zoom, font, cullRect);
 
         // 1. Draw Movement & Attack Arrows
-        DrawMovementAndAttackArrows(lineScale);
+        DrawMovementAndAttackArrows(lineScale, cullRect);
 
         // 2. Draw Division Counters
-        DrawDivisionCounters(counterScale, font);
+        DrawDivisionCounters(counterScale, font, cullRect);
 
         // 3. Draw HOI4-style 0..100 Battle Bubbles
-        DrawBattleBubbles(counterScale, font);
+        DrawBattleBubbles(counterScale, font, cullRect);
     }
 
-    private void DrawStrategicLandmarks(float zoom, Font font)
+    private void DrawStrategicLandmarks(float zoom, Font font, Rect2 cullRect)
     {
         if (_world == null || font == null)
         {
@@ -177,6 +204,11 @@ public partial class TacticalMapOverlay : Node2D
             }
 
             Vector2 pos = new(prov.CenterX, prov.CenterY);
+            if (!cullRect.HasPoint(pos))
+            {
+                continue;
+            }
+
             Color dotColor = isCapital ? new Color(1.0f, 0.85f, 0.20f, 0.95f) : new Color(0.92f, 0.95f, 1.0f, 0.85f);
             float dotRadius = isCapital ? 4.0f : 2.8f;
 
@@ -197,8 +229,6 @@ public partial class TacticalMapOverlay : Node2D
         {
             list.Clear();
         }
-        _counterClickTargets.Clear();
-        _bubbleClickTargets.Clear();
 
         if (_world == null)
         {
@@ -280,7 +310,7 @@ public partial class TacticalMapOverlay : Node2D
 
     #region Drawing: Arrows
 
-    private void DrawMovementAndAttackArrows(float lineScale)
+    private void DrawMovementAndAttackArrows(float lineScale, Rect2 cullRect)
     {
         if (_world == null)
         {
@@ -303,6 +333,12 @@ public partial class TacticalMapOverlay : Node2D
                 {
                     ref readonly ProvinceData pendingProv = ref _world.Provinces[pendingTargetId];
                     Vector2 pendingCenter = new(pendingProv.CenterX, pendingProv.CenterY);
+
+                    if (!cullRect.HasPoint(visualPos) && !cullRect.HasPoint(pendingCenter))
+                    {
+                        continue;
+                    }
+
                     bool isHostile = pendingProv.ControllerTag != div.CountryTag
                         && pendingProv.ControllerTag != CountryTag.None;
 
@@ -329,6 +365,11 @@ public partial class TacticalMapOverlay : Node2D
 
             ref readonly ProvinceData targetProv = ref _world.Provinces[div.TargetProvinceId];
             Vector2 targetCenter = new(targetProv.CenterX, targetProv.CenterY);
+
+            if (!cullRect.HasPoint(visualPos) && !cullRect.HasPoint(targetCenter))
+            {
+                continue;
+            }
 
             // Determine line style
             Color arrowColor = isAttacking
@@ -359,9 +400,12 @@ public partial class TacticalMapOverlay : Node2D
                 ref readonly ProvinceData nextProv = ref _world.Provinces[nextProvId];
                 Vector2 nextCenter = new(nextProv.CenterX, nextProv.CenterY);
 
-                Color futureColor = new(arrowColor.R, arrowColor.G, arrowColor.B, 0.50f);
-                DrawLine(prev, nextCenter, new Color(0, 0, 0, 0.3f), lineWidth);
-                DrawLine(prev, nextCenter, futureColor, lineWidth - 1.0f);
+                if (cullRect.HasPoint(prev) || cullRect.HasPoint(nextCenter))
+                {
+                    Color futureColor = new(arrowColor.R, arrowColor.G, arrowColor.B, 0.50f);
+                    DrawLine(prev, nextCenter, new Color(0, 0, 0, 0.3f), lineWidth);
+                    DrawLine(prev, nextCenter, futureColor, lineWidth - 1.0f);
+                }
                 prev = nextCenter;
             }
         }
@@ -379,6 +423,12 @@ public partial class TacticalMapOverlay : Node2D
                     {
                         ref readonly ProvinceData originProv = ref _world.Provinces[originId];
                         Vector2 originCenter = new(originProv.CenterX, originProv.CenterY);
+
+                        if (!cullRect.HasPoint(originCenter) && !cullRect.HasPoint(targetCenter))
+                        {
+                            continue;
+                        }
+
                         Color attackLineColor = new(0.95f, 0.15f, 0.15f, 0.65f);
                         DrawLine(originCenter, targetCenter, attackLineColor, 2.5f * lineScale);
                     }
@@ -416,101 +466,238 @@ public partial class TacticalMapOverlay : Node2D
 
     #region Drawing: Division Counters
 
-    private void DrawDivisionCounters(float counterScale, Font font)
+    private void DrawDivisionCounters(float counterScale, Font font, Rect2 cullRect)
     {
         float baseWidth = 40.0f * counterScale;
         float baseHeight = 22.0f * counterScale;
-        float spacing = 18.0f * counterScale;
+
+        Span<int> stationaryIndices = stackalloc int[128];
+        Span<int> countryCount = stackalloc int[SimulationWorld.MaxCountries];
 
         foreach (var (provId, indices) in _provincesToDivisions)
         {
-            int groupCount = indices.Count;
-
-            for (int k = 0; k < groupCount; k++)
+            if (indices.Count == 0 || provId >= SimulationWorld.MaxProvinces)
             {
-                int divIndex = indices[k];
-                var (basePos, div, entity) = _activeDivisions[divIndex];
+                continue;
+            }
 
-                // Stacking offset across X-axis
-                float offsetX = (k - (groupCount - 1) * 0.5f) * spacing;
-                Vector2 counterCenter = basePos + new Vector2(offsetX, 0);
+            int stationaryCount = 0;
+            int maxStationary = stationaryIndices.Length;
 
+            for (int k = 0; k < indices.Count; k++)
+            {
+                int divIdx = indices[k];
+                var (visualPos, div, _) = _activeDivisions[divIdx];
+                if (div.State == DivisionState.Moving || div.State == DivisionState.Retreating)
+                {
+                    // Draw moving unit individually
+                    Vector2 counterCenter = visualPos;
+                    Rect2 counterRect = new(
+                        counterCenter - new Vector2(baseWidth * 0.5f, baseHeight * 0.5f),
+                        new Vector2(baseWidth, baseHeight));
+
+                    if (cullRect.Intersects(counterRect))
+                    {
+                        var singleList = new List<int>(1) { divIdx };
+                        _counterClickTargets.Add((counterRect, singleList));
+                        DrawSingleCounter(counterRect, in div, 1, counterScale, font);
+                    }
+                }
+                else if (stationaryCount < maxStationary)
+                {
+                    stationaryIndices[stationaryCount++] = divIdx;
+                }
+            }
+
+            if (stationaryCount == 0)
+            {
+                continue;
+            }
+
+            // Group stationary units by CountryTag
+            countryCount.Clear();
+
+            for (int s = 0; s < stationaryCount; s++)
+            {
+                int divIdx = stationaryIndices[s];
+                byte tag = _activeDivisions[divIdx].div.CountryTag;
+                if (tag < SimulationWorld.MaxCountries)
+                {
+                    countryCount[tag]++;
+                }
+            }
+
+            int presentCountryIndex = 0;
+            int totalPresentCountries = 0;
+            for (int c = 0; c < SimulationWorld.MaxCountries; c++)
+            {
+                if (countryCount[c] > 0) totalPresentCountries++;
+            }
+
+            for (int c = 0; c < SimulationWorld.MaxCountries; c++)
+            {
+                int stackSize = countryCount[c];
+                if (stackSize == 0)
+                {
+                    continue;
+                }
+
+                var stackDivIndices = new List<int>(stackSize);
+                for (int s = 0; s < stationaryCount; s++)
+                {
+                    int divIdx = stationaryIndices[s];
+                    if (_activeDivisions[divIdx].div.CountryTag == c)
+                    {
+                        stackDivIndices.Add(divIdx);
+                    }
+                }
+
+                ref readonly ProvinceData prov = ref _world!.Provinces[provId];
+                Vector2 basePos = new(prov.CenterX, prov.CenterY);
+
+                float multiCountryOffset = totalPresentCountries > 1
+                    ? (presentCountryIndex - (totalPresentCountries - 1) * 0.5f) * (baseWidth + 4.0f)
+                    : 0.0f;
+                presentCountryIndex++;
+
+                Vector2 counterCenter = basePos + new Vector2(multiCountryOffset, 0);
                 Rect2 counterRect = new(
                     counterCenter - new Vector2(baseWidth * 0.5f, baseHeight * 0.5f),
                     new Vector2(baseWidth, baseHeight));
 
-                _counterClickTargets.Add((counterRect, div, entity));
-
-                bool isSelected = div.DivisionId == SelectedDivisionId;
-                bool isHovered = div.DivisionId == HoveredDivisionId;
-
-                // 1. Background Fill with Country Color Tone
-                Color countryColor = GetCountryColor(div.CountryTag);
-                Color bgColor = new(countryColor.R * 0.45f, countryColor.G * 0.45f, countryColor.B * 0.45f, 0.95f);
-                DrawRect(counterRect, bgColor, filled: true);
-
-                // 2. Selection / Hover Border
-                if (isSelected)
+                if (!cullRect.Intersects(counterRect))
                 {
-                    // Gold selected border + glowing outline
-                    DrawRect(counterRect.Grow(1.5f * counterScale), new Color(1.0f, 0.88f, 0.2f, 0.6f), filled: false, width: 2.0f * counterScale);
-                    DrawRect(counterRect, new Color(1.0f, 0.84f, 0.0f), filled: false, width: 2.8f * counterScale);
-
-                    // Downward gold selection indicator triangle above counter
-                    Vector2 tip = new(counterCenter.X, counterRect.Position.Y - 2.0f * counterScale);
-                    Vector2 b1 = new(counterCenter.X - 5.0f * counterScale, counterRect.Position.Y - 9.0f * counterScale);
-                    Vector2 b2 = new(counterCenter.X + 5.0f * counterScale, counterRect.Position.Y - 9.0f * counterScale);
-                    _arrowTriBuffer[0] = tip;
-                    _arrowTriBuffer[1] = b1;
-                    _arrowTriBuffer[2] = b2;
-                    DrawColoredPolygon(_arrowTriBuffer, new Color(1.0f, 0.84f, 0.0f));
-                }
-                else if (isHovered)
-                {
-                    // Cyan hover border
-                    DrawRect(counterRect, new Color(0.3f, 0.9f, 1.0f), filled: false, width: 1.8f * counterScale);
-                }
-                else
-                {
-                    // Subtle dark outline
-                    DrawRect(counterRect, new Color(0.1f, 0.1f, 0.1f, 0.8f), filled: false, width: 1.2f * counterScale);
+                    continue;
                 }
 
-                // 3. NATO Military Unit Symbol in Center
-                DrawNatoSymbol(counterRect, in div, countryColor, counterScale);
+                _counterClickTargets.Add((counterRect, stackDivIndices));
 
-                // 4. Organization Bar (Left Vertical Edge)
-                float barWidth = 3.0f * counterScale;
-                float orgRatio = Mathf.Clamp(div.Organization / Mathf.Max(1.0f, div.MaxOrganization), 0.0f, 1.0f);
-                Color orgColor = orgRatio > 0.50f
-                    ? new Color(0.20f, 0.85f, 0.30f)
-                    : (orgRatio > 0.25f ? new Color(1.0f, 0.75f, 0.10f) : new Color(0.90f, 0.20f, 0.20f));
+                int dominantDivIdx = stackDivIndices[0];
+                bool anySelected = false;
+                for (int s = 0; s < stackDivIndices.Count; s++)
+                {
+                    int dIdx = stackDivIndices[s];
+                    if (_activeDivisions[dIdx].div.DivisionId == SelectedDivisionId)
+                    {
+                        dominantDivIdx = dIdx;
+                        anySelected = true;
+                        break;
+                    }
+                }
 
-                float orgHeight = (counterRect.Size.Y - 2.0f) * orgRatio;
-                Rect2 orgRect = new(
-                    counterRect.Position.X + 1.0f,
-                    counterRect.Position.Y + counterRect.Size.Y - 1.0f - orgHeight,
-                    barWidth,
-                    orgHeight);
-                DrawRect(orgRect, orgColor, filled: true);
+                if (!anySelected)
+                {
+                    float bestScore = -1f;
+                    for (int s = 0; s < stackDivIndices.Count; s++)
+                    {
+                        int dIdx = stackDivIndices[s];
+                        DivisionComponent d = _activeDivisions[dIdx].div;
+                        float score = d.Hardness * 100f + (d.Breakthrough > 0 ? 10f : 0f) + d.MaxOrganization;
+                        if (score > bestScore)
+                        {
+                            bestScore = score;
+                            dominantDivIdx = dIdx;
+                        }
+                    }
+                }
 
-                // 5. Strength Bar (Right Vertical Edge)
-                float strRatio = Mathf.Clamp(div.Strength, 0.0f, 1.0f);
-                Color strColor = new(1.0f, 0.60f, 0.10f); // Amber
-                float strHeight = (counterRect.Size.Y - 2.0f) * strRatio;
-                Rect2 strRect = new(
-                    counterRect.Position.X + counterRect.Size.X - 1.0f - barWidth,
-                    counterRect.Position.Y + counterRect.Size.Y - 1.0f - strHeight,
-                    barWidth,
-                    strHeight);
-                DrawRect(strRect, strColor, filled: true);
-
-                // 6. Country Tag Label Badge
-                string tagText = CountryTag.GetCode(div.CountryTag);
-                int fontSize = Mathf.Clamp(Mathf.RoundToInt(9.0f * counterScale), 7, 13);
-                Vector2 textPos = new(counterRect.Position.X, counterRect.Position.Y + counterRect.Size.Y - 2.0f);
-                DrawString(font, textPos, tagText, HorizontalAlignment.Center, counterRect.Size.X, fontSize, new Color(1, 1, 1, 0.9f));
+                var dominantItem = _activeDivisions[dominantDivIdx];
+                DrawSingleCounter(counterRect, in dominantItem.div, stackSize, counterScale, font);
             }
+        }
+    }
+
+    private void DrawSingleCounter(
+        Rect2 counterRect,
+        in DivisionComponent div,
+        int stackCount,
+        float counterScale,
+        Font font)
+    {
+        bool isSelected = div.DivisionId == SelectedDivisionId;
+        bool isHovered = div.DivisionId == HoveredDivisionId;
+
+        // 1. Background Fill with Country Color Tone
+        Color countryColor = GetCountryColor(div.CountryTag);
+        Color bgColor = new(countryColor.R * 0.45f, countryColor.G * 0.45f, countryColor.B * 0.45f, 0.95f);
+        DrawRect(counterRect, bgColor, filled: true);
+
+        // 2. Selection / Hover Border
+        Vector2 counterCenter = counterRect.GetCenter();
+        if (isSelected)
+        {
+            DrawRect(counterRect.Grow(1.5f * counterScale), new Color(1.0f, 0.88f, 0.2f, 0.6f), filled: false, width: 2.0f * counterScale);
+            DrawRect(counterRect, new Color(1.0f, 0.84f, 0.0f), filled: false, width: 2.8f * counterScale);
+
+            Vector2 tip = new(counterCenter.X, counterRect.Position.Y - 2.0f * counterScale);
+            Vector2 b1 = new(counterCenter.X - 5.0f * counterScale, counterRect.Position.Y - 9.0f * counterScale);
+            Vector2 b2 = new(counterCenter.X + 5.0f * counterScale, counterRect.Position.Y - 9.0f * counterScale);
+            _arrowTriBuffer[0] = tip;
+            _arrowTriBuffer[1] = b1;
+            _arrowTriBuffer[2] = b2;
+            DrawColoredPolygon(_arrowTriBuffer, new Color(1.0f, 0.84f, 0.0f));
+        }
+        else if (isHovered)
+        {
+            DrawRect(counterRect, new Color(0.3f, 0.9f, 1.0f), filled: false, width: 1.8f * counterScale);
+        }
+        else
+        {
+            DrawRect(counterRect, new Color(0.1f, 0.1f, 0.1f, 0.8f), filled: false, width: 1.2f * counterScale);
+        }
+
+        // 3. NATO Military Unit Symbol in Center
+        DrawNatoSymbol(counterRect, in div, countryColor, counterScale);
+
+        // 4. Organization Bar (Left Vertical Edge)
+        float barWidth = 3.0f * counterScale;
+        float orgRatio = Mathf.Clamp(div.Organization / Mathf.Max(1.0f, div.MaxOrganization), 0.0f, 1.0f);
+        Color orgColor = orgRatio > 0.50f
+            ? new Color(0.20f, 0.85f, 0.30f)
+            : (orgRatio > 0.25f ? new Color(1.0f, 0.75f, 0.10f) : new Color(0.90f, 0.20f, 0.20f));
+
+        float orgHeight = (counterRect.Size.Y - 2.0f) * orgRatio;
+        Rect2 orgRect = new(
+            counterRect.Position.X + 1.0f,
+            counterRect.Position.Y + counterRect.Size.Y - 1.0f - orgHeight,
+            barWidth,
+            orgHeight);
+        DrawRect(orgRect, orgColor, filled: true);
+
+        // 5. Strength Bar (Right Vertical Edge)
+        float strRatio = Mathf.Clamp(div.Strength, 0.0f, 1.0f);
+        Color strColor = new(1.0f, 0.60f, 0.10f); // Amber
+        float strHeight = (counterRect.Size.Y - 2.0f) * strRatio;
+        Rect2 strRect = new(
+            counterRect.Position.X + counterRect.Size.X - 1.0f - barWidth,
+            counterRect.Position.Y + counterRect.Size.Y - 1.0f - strHeight,
+            barWidth,
+            strHeight);
+        DrawRect(strRect, strColor, filled: true);
+
+        // 6. Country Tag Label Badge
+        string tagText = CountryTag.GetCode(div.CountryTag);
+        int fontSize = Mathf.Clamp(Mathf.RoundToInt(9.0f * counterScale), 7, 13);
+        Vector2 textPos = new(counterRect.Position.X, counterRect.Position.Y + counterRect.Size.Y - 2.0f);
+        DrawString(font, textPos, tagText, HorizontalAlignment.Center, counterRect.Size.X, fontSize, new Color(1, 1, 1, 0.9f));
+
+        // 7. Stack Count Badge (if stackCount > 1)
+        if (stackCount > 1)
+        {
+            float badgeW = 16.0f * counterScale;
+            float badgeH = 11.0f * counterScale;
+            Rect2 badgeRect = new(
+                counterRect.Position.X + counterRect.Size.X - badgeW * 0.65f,
+                counterRect.Position.Y - badgeH * 0.45f,
+                badgeW,
+                badgeH);
+
+            DrawRect(badgeRect, new Color(0.08f, 0.10f, 0.14f, 0.95f), filled: true);
+            DrawRect(badgeRect, isSelected ? new Color(1.0f, 0.84f, 0.0f) : new Color(0.7f, 0.75f, 0.85f, 0.85f), filled: false, width: 1.0f * counterScale);
+
+            int badgeFontSize = Mathf.Clamp(Mathf.RoundToInt(8.5f * counterScale), 7, 11);
+            Vector2 badgeTextPos = new(badgeRect.Position.X, badgeRect.Position.Y + badgeRect.Size.Y - 1.5f);
+            DrawString(font, badgeTextPos, $"x{stackCount}", HorizontalAlignment.Center, badgeW, badgeFontSize, new Color(1.0f, 0.95f, 0.85f));
         }
     }
 
@@ -559,13 +746,17 @@ public partial class TacticalMapOverlay : Node2D
 
     #region Drawing: HOI4-Style 0..100 Battle Bubbles
 
-    private void DrawBattleBubbles(float counterScale, Font font)
+    private void DrawBattleBubbles(float counterScale, Font font, Rect2 cullRect)
     {
         float radius = 14.0f * counterScale;
 
         for (int i = 0; i < _activeCombats.Count; i++)
         {
             var (center, combat) = _activeCombats[i];
+            if (!cullRect.HasPoint(center))
+            {
+                continue;
+            }
 
             _bubbleClickTargets.Add((center, radius * 1.2f, combat));
 
@@ -641,13 +832,27 @@ public partial class TacticalMapOverlay : Node2D
                     }
                 }
 
-                // Priority 2: Check Division Counter click (with generous padding)
+                // Priority 2: Check Division Counter / Stack click (with generous padding and cycle selection)
                 for (int i = 0; i < _counterClickTargets.Count; i++)
                 {
-                    var (rect, div, entity) = _counterClickTargets[i];
+                    var (rect, divIndices) = _counterClickTargets[i];
                     Rect2 hitRect = rect.Grow(14.0f);
-                    if (hitRect.HasPoint(mouseGlobal))
+                    if (hitRect.HasPoint(mouseGlobal) && divIndices.Count > 0)
                     {
+                        int currentLocalIdx = -1;
+                        for (int k = 0; k < divIndices.Count; k++)
+                        {
+                            if (_activeDivisions[divIndices[k]].div.DivisionId == SelectedDivisionId)
+                            {
+                                currentLocalIdx = k;
+                                break;
+                            }
+                        }
+
+                        int nextLocalIdx = (currentLocalIdx + 1) % divIndices.Count;
+                        int nextDivIdx = divIndices[nextLocalIdx];
+                        var (_, div, entity) = _activeDivisions[nextDivIdx];
+
                         SelectedDivisionId = div.DivisionId;
                         SelectedDivisionEntity = entity;
                         DivisionSelected?.Invoke(div);
@@ -657,14 +862,26 @@ public partial class TacticalMapOverlay : Node2D
                     }
                 }
 
-                // Priority 3: Check if clicked province has stationed divisions
+                // Priority 3: Check if clicked province has stationed divisions & cycle
                 ushort clickedProvince = _mapRenderer.PickProvinceAtGlobalPosition(mouseGlobal);
                 if (clickedProvince < SimulationWorld.MaxProvinces)
                 {
                     if (_provincesToDivisions.TryGetValue(clickedProvince, out List<int>? divIndices) && divIndices.Count > 0)
                     {
-                        int divIndex = divIndices[0];
-                        var (_, div, entity) = _activeDivisions[divIndex];
+                        int currentLocalIdx = -1;
+                        for (int k = 0; k < divIndices.Count; k++)
+                        {
+                            if (_activeDivisions[divIndices[k]].div.DivisionId == SelectedDivisionId)
+                            {
+                                currentLocalIdx = k;
+                                break;
+                            }
+                        }
+
+                        int nextLocalIdx = (currentLocalIdx + 1) % divIndices.Count;
+                        int nextDivIdx = divIndices[nextLocalIdx];
+                        var (_, div, entity) = _activeDivisions[nextDivIdx];
+
                         SelectedDivisionId = div.DivisionId;
                         SelectedDivisionEntity = entity;
                         DivisionSelected?.Invoke(div);
@@ -719,11 +936,12 @@ public partial class TacticalMapOverlay : Node2D
 
         for (int i = 0; i < _counterClickTargets.Count; i++)
         {
-            var (rect, div, _) = _counterClickTargets[i];
+            var (rect, divIndices) = _counterClickTargets[i];
             Rect2 hitRect = rect.Grow(8.0f);
-            if (hitRect.HasPoint(mouseGlobal))
+            if (hitRect.HasPoint(mouseGlobal) && divIndices.Count > 0)
             {
-                HoveredDivisionId = div.DivisionId;
+                int firstIdx = divIndices[0];
+                HoveredDivisionId = _activeDivisions[firstIdx].div.DivisionId;
                 break;
             }
         }

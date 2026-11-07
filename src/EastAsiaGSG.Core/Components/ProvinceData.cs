@@ -3,9 +3,10 @@ using System.Runtime.InteropServices;
 namespace EastAsiaGSG.Core.Components;
 
 /// <summary>
-/// Explicit 24-byte blittable representation of a map province (Index == ProvinceId, 0..1499).
+/// Explicit 32-byte blittable representation of a map province (Index == ProvinceId, 0..1499).
+/// Power-of-two 8-byte aligned: exactly two structs fit within a standard 64-byte L1 CPU cache line.
 /// </summary>
-[StructLayout(LayoutKind.Explicit, Size = 24)]
+[StructLayout(LayoutKind.Explicit, Size = 32)]
 public struct ProvinceData
 {
     [FieldOffset(0)] public ushort ProvinceId;
@@ -22,4 +23,8 @@ public struct ProvinceData
     [FieldOffset(16)] public float SupplyRatio;
     [FieldOffset(20)] public short CenterX;
     [FieldOffset(22)] public short CenterY;
+    [FieldOffset(24)] public ushort VictoryPoints;
+    [FieldOffset(26)] public byte AirfieldLevel;
+    [FieldOffset(27)] public byte FortificationLevel;
+    [FieldOffset(28)] public int Reserved;
 }

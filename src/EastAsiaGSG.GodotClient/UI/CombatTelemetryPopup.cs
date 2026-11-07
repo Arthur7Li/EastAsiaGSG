@@ -3,6 +3,7 @@ using Arch.Core;
 using EastAsiaGSG.Core.Components;
 using EastAsiaGSG.Core.ECS;
 using EastAsiaGSG.Core.Systems;
+using EastAsiaGSG.Data.Map;
 using Godot;
 
 namespace EastAsiaGSG.GodotClient.UI;
@@ -28,6 +29,7 @@ public partial class CombatTelemetryPopup : PanelContainer
 
     private int _currentCombatId = -1;
     private SimulationWorld? _world;
+    private MapMetadataRegistry? _metadata;
 
     public override void _Ready()
     {
@@ -161,9 +163,13 @@ public partial class CombatTelemetryPopup : PanelContainer
         vbox.AddChild(_pgmStatusLabel);
     }
 
-    public void DisplayCombat(SimulationWorld world, int combatId)
+    public void DisplayCombat(SimulationWorld world, int combatId, MapMetadataRegistry? metadata = null)
     {
         _world = world;
+        if (metadata != null)
+        {
+            _metadata = metadata;
+        }
         _currentCombatId = combatId;
         UpdateTelemetry();
         Visible = true;
@@ -227,10 +233,11 @@ public partial class CombatTelemetryPopup : PanelContainer
 
         string attTag = CountryTag.GetCode(foundCombat.AttackerTag);
         string defTag = CountryTag.GetCode(foundCombat.DefenderTag);
+        string provName = _metadata != null ? _metadata.GetProvinceName(targetId) : $"Province #{targetId}";
 
         if (_titleLabel != null)
         {
-            _titleLabel.Text = $"Battle for Province #{targetId} (Tick {foundCombat.ElapsedSixHourTicks})";
+            _titleLabel.Text = $"Battle for {provName} (#{targetId}, Tick {foundCombat.ElapsedSixHourTicks})";
         }
 
         if (_terrainLabel != null)

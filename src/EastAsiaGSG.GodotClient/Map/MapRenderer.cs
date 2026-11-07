@@ -30,6 +30,12 @@ public partial class MapRenderer : Node2D
     public ushort HoveredProvinceId { get; private set; } = ProvinceMapBuffer.OceanProvinceId;
     public ushort SelectedProvinceId { get; private set; } = ProvinceMapBuffer.OceanProvinceId;
 
+    private uint _lastOwnershipRevision;
+    private uint _lastSupplyRevision;
+    private uint _lastEconomyRevision;
+    private uint _lastAirNavalRevision;
+    private MapMode? _lastRenderedMode;
+
     public ProvinceMapBuffer? ProvinceBuffer => _provinceBuffer;
     public MapLutBuffer LutBuffer => _lutBuffer;
 
@@ -75,6 +81,11 @@ public partial class MapRenderer : Node2D
             Image.Format.Rgba8,
             _lutBuffer.RawRgbaBytes);
         _lutTexture = ImageTexture.CreateFromImage(_lutImage);
+        _lastOwnershipRevision = _world.OwnershipRevision;
+        _lastSupplyRevision = _world.SupplyRevision;
+        _lastEconomyRevision = _world.EconomyRevision;
+        _lastAirNavalRevision = _world.AirNavalRevision;
+        _lastRenderedMode = CurrentMapMode;
 
         // Configure ShaderMaterial & Sprite2D quad
         _shaderMaterial = new ShaderMaterial();
@@ -113,15 +124,45 @@ public partial class MapRenderer : Node2D
     public void SetMapMode(MapMode mode)
     {
         CurrentMapMode = mode;
-        RefreshMapLut();
+        RefreshMapLut(force: true);
     }
 
     /// <summary>
-    /// Recomputes all 1,500 province colors on the CPU and uploads the 2048x1 RGBA8 LUT to the GPU.
+    /// Recomputes province colors on the CPU and uploads the 2048x1 RGBA8 LUT to the GPU
+    /// only if relevant simulation revisions have changed or a forced refresh was requested.
     /// </summary>
-    public void RefreshMapLut()
+    public void RefreshMapLut(bool force = false)
     {
         if (_world == null)
+        {
+            return;
+        }
+
+        bool dirty = force || CurrentMapMode != _lastRenderedMode;
+        if (!dirty)
+        {
+            switch (CurrentMapMode)
+            {
+                case MapMode.Political:
+                case MapMode.Terrain:
+                    dirty = _world.OwnershipRevision != _lastOwnershipRevision;
+                    break;
+                case MapMode.Supply:
+                    dirty = _world.SupplyRevision != _lastSupplyRevision || _world.OwnershipRevision != _lastOwnershipRevision;
+                    break;
+                case MapMode.Industrial:
+                    dirty = _world.EconomyRevision != _lastEconomyRevision || _world.OwnershipRevision != _lastOwnershipRevision;
+                    break;
+                case MapMode.AirSuperiority:
+                    dirty = _world.AirNavalRevision != _lastAirNavalRevision;
+                    break;
+                default:
+                    dirty = true;
+                    break;
+            }
+        }
+
+        if (!dirty)
         {
             return;
         }
@@ -138,6 +179,12 @@ public partial class MapRenderer : Node2D
                 _lutBuffer.RawRgbaBytes);
             _lutTexture.Update(_lutImage);
         }
+
+        _lastOwnershipRevision = _world.OwnershipRevision;
+        _lastSupplyRevision = _world.SupplyRevision;
+        _lastEconomyRevision = _world.EconomyRevision;
+        _lastAirNavalRevision = _world.AirNavalRevision;
+        _lastRenderedMode = CurrentMapMode;
     }
 
     /// <summary>

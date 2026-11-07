@@ -25,6 +25,7 @@ public partial class MainView : Node2D
     }
 
     private SimulationWorld? _world;
+    private MapMetadataRegistry? _metadata;
     private SideDrawerTab _activeDrawerTab = SideDrawerTab.None;
     private readonly List<LoadedFocusTree> _loadedFocusTrees = [];
 
@@ -56,11 +57,12 @@ public partial class MainView : Node2D
 
         if (statesPath != null && provincesPath != null)
         {
-            JsonMapLoader.LoadMap(_world, statesPath, provincesPath);
+            _metadata = JsonMapLoader.LoadMap(_world, statesPath, provincesPath);
             GD.Print($"[MainView] Loaded Map dataset from: {statesPath}");
         }
         else
         {
+            _metadata = new MapMetadataRegistry();
             GD.PushWarning("[MainView] Could not locate data/map JSON files; running with default world state.");
         }
 
@@ -167,7 +169,7 @@ public partial class MainView : Node2D
         _infoPanel.OffsetTop = 106;
         _infoPanel.OffsetRight = 356;
         _infoPanel.OffsetBottom = 390;
-        _infoPanel.Initialize(_world);
+        _infoPanel.Initialize(_world, _metadata);
 
         // Setup TimeControlsToolbar at top-right (X = 734..1264, Y = 12..58)
         _timeToolbar = hudLayer.GetNodeOrNull<TimeControlsToolbar>("TimeControlsToolbar");
@@ -219,7 +221,7 @@ public partial class MainView : Node2D
         _constructionPanel.OffsetTop = 106;
         _constructionPanel.OffsetRight = 468;
         _constructionPanel.OffsetBottom = 704;
-        _constructionPanel.Initialize(_world, CountryTag.ROK);
+        _constructionPanel.Initialize(_world, CountryTag.ROK, _metadata);
 
         // Setup HOI4-style Left Side-Drawer Tab 2: ProductionLinePanel (X = 16..468, Y = 106..704, closed by default)
         _productionPanel = hudLayer.GetNodeOrNull<ProductionLinePanel>("ProductionLinePanel");
@@ -322,22 +324,35 @@ public partial class MainView : Node2D
             _infoPanel.DisplaySelectedDivision(div);
         };
         _tacticalOverlay.DivisionDeselected += () => _infoPanel.DisplaySelectedDivision(null);
-        _tacticalOverlay.CombatSelected += combat => _combatPopup.DisplayCombat(_world, combat.CombatId);
+        _tacticalOverlay.CombatSelected += combat => _combatPopup.DisplayCombat(_world, combat.CombatId, _metadata);
 
         // Wire time controls tick event to refresh map colors, tactical overlay, combat telemetry, and industrial HUD
         _timeToolbar.Ticked += () =>
         {
             _mapRenderer.RefreshMapLut();
             _combatPopup?.RefreshIfActive();
-            _tacticalOverlay?.QueueRedraw();
-            _focusTreeViewer?.ClearPendingPreviews();
-            _constructionPanel?.ClearPendingPreviews();
-            _productionPanel?.ClearPendingPreviews();
+            _tacticalOverlay?.OnTick();
             _stockpileTopBar?.Refresh();
-            _focusTreeViewer?.Refresh();
-            _constructionPanel?.Refresh();
-            _productionPanel?.Refresh();
-            _infoPanel?.RefreshCurrent();
+
+            // Only refresh the active drawer tab, saving substantial UI rebuild cost
+            switch (_activeDrawerTab)
+            {
+                case SideDrawerTab.None:
+                    _infoPanel?.RefreshCurrent();
+                    break;
+                case SideDrawerTab.FocusTree:
+                    _focusTreeViewer?.ClearPendingPreviews();
+                    _focusTreeViewer?.Refresh();
+                    break;
+                case SideDrawerTab.Construction:
+                    _constructionPanel?.ClearPendingPreviews();
+                    _constructionPanel?.Refresh();
+                    break;
+                case SideDrawerTab.Production:
+                    _productionPanel?.ClearPendingPreviews();
+                    _productionPanel?.Refresh();
+                    break;
+            }
         };
     }
 
@@ -536,7 +551,7 @@ public partial class MainView : Node2D
             {
                 try
                 {
-                    JsonOobLoader.LoadOob(_world, oobPath);
+                    JsonOobLoader.LoadOob(_world, oobPath, metadata: _metadata);
                     loadedAnyOob = true;
                 }
                 catch (Exception ex)

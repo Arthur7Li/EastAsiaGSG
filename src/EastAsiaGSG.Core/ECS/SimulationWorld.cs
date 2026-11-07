@@ -82,6 +82,24 @@ public sealed class SimulationWorld : IDisposable
     public int CurrentDay { get; private set; } = StartDay;
     public int CurrentHour { get; private set; } = StartHour;
 
+    // Monotonic Dirty-Revision Counters for Reactive Presentation Cache Invalidation
+    public uint OwnershipRevision { get; private set; } = 1;
+    public uint SupplyRevision { get; private set; } = 1;
+    public uint EconomyRevision { get; private set; } = 1;
+    public uint AirNavalRevision { get; private set; } = 1;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void InvalidateOwnership() => OwnershipRevision++;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void InvalidateSupply() => SupplyRevision++;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void InvalidateEconomy() => EconomyRevision++;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void InvalidateAirNaval() => AirNavalRevision++;
+
     private int _nextCombatId = 1;
     private int _nextDivisionId = 10_000;
     private bool _disposed;
@@ -795,6 +813,7 @@ public sealed class SimulationWorld : IDisposable
                         ref StateData state = ref States[cmd.TargetId];
                         int clamped = cmd.IntParam0 < 0 ? 0 : (cmd.IntParam0 > 15 ? 15 : cmd.IntParam0);
                         state.AssignedCivFactories = (ushort)clamped;
+                        InvalidateEconomy();
                     }
                     break;
                 }
@@ -833,6 +852,7 @@ public sealed class SimulationWorld : IDisposable
                             byte levels = (byte)((cmd.IntParam0 >> 8) & 0xFF);
                             ushort requestedCiv = (ushort)System.Math.Clamp(cmd.IntParam1, 0, ConstructionSystem.MaxCivFactoriesPerState);
                             ConstructionSystem.QueueConstruction(ref state, buildingType, levels, requestedCiv);
+                            InvalidateEconomy();
                         }
                     }
                     break;
@@ -846,6 +866,7 @@ public sealed class SimulationWorld : IDisposable
                         {
                             int clamped = System.Math.Clamp(cmd.IntParam0, 0, ProductionLineComponent.MaxFactoriesPerLine);
                             line.AssignedMilitaryFactories = (ushort)clamped;
+                            InvalidateEconomy();
                         }
                     }
                     break;
@@ -865,7 +886,10 @@ public sealed class SimulationWorld : IDisposable
                     ushort spawnProv = cmd.IntParam0 is >= 0 and < MaxProvinces
                         ? (ushort)cmd.IntParam0
                         : GetCapitalProvince(cmd.CountryTag);
-                    TryRecruitDivisionFromStockpile(cmd.CountryTag, tplId, spawnProv, out _);
+                    if (TryRecruitDivisionFromStockpile(cmd.CountryTag, tplId, spawnProv, out _))
+                    {
+                        InvalidateEconomy();
+                    }
                     break;
                 }
                 case CommandType.None:

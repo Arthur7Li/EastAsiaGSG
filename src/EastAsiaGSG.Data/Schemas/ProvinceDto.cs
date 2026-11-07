@@ -17,6 +17,9 @@ public sealed class ProvinceDto
     public byte InfrastructureLevel { get; set; }
     public short CenterX { get; set; }
     public short CenterY { get; set; }
+    public ushort VictoryPoints { get; set; }
+    public byte AirfieldLevel { get; set; }
+    public byte FortificationLevel { get; set; }
     public List<ProvinceAdjacencyDto> Adjacencies { get; set; } = [];
 }
 

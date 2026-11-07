@@ -36,9 +36,9 @@
 # Grand Architecture Expansion Roadmap (Phases 7–11)
 
 ## Phase 7: Presentation Optimization, Snapshot Decoupling & Map Metadata
-- [ ] **Task 7.1:** Expand `ProvinceData` to 32 bytes (`VictoryPoints`, `AirfieldLevel`, `FortificationLevel`) and add monotonic dirty-revision counters (`OwnershipRevision`, `SupplyRevision`, `EconomyRevision`, `AirNavalRevision`) to `SimulationWorld`.
-- [ ] **Task 7.2:** Implement `MapMetadataRegistry` in `EastAsiaGSG.Data` to surface authentic State, Province, Strategic Region, Template, and News Event names across all Godot HUD panels (`ProvinceInfoPanel`, `ConstructionQueuePanel`, `CombatTelemetryPopup`).
-- [ ] **Task 7.3:** Optimize `MainView` (active-drawer-only refresh on tick), `MapRenderer` (revision-gated GPU LUT uploads), and `TacticalMapOverlay` (tick-gated ECS collection decoupled from 144Hz camera pan/zoom, viewport frustum culling, and HOI4-style `xN` unit stack counter aggregation).
+- [x] **Task 7.1:** Expand `ProvinceData` to 32 bytes (`VictoryPoints`, `AirfieldLevel`, `FortificationLevel`) and add monotonic dirty-revision counters (`OwnershipRevision`, `SupplyRevision`, `EconomyRevision`, `AirNavalRevision`) to `SimulationWorld`.
+- [x] **Task 7.2:** Implement `MapMetadataRegistry` in `EastAsiaGSG.Data` to surface authentic State, Province, Strategic Region, Template, and News Event names across all Godot HUD panels (`ProvinceInfoPanel`, `ConstructionQueuePanel`, `CombatTelemetryPopup`).
+- [x] **Task 7.3:** Optimize `MainView` (active-drawer-only refresh on tick), `MapRenderer` (revision-gated GPU LUT uploads), and `TacticalMapOverlay` (tick-gated ECS collection decoupled from 144Hz camera pan/zoom, viewport frustum culling, and HOI4-style `xN` unit stack counter aggregation).
 
 ## Phase 8: $O(1)$ Spatial Index & Three-Tier Operational AI
 - [ ] **Task 8.1:** Implement zero-allocation `ProvinceSpatialIndex` in `EastAsiaGSG.Core/ECS` rebuilt in a single $O(D)$ pass per tick, replacing all nested $O(P \times D)$ ECS queries in `DivisionMovementSystem` and `TacticalFrontlineAISystem`.

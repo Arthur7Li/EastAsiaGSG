@@ -497,5 +497,7 @@ public static class SupplyGraphSystem
                 prov.SupplyRatio = System.Math.Clamp(ratio, MinSupplyRatio, MaxSupplyRatio);
             }
         }
+
+        world.InvalidateSupply();
     }
 }

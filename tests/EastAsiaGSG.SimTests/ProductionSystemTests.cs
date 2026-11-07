@@ -350,12 +350,16 @@ public sealed class ProductionSystemTests
             archetype: EquipmentType.MBT,
             assignedMilitaryFactories: 6));
 
-        // Warm up JIT past TieredPGO threshold (64 calls)
-        for (int w = 0; w < 64; w++)
+        // Warm up JIT past TieredPGO threshold (128 calls)
+        for (int w = 0; w < 128; w++)
         {
             ConstructionSystem.Execute(world);
             ProductionSystem.Execute(world);
         }
+
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
 
         long beforeBytes = GC.GetAllocatedBytesForCurrentThread();
         for (int i = 0; i < 1000; i++)
