@@ -30,3 +30,32 @@
 ## Phase 6: Two-Tier Utility AI & Polish
 - [x] **Task 6.1:** Implement `StrategicMinisterAISystem` (monthly focus/production scoring) and `TacticalFrontlineAISystem` (daily frontline assignment & attack execution).
 - [x] **Task 6.2:** Run 15-year headless soak tests (21,900 six-hour ticks) to verify zero exceptions, zero memory leaks, and historical plausibility.
+
+---
+
+# Grand Architecture Expansion Roadmap (Phases 7–11)
+
+## Phase 7: Presentation Optimization, Snapshot Decoupling & Map Metadata
+- [ ] **Task 7.1:** Expand `ProvinceData` to 32 bytes (`VictoryPoints`, `AirfieldLevel`, `FortificationLevel`) and add monotonic dirty-revision counters (`OwnershipRevision`, `SupplyRevision`, `EconomyRevision`, `AirNavalRevision`) to `SimulationWorld`.
+- [ ] **Task 7.2:** Implement `MapMetadataRegistry` in `EastAsiaGSG.Data` to surface authentic State, Province, Strategic Region, Template, and News Event names across all Godot HUD panels (`ProvinceInfoPanel`, `ConstructionQueuePanel`, `CombatTelemetryPopup`).
+- [ ] **Task 7.3:** Optimize `MainView` (active-drawer-only refresh on tick), `MapRenderer` (revision-gated GPU LUT uploads), and `TacticalMapOverlay` (tick-gated ECS collection decoupled from 144Hz camera pan/zoom, viewport frustum culling, and HOI4-style `xN` unit stack counter aggregation).
+
+## Phase 8: $O(1)$ Spatial Index & Three-Tier Operational AI
+- [ ] **Task 8.1:** Implement zero-allocation `ProvinceSpatialIndex` in `EastAsiaGSG.Core/ECS` rebuilt in a single $O(D)$ pass per tick, replacing all nested $O(P \times D)$ ECS queries in `DivisionMovementSystem` and `TacticalFrontlineAISystem`.
+- [ ] **Task 8.2:** Repurpose `DivisionComponent` reserved bytes (`FieldOffset 116..127`, preserving 128-byte size) for `ObjectiveProvinceId`, `ArmyGroupId`, and `OperationalOrderStance`, and implement daily `OperationalPlanSystem` to concentrate armored/mechanized *Schwerpunkt* spearheads on enemy capitals and supply hubs.
+- [ ] **Task 8.3:** Upgrade `TacticalFrontlineAISystem` with multi-province coordinated pincer attacks (+20 combat width bonus) and entrenchment hysteresis, and expand `StrategicMinisterAISystem` to autonomously recruit new divisions (`CommandType.RecruitDivision`) and execute wargoals (`CommandType.DeclareWar`).
+
+## Phase 9: Discrete Pacific Air/Naval Task Forces & Combat Doctrines
+- [ ] **Task 9.1:** Implement 64-byte `NavalTaskForceComponent` (`CarrierStrikeGroup`, `SurfaceActionGroup`, `SubmarineWolfpack`, `AmphibiousReadyGroup`) and 32-byte `AirWingComponent` in `EastAsiaGSG.Core/Components`.
+- [ ] **Task 9.2:** Upgrade `AirAndNavalRegionSystem` and `SupplyGraphSystem` to integrate task force missions, physical US PACOM / Soviet Pacific Fleet spawns, and submarine sea-lane convoy interdiction reducing overseas port supply capacity.
+- [ ] **Task 9.3:** Enhance `CombatResolutionSystem` with a $+15\%$ Combined Arms synergy modifier and 24-hour tactical doctrine counter-play rolls (*AirLand Battle*, *Deep Operations*, *Mass Assault*, *Elastic Defense*).
+
+## Phase 10: Victory Points, Capitulation, Interactive Diplomacy & Force Designer UI
+- [ ] **Task 10.1:** Implement daily `CapitulationSystem` in `EastAsiaGSG.Core/Systems` evaluating province `VictoryPoints` and national `Stability` to trigger surrender, province control transfer, 50% stockpile capture, and global capitulation news events.
+- [ ] **Task 10.2:** Add `SwitchProductionEquipment`, `CreateProductionLine`, and `AssignNavalMission` commands to `SimulationCommand` and `SimulationWorld.DrainCommandQueue`.
+- [ ] **Task 10.3:** Build `DiplomacyAndNewsModal.cs` (15-nation faction/war ledger, targetable war declarations, and interactive Cold War News Event popups), upgrade `NationalStockpileTopBar` with a historical OOB Template Recruitment selector, and add equipment generation upgrade/creation controls to `ProductionLinePanel`.
+
+## Phase 11: High-Density Theatre Scaling (600+ Provinces) & Binary Save/Load
+- [ ] **Task 11.1:** Implement `WorldSnapshotSerializer` in `EastAsiaGSG.Data/Serialization` using `MemoryMarshal.AsBytes` and `ZLibStream` for $< 5\ \text{ms}$ `.eagsav` binary save/load roundtripping, wired to `Save` / `Load` buttons in `TimeControlsToolbar`.
+- [ ] **Task 11.2:** Upgrade `scripts/generate_east_asia_theatre.py` with bounded Lloyd-relaxed Voronoi tessellation to subdivide the 41 states into 650+ operational provinces while preserving river, strait, and railway arteries and city Victory Points.
+- [ ] **Task 11.3:** Execute full-scale 15-year soak benchmarks and headless balance verification across the expanded theatre.
