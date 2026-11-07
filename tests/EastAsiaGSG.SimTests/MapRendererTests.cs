@@ -158,4 +158,62 @@ public sealed class MapRendererTests
         Assert.True(blueAirColor.B > blueAirColor.R);
         Assert.Equal(CountryTag.ROK, blueAirColor.A);
     }
+
+    [Fact]
+    public void EastAsiaTheatrePng_232Provinces_ContiguousLandmassesAnd100PercentMousePicking()
+    {
+        string root = FindRepositoryRoot();
+        string statesPath = Path.Combine(root, "data", "map", "east_asia_1985_states.json");
+        string provincesPath = Path.Combine(root, "data", "map", "east_asia_1985_provinces.json");
+        string pngPath = Path.Combine(root, "data", "map", "east_asia_1985_provinces.png");
+
+        using var world = new SimulationWorld();
+        JsonMapLoader.LoadMap(world, statesPath, provincesPath);
+
+        ProvinceMapBuffer buffer = ProvinceMapBuffer.LoadFromPngFile(pngPath);
+        Assert.Equal(2048, buffer.Width);
+        Assert.Equal(2048, buffer.Height);
+
+        int[] pixelCounts = new int[SimulationWorld.MaxProvinces];
+        for (int y = 0; y < buffer.Height; y++)
+        {
+            for (int x = 0; x < buffer.Width; x++)
+            {
+                ushort pid = buffer.PickProvinceAtPixel(x, y);
+                if (pid < SimulationWorld.MaxProvinces)
+                {
+                    pixelCounts[pid]++;
+                }
+            }
+        }
+
+        int verifiedProvinces = 0;
+        for (ushort pid = 0; pid < SimulationWorld.MaxProvinces; pid++)
+        {
+            ref readonly ProvinceData prov = ref world.Provinces[pid];
+            if (prov.AdjacencyCount == 0)
+            {
+                continue;
+            }
+
+            verifiedProvinces++;
+            ushort picked = buffer.PickProvinceAtPixel(prov.CenterX, prov.CenterY);
+            Assert.True(picked == pid,
+                $"East Asia Theatre Province {pid} at ({prov.CenterX}, {prov.CenterY}) picked {picked}");
+            Assert.True(pixelCounts[pid] >= 9,
+                $"East Asia Theatre Province {pid} has insufficient pixel area: {pixelCounts[pid]}");
+
+            if (pid < 120)
+            {
+                Assert.InRange(prov.CenterX, 970, 1260);
+                Assert.InRange(prov.CenterY, 500, 1020);
+            }
+        }
+
+        Assert.Equal(232, verifiedProvinces);
+
+        // Verify Okinawa (500) is in the Ryukyu chain south of Kyushu and outside Korea
+        ref readonly ProvinceData naha = ref world.Provinces[500];
+        Assert.InRange(naha.CenterY, 1180, 1270);
+    }
 }

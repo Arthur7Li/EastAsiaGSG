@@ -149,7 +149,7 @@ public sealed class ProvinceMapBuffer
         int width = 1024,
         int height = 1024,
         int activeProvinceCount = 120,
-        float maxCoastalRadius = 60f)
+        float maxCoastalRadius = 85f)
     {
         ArgumentNullException.ThrowIfNull(world);
         var buffer = new ProvinceMapBuffer(width, height);

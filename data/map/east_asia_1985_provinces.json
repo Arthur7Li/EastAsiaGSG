@@ -10,8 +10,8 @@
     "supplyHubLevel": 4,
     "portLevel": 0,
     "infrastructureLevel": 9,
-    "centerX": 450,
-    "centerY": 600,
+    "centerX": 1079,
+    "centerY": 781,
     "adjacencies": [
       {
         "targetProvinceId": 1,
@@ -50,8 +50,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 8,
-    "centerX": 450,
-    "centerY": 580,
+    "centerX": 1079,
+    "centerY": 770,
     "adjacencies": [
       {
         "targetProvinceId": 0,
@@ -78,8 +78,8 @@
     "supplyHubLevel": 2,
     "portLevel": 0,
     "infrastructureLevel": 9,
-    "centerX": 455,
-    "centerY": 620,
+    "centerX": 1082,
+    "centerY": 792,
     "adjacencies": [
       {
         "targetProvinceId": 0,
@@ -110,8 +110,8 @@
     "supplyHubLevel": 3,
     "portLevel": 6,
     "infrastructureLevel": 8,
-    "centerX": 410,
-    "centerY": 610,
+    "centerX": 1056,
+    "centerY": 786,
     "adjacencies": [
       {
         "targetProvinceId": 2,
@@ -138,8 +138,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 425,
-    "centerY": 590,
+    "centerX": 1065,
+    "centerY": 775,
     "adjacencies": [
       {
         "targetProvinceId": 0,
@@ -170,8 +170,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 435,
-    "centerY": 580,
+    "centerX": 1071,
+    "centerY": 770,
     "adjacencies": [
       {
         "targetProvinceId": 0,
@@ -206,8 +206,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 430,
-    "centerY": 550,
+    "centerX": 1068,
+    "centerY": 754,
     "adjacencies": [
       {
         "targetProvinceId": 4,
@@ -242,8 +242,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 460,
-    "centerY": 540,
+    "centerX": 1085,
+    "centerY": 748,
     "adjacencies": [
       {
         "targetProvinceId": 6,
@@ -282,8 +282,8 @@
     "supplyHubLevel": 2,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 460,
-    "centerY": 570,
+    "centerX": 1085,
+    "centerY": 764,
     "adjacencies": [
       {
         "targetProvinceId": 0,
@@ -326,8 +326,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 8,
-    "centerX": 470,
-    "centerY": 630,
+    "centerX": 1091,
+    "centerY": 797,
     "adjacencies": [
       {
         "targetProvinceId": 0,
@@ -362,8 +362,8 @@
     "supplyHubLevel": 3,
     "portLevel": 0,
     "infrastructureLevel": 8,
-    "centerX": 450,
-    "centerY": 650,
+    "centerX": 1079,
+    "centerY": 808,
     "adjacencies": [
       {
         "targetProvinceId": 2,
@@ -398,8 +398,8 @@
     "supplyHubLevel": 1,
     "portLevel": 4,
     "infrastructureLevel": 7,
-    "centerX": 440,
-    "centerY": 680,
+    "centerX": 1073,
+    "centerY": 824,
     "adjacencies": [
       {
         "targetProvinceId": 10,
@@ -422,7 +422,7 @@
   {
     "provinceId": 12,
     "name": "Cheorwon South",
-    "stateId": 1,
+    "stateId": 0,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Hills",
@@ -430,8 +430,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 485,
-    "centerY": 540,
+    "centerX": 1100,
+    "centerY": 748,
     "adjacencies": [
       {
         "targetProvinceId": 7,
@@ -466,7 +466,7 @@
   {
     "provinceId": 13,
     "name": "Hwacheon",
-    "stateId": 1,
+    "stateId": 0,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Mountain",
@@ -474,8 +474,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 4,
-    "centerX": 515,
-    "centerY": 545,
+    "centerX": 1117,
+    "centerY": 751,
     "adjacencies": [
       {
         "targetProvinceId": 12,
@@ -502,7 +502,7 @@
   {
     "provinceId": 14,
     "name": "Yanggu",
-    "stateId": 1,
+    "stateId": 0,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Mountain",
@@ -510,8 +510,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 4,
-    "centerX": 545,
-    "centerY": 545,
+    "centerX": 1135,
+    "centerY": 751,
     "adjacencies": [
       {
         "targetProvinceId": 13,
@@ -538,7 +538,7 @@
   {
     "provinceId": 15,
     "name": "Inje",
-    "stateId": 1,
+    "stateId": 0,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Mountain",
@@ -546,8 +546,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 4,
-    "centerX": 565,
-    "centerY": 565,
+    "centerX": 1147,
+    "centerY": 762,
     "adjacencies": [
       {
         "targetProvinceId": 14,
@@ -574,7 +574,7 @@
   {
     "provinceId": 16,
     "name": "Chuncheon",
-    "stateId": 1,
+    "stateId": 0,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Hills",
@@ -582,8 +582,8 @@
     "supplyHubLevel": 2,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 500,
-    "centerY": 580,
+    "centerX": 1109,
+    "centerY": 770,
     "adjacencies": [
       {
         "targetProvinceId": 8,
@@ -614,7 +614,7 @@
   {
     "provinceId": 17,
     "name": "Hongcheon",
-    "stateId": 1,
+    "stateId": 0,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Hills",
@@ -622,8 +622,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 520,
-    "centerY": 600,
+    "centerX": 1120,
+    "centerY": 781,
     "adjacencies": [
       {
         "targetProvinceId": 9,
@@ -650,7 +650,7 @@
   {
     "provinceId": 18,
     "name": "Hoengseong",
-    "stateId": 1,
+    "stateId": 0,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Hills",
@@ -658,8 +658,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 530,
-    "centerY": 630,
+    "centerX": 1126,
+    "centerY": 797,
     "adjacencies": [
       {
         "targetProvinceId": 17,
@@ -678,7 +678,7 @@
   {
     "provinceId": 19,
     "name": "Wonju",
-    "stateId": 1,
+    "stateId": 0,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Hills",
@@ -686,8 +686,8 @@
     "supplyHubLevel": 2,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 510,
-    "centerY": 650,
+    "centerX": 1114,
+    "centerY": 808,
     "adjacencies": [
       {
         "targetProvinceId": 10,
@@ -718,7 +718,7 @@
   {
     "provinceId": 20,
     "name": "Sokcho Port",
-    "stateId": 1,
+    "stateId": 0,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Hills",
@@ -726,8 +726,8 @@
     "supplyHubLevel": 1,
     "portLevel": 4,
     "infrastructureLevel": 5,
-    "centerX": 585,
-    "centerY": 540,
+    "centerX": 1158,
+    "centerY": 748,
     "adjacencies": [
       {
         "targetProvinceId": 15,
@@ -746,7 +746,7 @@
   {
     "provinceId": 21,
     "name": "Gangneung Port",
-    "stateId": 1,
+    "stateId": 0,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Plains",
@@ -754,8 +754,8 @@
     "supplyHubLevel": 2,
     "portLevel": 5,
     "infrastructureLevel": 6,
-    "centerX": 595,
-    "centerY": 590,
+    "centerX": 1164,
+    "centerY": 775,
     "adjacencies": [
       {
         "targetProvinceId": 17,
@@ -778,7 +778,7 @@
   {
     "provinceId": 22,
     "name": "Donghae",
-    "stateId": 1,
+    "stateId": 0,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Hills",
@@ -786,8 +786,8 @@
     "supplyHubLevel": 1,
     "portLevel": 4,
     "infrastructureLevel": 5,
-    "centerX": 605,
-    "centerY": 630,
+    "centerX": 1170,
+    "centerY": 797,
     "adjacencies": [
       {
         "targetProvinceId": 21,
@@ -806,7 +806,7 @@
   {
     "provinceId": 23,
     "name": "Taebaek",
-    "stateId": 1,
+    "stateId": 0,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Mountain",
@@ -814,8 +814,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 4,
-    "centerX": 580,
-    "centerY": 660,
+    "centerX": 1155,
+    "centerY": 813,
     "adjacencies": [
       {
         "targetProvinceId": 19,
@@ -854,8 +854,8 @@
     "supplyHubLevel": 2,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 450,
-    "centerY": 710,
+    "centerX": 1079,
+    "centerY": 840,
     "adjacencies": [
       {
         "targetProvinceId": 11,
@@ -886,8 +886,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 430,
-    "centerY": 710,
+    "centerX": 1068,
+    "centerY": 840,
     "adjacencies": [
       {
         "targetProvinceId": 11,
@@ -918,8 +918,8 @@
     "supplyHubLevel": 0,
     "portLevel": 3,
     "infrastructureLevel": 6,
-    "centerX": 410,
-    "centerY": 700,
+    "centerX": 1056,
+    "centerY": 835,
     "adjacencies": [
       {
         "targetProvinceId": 11,
@@ -946,8 +946,8 @@
     "supplyHubLevel": 0,
     "portLevel": 2,
     "infrastructureLevel": 5,
-    "centerX": 390,
-    "centerY": 720,
+    "centerX": 1044,
+    "centerY": 846,
     "adjacencies": [
       {
         "targetProvinceId": 26,
@@ -970,8 +970,8 @@
     "supplyHubLevel": 2,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 480,
-    "centerY": 720,
+    "centerX": 1097,
+    "centerY": 846,
     "adjacencies": [
       {
         "targetProvinceId": 19,
@@ -1006,8 +1006,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 510,
-    "centerY": 690,
+    "centerX": 1114,
+    "centerY": 830,
     "adjacencies": [
       {
         "targetProvinceId": 19,
@@ -1042,8 +1042,8 @@
     "supplyHubLevel": 3,
     "portLevel": 0,
     "infrastructureLevel": 8,
-    "centerX": 470,
-    "centerY": 760,
+    "centerX": 1091,
+    "centerY": 868,
     "adjacencies": [
       {
         "targetProvinceId": 24,
@@ -1082,8 +1082,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 490,
-    "centerY": 760,
+    "centerX": 1103,
+    "centerY": 868,
     "adjacencies": [
       {
         "targetProvinceId": 28,
@@ -1114,8 +1114,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 440,
-    "centerY": 750,
+    "centerX": 1073,
+    "centerY": 862,
     "adjacencies": [
       {
         "targetProvinceId": 25,
@@ -1146,8 +1146,8 @@
     "supplyHubLevel": 0,
     "portLevel": 3,
     "infrastructureLevel": 5,
-    "centerX": 400,
-    "centerY": 760,
+    "centerX": 1050,
+    "centerY": 868,
     "adjacencies": [
       {
         "targetProvinceId": 27,
@@ -1178,8 +1178,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 440,
-    "centerY": 780,
+    "centerX": 1073,
+    "centerY": 879,
     "adjacencies": [
       {
         "targetProvinceId": 30,
@@ -1218,8 +1218,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 510,
-    "centerY": 770,
+    "centerX": 1114,
+    "centerY": 873,
     "adjacencies": [
       {
         "targetProvinceId": 23,
@@ -1250,7 +1250,7 @@
   {
     "provinceId": 36,
     "name": "Gunsan Port",
-    "stateId": 3,
+    "stateId": 2,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Plains",
@@ -1258,8 +1258,8 @@
     "supplyHubLevel": 1,
     "portLevel": 4,
     "infrastructureLevel": 6,
-    "centerX": 410,
-    "centerY": 800,
+    "centerX": 1056,
+    "centerY": 889,
     "adjacencies": [
       {
         "targetProvinceId": 33,
@@ -1278,7 +1278,7 @@
   {
     "provinceId": 37,
     "name": "Iksan",
-    "stateId": 3,
+    "stateId": 2,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Plains",
@@ -1286,8 +1286,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 430,
-    "centerY": 800,
+    "centerX": 1068,
+    "centerY": 889,
     "adjacencies": [
       {
         "targetProvinceId": 34,
@@ -1310,7 +1310,7 @@
   {
     "provinceId": 38,
     "name": "Jeonju",
-    "stateId": 3,
+    "stateId": 2,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Urban",
@@ -1318,8 +1318,8 @@
     "supplyHubLevel": 2,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 450,
-    "centerY": 810,
+    "centerX": 1079,
+    "centerY": 895,
     "adjacencies": [
       {
         "targetProvinceId": 34,
@@ -1342,7 +1342,7 @@
   {
     "provinceId": 39,
     "name": "Namwon",
-    "stateId": 3,
+    "stateId": 2,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Hills",
@@ -1350,8 +1350,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 475,
-    "centerY": 835,
+    "centerX": 1094,
+    "centerY": 908,
     "adjacencies": [
       {
         "targetProvinceId": 38,
@@ -1374,7 +1374,7 @@
   {
     "provinceId": 40,
     "name": "Gwangju Central",
-    "stateId": 3,
+    "stateId": 2,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Urban",
@@ -1382,8 +1382,8 @@
     "supplyHubLevel": 3,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 420,
-    "centerY": 855,
+    "centerX": 1062,
+    "centerY": 919,
     "adjacencies": [
       {
         "targetProvinceId": 37,
@@ -1410,7 +1410,7 @@
   {
     "provinceId": 41,
     "name": "Naju",
-    "stateId": 3,
+    "stateId": 2,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Plains",
@@ -1418,8 +1418,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 410,
-    "centerY": 875,
+    "centerX": 1056,
+    "centerY": 930,
     "adjacencies": [
       {
         "targetProvinceId": 40,
@@ -1438,7 +1438,7 @@
   {
     "provinceId": 42,
     "name": "Mokpo Port",
-    "stateId": 3,
+    "stateId": 2,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Plains",
@@ -1446,8 +1446,8 @@
     "supplyHubLevel": 2,
     "portLevel": 5,
     "infrastructureLevel": 6,
-    "centerX": 380,
-    "centerY": 895,
+    "centerX": 1038,
+    "centerY": 941,
     "adjacencies": [
       {
         "targetProvinceId": 41,
@@ -1466,7 +1466,7 @@
   {
     "provinceId": 43,
     "name": "Haenam",
-    "stateId": 3,
+    "stateId": 2,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Plains",
@@ -1474,8 +1474,8 @@
     "supplyHubLevel": 0,
     "portLevel": 2,
     "infrastructureLevel": 5,
-    "centerX": 395,
-    "centerY": 925,
+    "centerX": 1047,
+    "centerY": 957,
     "adjacencies": [
       {
         "targetProvinceId": 41,
@@ -1498,7 +1498,7 @@
   {
     "provinceId": 44,
     "name": "Suncheon",
-    "stateId": 3,
+    "stateId": 2,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Hills",
@@ -1506,8 +1506,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 470,
-    "centerY": 880,
+    "centerX": 1091,
+    "centerY": 933,
     "adjacencies": [
       {
         "targetProvinceId": 39,
@@ -1538,7 +1538,7 @@
   {
     "provinceId": 45,
     "name": "Yeosu Petrochemical Port",
-    "stateId": 3,
+    "stateId": 2,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Plains",
@@ -1546,8 +1546,8 @@
     "supplyHubLevel": 1,
     "portLevel": 6,
     "infrastructureLevel": 7,
-    "centerX": 485,
-    "centerY": 915,
+    "centerX": 1100,
+    "centerY": 952,
     "adjacencies": [
       {
         "targetProvinceId": 44,
@@ -1562,7 +1562,7 @@
   {
     "provinceId": 46,
     "name": "Gwangyang Harbor",
-    "stateId": 3,
+    "stateId": 2,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Plains",
@@ -1570,8 +1570,8 @@
     "supplyHubLevel": 1,
     "portLevel": 5,
     "infrastructureLevel": 6,
-    "centerX": 490,
-    "centerY": 885,
+    "centerX": 1103,
+    "centerY": 936,
     "adjacencies": [
       {
         "targetProvinceId": 44,
@@ -1594,7 +1594,7 @@
   {
     "provinceId": 47,
     "name": "Jindo Island",
-    "stateId": 3,
+    "stateId": 2,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Plains",
@@ -1602,8 +1602,8 @@
     "supplyHubLevel": 0,
     "portLevel": 2,
     "infrastructureLevel": 4,
-    "centerX": 360,
-    "centerY": 930,
+    "centerX": 1027,
+    "centerY": 960,
     "adjacencies": [
       {
         "targetProvinceId": 42,
@@ -1618,7 +1618,7 @@
   {
     "provinceId": 48,
     "name": "Gimcheon",
-    "stateId": 4,
+    "stateId": 1,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Hills",
@@ -1626,8 +1626,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 530,
-    "centerY": 770,
+    "centerX": 1126,
+    "centerY": 873,
     "adjacencies": [
       {
         "targetProvinceId": 23,
@@ -1646,7 +1646,7 @@
   {
     "provinceId": 49,
     "name": "Gumi Electronics",
-    "stateId": 4,
+    "stateId": 1,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Plains",
@@ -1654,8 +1654,8 @@
     "supplyHubLevel": 2,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 550,
-    "centerY": 775,
+    "centerX": 1138,
+    "centerY": 876,
     "adjacencies": [
       {
         "targetProvinceId": 35,
@@ -1674,7 +1674,7 @@
   {
     "provinceId": 50,
     "name": "Daegu Central",
-    "stateId": 4,
+    "stateId": 1,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Urban",
@@ -1682,8 +1682,8 @@
     "supplyHubLevel": 4,
     "portLevel": 0,
     "infrastructureLevel": 8,
-    "centerX": 565,
-    "centerY": 800,
+    "centerX": 1147,
+    "centerY": 889,
     "adjacencies": [
       {
         "targetProvinceId": 49,
@@ -1710,7 +1710,7 @@
   {
     "provinceId": 51,
     "name": "Gyeongsan",
-    "stateId": 4,
+    "stateId": 1,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Plains",
@@ -1718,8 +1718,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 580,
-    "centerY": 815,
+    "centerX": 1155,
+    "centerY": 898,
     "adjacencies": [
       {
         "targetProvinceId": 50,
@@ -1742,7 +1742,7 @@
   {
     "provinceId": 52,
     "name": "Pohang Steelworks",
-    "stateId": 4,
+    "stateId": 1,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Plains",
@@ -1750,8 +1750,8 @@
     "supplyHubLevel": 2,
     "portLevel": 6,
     "infrastructureLevel": 8,
-    "centerX": 630,
-    "centerY": 790,
+    "centerX": 1184,
+    "centerY": 884,
     "adjacencies": [
       {
         "targetProvinceId": 22,
@@ -1774,7 +1774,7 @@
   {
     "provinceId": 53,
     "name": "Gyeongju",
-    "stateId": 4,
+    "stateId": 1,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Hills",
@@ -1782,8 +1782,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 615,
-    "centerY": 820,
+    "centerX": 1176,
+    "centerY": 900,
     "adjacencies": [
       {
         "targetProvinceId": 50,
@@ -1806,7 +1806,7 @@
   {
     "provinceId": 54,
     "name": "Ulsan Shipyards",
-    "stateId": 4,
+    "stateId": 1,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Urban",
@@ -1814,8 +1814,8 @@
     "supplyHubLevel": 2,
     "portLevel": 7,
     "infrastructureLevel": 8,
-    "centerX": 620,
-    "centerY": 850,
+    "centerX": 1179,
+    "centerY": 917,
     "adjacencies": [
       {
         "targetProvinceId": 53,
@@ -1834,7 +1834,7 @@
   {
     "provinceId": 55,
     "name": "Busan North / Geumjeong",
-    "stateId": 4,
+    "stateId": 1,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Urban",
@@ -1842,8 +1842,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 8,
-    "centerX": 595,
-    "centerY": 870,
+    "centerX": 1164,
+    "centerY": 927,
     "adjacencies": [
       {
         "targetProvinceId": 51,
@@ -1866,7 +1866,7 @@
   {
     "provinceId": 56,
     "name": "Busan Central / Harbor",
-    "stateId": 4,
+    "stateId": 1,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Urban",
@@ -1874,8 +1874,8 @@
     "supplyHubLevel": 5,
     "portLevel": 8,
     "infrastructureLevel": 9,
-    "centerX": 600,
-    "centerY": 890,
+    "centerX": 1167,
+    "centerY": 938,
     "adjacencies": [
       {
         "targetProvinceId": 54,
@@ -1902,7 +1902,7 @@
   {
     "provinceId": 57,
     "name": "Changwon / Masan",
-    "stateId": 4,
+    "stateId": 1,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Urban",
@@ -1910,8 +1910,8 @@
     "supplyHubLevel": 2,
     "portLevel": 5,
     "infrastructureLevel": 8,
-    "centerX": 560,
-    "centerY": 880,
+    "centerX": 1144,
+    "centerY": 933,
     "adjacencies": [
       {
         "targetProvinceId": 46,
@@ -1942,7 +1942,7 @@
   {
     "provinceId": 58,
     "name": "Jinju",
-    "stateId": 4,
+    "stateId": 1,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Hills",
@@ -1950,8 +1950,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 520,
-    "centerY": 870,
+    "centerX": 1120,
+    "centerY": 927,
     "adjacencies": [
       {
         "targetProvinceId": 39,
@@ -1982,7 +1982,7 @@
   {
     "provinceId": 59,
     "name": "Geoje Island Shipyards",
-    "stateId": 4,
+    "stateId": 1,
     "ownerTag": "ROK",
     "controllerTag": "ROK",
     "terrain": "Hills",
@@ -1990,8 +1990,8 @@
     "supplyHubLevel": 0,
     "portLevel": 6,
     "infrastructureLevel": 6,
-    "centerX": 570,
-    "centerY": 920,
+    "centerX": 1149,
+    "centerY": 955,
     "adjacencies": [
       {
         "targetProvinceId": 56,
@@ -2018,8 +2018,8 @@
     "supplyHubLevel": 4,
     "portLevel": 0,
     "infrastructureLevel": 8,
-    "centerX": 380,
-    "centerY": 400,
+    "centerX": 1038,
+    "centerY": 672,
     "adjacencies": [
       {
         "targetProvinceId": 61,
@@ -2050,8 +2050,8 @@
     "supplyHubLevel": 2,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 395,
-    "centerY": 400,
+    "centerX": 1047,
+    "centerY": 672,
     "adjacencies": [
       {
         "targetProvinceId": 60,
@@ -2086,8 +2086,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 375,
-    "centerY": 415,
+    "centerX": 1036,
+    "centerY": 680,
     "adjacencies": [
       {
         "targetProvinceId": 60,
@@ -2122,8 +2122,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 375,
-    "centerY": 380,
+    "centerX": 1036,
+    "centerY": 661,
     "adjacencies": [
       {
         "targetProvinceId": 60,
@@ -2158,8 +2158,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 395,
-    "centerY": 375,
+    "centerX": 1047,
+    "centerY": 659,
     "adjacencies": [
       {
         "targetProvinceId": 61,
@@ -2194,8 +2194,8 @@
     "supplyHubLevel": 2,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 415,
-    "centerY": 360,
+    "centerX": 1059,
+    "centerY": 650,
     "adjacencies": [
       {
         "targetProvinceId": 64,
@@ -2226,8 +2226,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 420,
-    "centerY": 335,
+    "centerX": 1062,
+    "centerY": 637,
     "adjacencies": [
       {
         "targetProvinceId": 64,
@@ -2266,8 +2266,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 450,
-    "centerY": 335,
+    "centerX": 1079,
+    "centerY": 637,
     "adjacencies": [
       {
         "targetProvinceId": 65,
@@ -2302,8 +2302,8 @@
     "supplyHubLevel": 3,
     "portLevel": 6,
     "infrastructureLevel": 7,
-    "centerX": 345,
-    "centerY": 430,
+    "centerX": 1018,
+    "centerY": 688,
     "adjacencies": [
       {
         "targetProvinceId": 60,
@@ -2342,8 +2342,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 330,
-    "centerY": 415,
+    "centerX": 1009,
+    "centerY": 680,
     "adjacencies": [
       {
         "targetProvinceId": 68,
@@ -2370,8 +2370,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 350,
-    "centerY": 410,
+    "centerX": 1021,
+    "centerY": 678,
     "adjacencies": [
       {
         "targetProvinceId": 62,
@@ -2402,8 +2402,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 345,
-    "centerY": 385,
+    "centerX": 1018,
+    "centerY": 664,
     "adjacencies": [
       {
         "targetProvinceId": 63,
@@ -2434,8 +2434,8 @@
     "supplyHubLevel": 3,
     "portLevel": 3,
     "infrastructureLevel": 7,
-    "centerX": 280,
-    "centerY": 270,
+    "centerX": 980,
+    "centerY": 601,
     "adjacencies": [
       {
         "targetProvinceId": 73,
@@ -2466,8 +2466,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 290,
-    "centerY": 250,
+    "centerX": 986,
+    "centerY": 591,
     "adjacencies": [
       {
         "targetProvinceId": 72,
@@ -2494,8 +2494,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 295,
-    "centerY": 290,
+    "centerX": 989,
+    "centerY": 612,
     "adjacencies": [
       {
         "targetProvinceId": 72,
@@ -2526,8 +2526,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 310,
-    "centerY": 305,
+    "centerX": 998,
+    "centerY": 620,
     "adjacencies": [
       {
         "targetProvinceId": 74,
@@ -2558,8 +2558,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 330,
-    "centerY": 300,
+    "centerX": 1009,
+    "centerY": 618,
     "adjacencies": [
       {
         "targetProvinceId": 75,
@@ -2590,8 +2590,8 @@
     "supplyHubLevel": 2,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 360,
-    "centerY": 310,
+    "centerX": 1027,
+    "centerY": 623,
     "adjacencies": [
       {
         "targetProvinceId": 63,
@@ -2626,8 +2626,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 385,
-    "centerY": 315,
+    "centerX": 1041,
+    "centerY": 626,
     "adjacencies": [
       {
         "targetProvinceId": 63,
@@ -2662,8 +2662,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 340,
-    "centerY": 270,
+    "centerX": 1015,
+    "centerY": 601,
     "adjacencies": [
       {
         "targetProvinceId": 74,
@@ -2698,8 +2698,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 370,
-    "centerY": 275,
+    "centerX": 1033,
+    "centerY": 604,
     "adjacencies": [
       {
         "targetProvinceId": 66,
@@ -2746,8 +2746,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 4,
-    "centerX": 400,
-    "centerY": 270,
+    "centerX": 1050,
+    "centerY": 601,
     "adjacencies": [
       {
         "targetProvinceId": 67,
@@ -2786,8 +2786,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 4,
-    "centerX": 330,
-    "centerY": 230,
+    "centerX": 1009,
+    "centerY": 580,
     "adjacencies": [
       {
         "targetProvinceId": 72,
@@ -2818,8 +2818,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 4,
-    "centerX": 365,
-    "centerY": 230,
+    "centerX": 1030,
+    "centerY": 580,
     "adjacencies": [
       {
         "targetProvinceId": 80,
@@ -2842,7 +2842,7 @@
   {
     "provinceId": 84,
     "name": "Sariwon",
-    "stateId": 7,
+    "stateId": 5,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Plains",
@@ -2850,8 +2850,8 @@
     "supplyHubLevel": 3,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 385,
-    "centerY": 470,
+    "centerX": 1041,
+    "centerY": 710,
     "adjacencies": [
       {
         "targetProvinceId": 61,
@@ -2878,7 +2878,7 @@
   {
     "provinceId": 85,
     "name": "Hwangju",
-    "stateId": 7,
+    "stateId": 5,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Plains",
@@ -2886,8 +2886,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 380,
-    "centerY": 440,
+    "centerX": 1038,
+    "centerY": 694,
     "adjacencies": [
       {
         "targetProvinceId": 62,
@@ -2910,7 +2910,7 @@
   {
     "provinceId": 86,
     "name": "Pongsan",
-    "stateId": 7,
+    "stateId": 5,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Plains",
@@ -2918,8 +2918,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 400,
-    "centerY": 475,
+    "centerX": 1050,
+    "centerY": 713,
     "adjacencies": [
       {
         "targetProvinceId": 61,
@@ -2950,7 +2950,7 @@
   {
     "provinceId": 87,
     "name": "Sinwon",
-    "stateId": 7,
+    "stateId": 5,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Hills",
@@ -2958,8 +2958,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 380,
-    "centerY": 505,
+    "centerX": 1038,
+    "centerY": 729,
     "adjacencies": [
       {
         "targetProvinceId": 84,
@@ -2982,7 +2982,7 @@
   {
     "provinceId": 88,
     "name": "Haeju Port",
-    "stateId": 7,
+    "stateId": 5,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Urban",
@@ -2990,8 +2990,8 @@
     "supplyHubLevel": 2,
     "portLevel": 5,
     "infrastructureLevel": 6,
-    "centerX": 365,
-    "centerY": 540,
+    "centerX": 1030,
+    "centerY": 748,
     "adjacencies": [
       {
         "targetProvinceId": 68,
@@ -3014,7 +3014,7 @@
   {
     "provinceId": 89,
     "name": "Ongjin Peninsula",
-    "stateId": 7,
+    "stateId": 5,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Hills",
@@ -3022,8 +3022,8 @@
     "supplyHubLevel": 0,
     "portLevel": 2,
     "infrastructureLevel": 4,
-    "centerX": 320,
-    "centerY": 545,
+    "centerX": 1003,
+    "centerY": 751,
     "adjacencies": [
       {
         "targetProvinceId": 88,
@@ -3038,7 +3038,7 @@
   {
     "provinceId": 90,
     "name": "Yonan",
-    "stateId": 7,
+    "stateId": 5,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Plains",
@@ -3046,8 +3046,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 395,
-    "centerY": 550,
+    "centerX": 1047,
+    "centerY": 754,
     "adjacencies": [
       {
         "targetProvinceId": 87,
@@ -3070,7 +3070,7 @@
   {
     "provinceId": 91,
     "name": "Paechon",
-    "stateId": 7,
+    "stateId": 5,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Plains",
@@ -3078,8 +3078,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 410,
-    "centerY": 545,
+    "centerX": 1056,
+    "centerY": 751,
     "adjacencies": [
       {
         "targetProvinceId": 90,
@@ -3098,7 +3098,7 @@
   {
     "provinceId": 92,
     "name": "Kaesong City",
-    "stateId": 7,
+    "stateId": 5,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Urban",
@@ -3106,8 +3106,8 @@
     "supplyHubLevel": 3,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 420,
-    "centerY": 520,
+    "centerX": 1062,
+    "centerY": 737,
     "adjacencies": [
       {
         "targetProvinceId": 6,
@@ -3130,7 +3130,7 @@
   {
     "provinceId": 93,
     "name": "Panmunjom North",
-    "stateId": 7,
+    "stateId": 5,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Plains",
@@ -3138,8 +3138,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 435,
-    "centerY": 530,
+    "centerX": 1071,
+    "centerY": 743,
     "adjacencies": [
       {
         "targetProvinceId": 6,
@@ -3170,7 +3170,7 @@
   {
     "provinceId": 94,
     "name": "Kumchon",
-    "stateId": 7,
+    "stateId": 5,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Hills",
@@ -3178,8 +3178,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 425,
-    "centerY": 490,
+    "centerX": 1065,
+    "centerY": 721,
     "adjacencies": [
       {
         "targetProvinceId": 7,
@@ -3214,7 +3214,7 @@
   {
     "provinceId": 95,
     "name": "Tosan",
-    "stateId": 7,
+    "stateId": 5,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Hills",
@@ -3222,8 +3222,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 450,
-    "centerY": 505,
+    "centerX": 1079,
+    "centerY": 729,
     "adjacencies": [
       {
         "targetProvinceId": 7,
@@ -3254,7 +3254,7 @@
   {
     "provinceId": 96,
     "name": "Cheorwon North",
-    "stateId": 8,
+    "stateId": 7,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Hills",
@@ -3262,8 +3262,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 480,
-    "centerY": 515,
+    "centerX": 1097,
+    "centerY": 735,
     "adjacencies": [
       {
         "targetProvinceId": 12,
@@ -3286,7 +3286,7 @@
   {
     "provinceId": 97,
     "name": "Pyonggang",
-    "stateId": 8,
+    "stateId": 7,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Mountain",
@@ -3294,8 +3294,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 485,
-    "centerY": 490,
+    "centerX": 1100,
+    "centerY": 721,
     "adjacencies": [
       {
         "targetProvinceId": 12,
@@ -3334,7 +3334,7 @@
   {
     "provinceId": 98,
     "name": "Kimhwa",
-    "stateId": 8,
+    "stateId": 7,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Mountain",
@@ -3342,8 +3342,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 4,
-    "centerX": 510,
-    "centerY": 515,
+    "centerX": 1114,
+    "centerY": 735,
     "adjacencies": [
       {
         "targetProvinceId": 13,
@@ -3374,7 +3374,7 @@
   {
     "provinceId": 99,
     "name": "Changdo",
-    "stateId": 8,
+    "stateId": 7,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Mountain",
@@ -3382,8 +3382,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 4,
-    "centerX": 535,
-    "centerY": 515,
+    "centerX": 1129,
+    "centerY": 735,
     "adjacencies": [
       {
         "targetProvinceId": 14,
@@ -3410,7 +3410,7 @@
   {
     "provinceId": 100,
     "name": "Sepo",
-    "stateId": 8,
+    "stateId": 7,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Mountain",
@@ -3418,8 +3418,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 505,
-    "centerY": 475,
+    "centerX": 1111,
+    "centerY": 713,
     "adjacencies": [
       {
         "targetProvinceId": 64,
@@ -3454,7 +3454,7 @@
   {
     "provinceId": 101,
     "name": "Kosan",
-    "stateId": 8,
+    "stateId": 7,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Mountain",
@@ -3462,8 +3462,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 4,
-    "centerX": 520,
-    "centerY": 450,
+    "centerX": 1120,
+    "centerY": 699,
     "adjacencies": [
       {
         "targetProvinceId": 100,
@@ -3490,7 +3490,7 @@
   {
     "provinceId": 102,
     "name": "Wonsan Central / Port",
-    "stateId": 8,
+    "stateId": 7,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Urban",
@@ -3498,8 +3498,8 @@
     "supplyHubLevel": 4,
     "portLevel": 6,
     "infrastructureLevel": 7,
-    "centerX": 540,
-    "centerY": 410,
+    "centerX": 1132,
+    "centerY": 678,
     "adjacencies": [
       {
         "targetProvinceId": 101,
@@ -3526,7 +3526,7 @@
   {
     "provinceId": 103,
     "name": "Wonsan South / Kalma",
-    "stateId": 8,
+    "stateId": 7,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Plains",
@@ -3534,8 +3534,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 555,
-    "centerY": 425,
+    "centerX": 1141,
+    "centerY": 686,
     "adjacencies": [
       {
         "targetProvinceId": 102,
@@ -3554,7 +3554,7 @@
   {
     "provinceId": 104,
     "name": "Anbyon",
-    "stateId": 8,
+    "stateId": 7,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Plains",
@@ -3562,8 +3562,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 545,
-    "centerY": 445,
+    "centerX": 1135,
+    "centerY": 697,
     "adjacencies": [
       {
         "targetProvinceId": 101,
@@ -3586,7 +3586,7 @@
   {
     "provinceId": 105,
     "name": "Tongchon",
-    "stateId": 8,
+    "stateId": 7,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Plains",
@@ -3594,8 +3594,8 @@
     "supplyHubLevel": 0,
     "portLevel": 3,
     "infrastructureLevel": 5,
-    "centerX": 575,
-    "centerY": 465,
+    "centerX": 1152,
+    "centerY": 707,
     "adjacencies": [
       {
         "targetProvinceId": 103,
@@ -3614,7 +3614,7 @@
   {
     "provinceId": 106,
     "name": "Goseong North / Kumgangsan",
-    "stateId": 8,
+    "stateId": 7,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Mountain",
@@ -3622,8 +3622,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 4,
-    "centerX": 580,
-    "centerY": 510,
+    "centerX": 1155,
+    "centerY": 732,
     "adjacencies": [
       {
         "targetProvinceId": 15,
@@ -3646,7 +3646,7 @@
   {
     "provinceId": 107,
     "name": "Hoeyang",
-    "stateId": 8,
+    "stateId": 7,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Mountain",
@@ -3654,8 +3654,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 4,
-    "centerX": 530,
-    "centerY": 485,
+    "centerX": 1126,
+    "centerY": 718,
     "adjacencies": [
       {
         "targetProvinceId": 99,
@@ -3678,7 +3678,7 @@
   {
     "provinceId": 108,
     "name": "Hamhung Central",
-    "stateId": 9,
+    "stateId": 7,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Urban",
@@ -3686,8 +3686,8 @@
     "supplyHubLevel": 4,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 530,
-    "centerY": 330,
+    "centerX": 1126,
+    "centerY": 634,
     "adjacencies": [
       {
         "targetProvinceId": 109,
@@ -3714,7 +3714,7 @@
   {
     "provinceId": 109,
     "name": "Hungnam Chemical Port",
-    "stateId": 9,
+    "stateId": 7,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Urban",
@@ -3722,8 +3722,8 @@
     "supplyHubLevel": 2,
     "portLevel": 6,
     "infrastructureLevel": 7,
-    "centerX": 545,
-    "centerY": 345,
+    "centerX": 1135,
+    "centerY": 642,
     "adjacencies": [
       {
         "targetProvinceId": 108,
@@ -3742,7 +3742,7 @@
   {
     "provinceId": 110,
     "name": "Chongpyong",
-    "stateId": 9,
+    "stateId": 7,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Plains",
@@ -3750,8 +3750,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 510,
-    "centerY": 360,
+    "centerX": 1114,
+    "centerY": 650,
     "adjacencies": [
       {
         "targetProvinceId": 67,
@@ -3782,7 +3782,7 @@
   {
     "provinceId": 111,
     "name": "Kowon",
-    "stateId": 9,
+    "stateId": 7,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Hills",
@@ -3790,8 +3790,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 515,
-    "centerY": 390,
+    "centerX": 1117,
+    "centerY": 667,
     "adjacencies": [
       {
         "targetProvinceId": 66,
@@ -3814,7 +3814,7 @@
   {
     "provinceId": 112,
     "name": "Yonggwang",
-    "stateId": 9,
+    "stateId": 7,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Mountain",
@@ -3822,8 +3822,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 4,
-    "centerX": 510,
-    "centerY": 310,
+    "centerX": 1114,
+    "centerY": 623,
     "adjacencies": [
       {
         "targetProvinceId": 67,
@@ -3850,7 +3850,7 @@
   {
     "provinceId": 113,
     "name": "Sinhung",
-    "stateId": 9,
+    "stateId": 7,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Mountain",
@@ -3858,8 +3858,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 4,
-    "centerX": 540,
-    "centerY": 290,
+    "centerX": 1132,
+    "centerY": 612,
     "adjacencies": [
       {
         "targetProvinceId": 81,
@@ -3886,7 +3886,7 @@
   {
     "provinceId": 114,
     "name": "Sinpo Submarine Port",
-    "stateId": 9,
+    "stateId": 7,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Plains",
@@ -3894,8 +3894,8 @@
     "supplyHubLevel": 1,
     "portLevel": 5,
     "infrastructureLevel": 6,
-    "centerX": 585,
-    "centerY": 320,
+    "centerX": 1158,
+    "centerY": 629,
     "adjacencies": [
       {
         "targetProvinceId": 108,
@@ -3918,7 +3918,7 @@
   {
     "provinceId": 115,
     "name": "Tanchon",
-    "stateId": 9,
+    "stateId": 7,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Hills",
@@ -3926,8 +3926,8 @@
     "supplyHubLevel": 1,
     "portLevel": 4,
     "infrastructureLevel": 5,
-    "centerX": 630,
-    "centerY": 275,
+    "centerX": 1184,
+    "centerY": 604,
     "adjacencies": [
       {
         "targetProvinceId": 114,
@@ -3946,7 +3946,7 @@
   {
     "provinceId": 116,
     "name": "Kimchaek / Songjin",
-    "stateId": 9,
+    "stateId": 7,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Urban",
@@ -3954,8 +3954,8 @@
     "supplyHubLevel": 2,
     "portLevel": 5,
     "infrastructureLevel": 6,
-    "centerX": 665,
-    "centerY": 230,
+    "centerX": 1205,
+    "centerY": 580,
     "adjacencies": [
       {
         "targetProvinceId": 115,
@@ -3974,7 +3974,7 @@
   {
     "provinceId": 117,
     "name": "Kilju",
-    "stateId": 9,
+    "stateId": 7,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Hills",
@@ -3982,8 +3982,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 675,
-    "centerY": 190,
+    "centerX": 1211,
+    "centerY": 558,
     "adjacencies": [
       {
         "targetProvinceId": 115,
@@ -4006,7 +4006,7 @@
   {
     "provinceId": 118,
     "name": "Myongcheon",
-    "stateId": 9,
+    "stateId": 7,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Hills",
@@ -4014,8 +4014,8 @@
     "supplyHubLevel": 0,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 695,
-    "centerY": 160,
+    "centerX": 1222,
+    "centerY": 542,
     "adjacencies": [
       {
         "targetProvinceId": 116,
@@ -4034,7 +4034,7 @@
   {
     "provinceId": 119,
     "name": "Chongjin Steel Titan",
-    "stateId": 9,
+    "stateId": 7,
     "ownerTag": "PRK",
     "controllerTag": "PRK",
     "terrain": "Urban",
@@ -4042,8 +4042,8 @@
     "supplyHubLevel": 4,
     "portLevel": 7,
     "infrastructureLevel": 7,
-    "centerX": 725,
-    "centerY": 120,
+    "centerX": 1240,
+    "centerY": 520,
     "adjacencies": [
       {
         "targetProvinceId": 117,
@@ -4074,8 +4074,8 @@
     "supplyHubLevel": 5,
     "portLevel": 0,
     "infrastructureLevel": 8,
-    "centerX": 220,
-    "centerY": 40,
+    "centerX": 160,
+    "centerY": 95,
     "adjacencies": [
       {
         "targetProvinceId": 151,
@@ -4098,8 +4098,8 @@
     "supplyHubLevel": 3,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 290,
-    "centerY": 45,
+    "centerX": 420,
+    "centerY": 95,
     "adjacencies": [
       {
         "targetProvinceId": 150,
@@ -4122,8 +4122,8 @@
     "supplyHubLevel": 4,
     "portLevel": 0,
     "infrastructureLevel": 8,
-    "centerX": 370,
-    "centerY": 45,
+    "centerX": 720,
+    "centerY": 105,
     "adjacencies": [
       {
         "targetProvinceId": 151,
@@ -4146,8 +4146,8 @@
     "supplyHubLevel": 4,
     "portLevel": 2,
     "infrastructureLevel": 8,
-    "centerX": 450,
-    "centerY": 50,
+    "centerX": 1345,
+    "centerY": 165,
     "adjacencies": [
       {
         "targetProvinceId": 152,
@@ -4174,8 +4174,8 @@
     "supplyHubLevel": 3,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 530,
-    "centerY": 50,
+    "centerX": 900,
+    "centerY": 165,
     "adjacencies": [
       {
         "targetProvinceId": 153,
@@ -4198,8 +4198,8 @@
     "supplyHubLevel": 3,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 610,
-    "centerY": 55,
+    "centerX": 1085,
+    "centerY": 215,
     "adjacencies": [
       {
         "targetProvinceId": 160,
@@ -4222,8 +4222,8 @@
     "supplyHubLevel": 3,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 690,
-    "centerY": 60,
+    "centerX": 1220,
+    "centerY": 265,
     "adjacencies": [
       {
         "targetProvinceId": 161,
@@ -4246,8 +4246,8 @@
     "supplyHubLevel": 5,
     "portLevel": 3,
     "infrastructureLevel": 9,
-    "centerX": 770,
-    "centerY": 65,
+    "centerX": 1335,
+    "centerY": 275,
     "adjacencies": [
       {
         "targetProvinceId": 162,
@@ -4278,8 +4278,8 @@
     "supplyHubLevel": 4,
     "portLevel": 0,
     "infrastructureLevel": 8,
-    "centerX": 780,
-    "centerY": 110,
+    "centerX": 1285,
+    "centerY": 430,
     "adjacencies": [
       {
         "targetProvinceId": 163,
@@ -4318,8 +4318,8 @@
     "supplyHubLevel": 5,
     "portLevel": 5,
     "infrastructureLevel": 9,
-    "centerX": 810,
-    "centerY": 160,
+    "centerX": 1290,
+    "centerY": 480,
     "adjacencies": [
       {
         "targetProvinceId": 170,
@@ -4346,8 +4346,8 @@
     "supplyHubLevel": 3,
     "portLevel": 4,
     "infrastructureLevel": 7,
-    "centerX": 840,
-    "centerY": 190,
+    "centerX": 1335,
+    "centerY": 488,
     "adjacencies": [
       {
         "targetProvinceId": 171,
@@ -4370,8 +4370,8 @@
     "supplyHubLevel": 2,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 790,
-    "centerY": 85,
+    "centerX": 1310,
+    "centerY": 365,
     "adjacencies": [
       {
         "targetProvinceId": 170,
@@ -4394,8 +4394,8 @@
     "supplyHubLevel": 3,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 830,
-    "centerY": 130,
+    "centerX": 1355,
+    "centerY": 415,
     "adjacencies": [
       {
         "targetProvinceId": 170,
@@ -4418,8 +4418,8 @@
     "supplyHubLevel": 3,
     "portLevel": 3,
     "infrastructureLevel": 7,
-    "centerX": 760,
-    "centerY": 150,
+    "centerX": 1258,
+    "centerY": 498,
     "adjacencies": [
       {
         "targetProvinceId": 171,
@@ -4442,8 +4442,8 @@
     "supplyHubLevel": 3,
     "portLevel": 4,
     "infrastructureLevel": 6,
-    "centerX": 890,
-    "centerY": 60,
+    "centerX": 1545,
+    "centerY": 270,
     "adjacencies": [
       {
         "targetProvinceId": 181,
@@ -4466,8 +4466,8 @@
     "supplyHubLevel": 2,
     "portLevel": 4,
     "infrastructureLevel": 6,
-    "centerX": 860,
-    "centerY": 85,
+    "centerX": 1518,
+    "centerY": 240,
     "adjacencies": [
       {
         "targetProvinceId": 180,
@@ -4490,8 +4490,8 @@
     "supplyHubLevel": 2,
     "portLevel": 3,
     "infrastructureLevel": 6,
-    "centerX": 910,
-    "centerY": 100,
+    "centerX": 1552,
+    "centerY": 312,
     "adjacencies": [
       {
         "targetProvinceId": 180,
@@ -4514,8 +4514,8 @@
     "supplyHubLevel": 2,
     "portLevel": 3,
     "infrastructureLevel": 5,
-    "centerX": 960,
-    "centerY": 120,
+    "centerX": 1755,
+    "centerY": 385,
     "adjacencies": [
       {
         "targetProvinceId": 182,
@@ -4538,8 +4538,8 @@
     "supplyHubLevel": 5,
     "portLevel": 0,
     "infrastructureLevel": 9,
-    "centerX": 90,
-    "centerY": 240,
+    "centerX": 585,
+    "centerY": 585,
     "adjacencies": [
       {
         "targetProvinceId": 201,
@@ -4574,8 +4574,8 @@
     "supplyHubLevel": 4,
     "portLevel": 4,
     "infrastructureLevel": 8,
-    "centerX": 130,
-    "centerY": 260,
+    "centerX": 685,
+    "centerY": 655,
     "adjacencies": [
       {
         "targetProvinceId": 200,
@@ -4590,7 +4590,7 @@
   {
     "provinceId": 202,
     "name": "Tangshan Industrial Basin",
-    "stateId": 20,
+    "stateId": 21,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Plains",
@@ -4598,8 +4598,8 @@
     "supplyHubLevel": 3,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 160,
-    "centerY": 240,
+    "centerX": 725,
+    "centerY": 595,
     "adjacencies": [
       {
         "targetProvinceId": 200,
@@ -4618,7 +4618,7 @@
   {
     "provinceId": 203,
     "name": "Baoding Southern Gate",
-    "stateId": 20,
+    "stateId": 21,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Plains",
@@ -4626,8 +4626,8 @@
     "supplyHubLevel": 3,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 80,
-    "centerY": 280,
+    "centerX": 420,
+    "centerY": 665,
     "adjacencies": [
       {
         "targetProvinceId": 200,
@@ -4642,7 +4642,7 @@
   {
     "provinceId": 204,
     "name": "Shijiazhuang Rail Hub",
-    "stateId": 20,
+    "stateId": 21,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Plains",
@@ -4650,8 +4650,8 @@
     "supplyHubLevel": 4,
     "portLevel": 0,
     "infrastructureLevel": 8,
-    "centerX": 70,
-    "centerY": 320,
+    "centerX": 220,
+    "centerY": 725,
     "adjacencies": [
       {
         "targetProvinceId": 203,
@@ -4666,7 +4666,7 @@
   {
     "provinceId": 205,
     "name": "Qinhuangdao Naval Gate",
-    "stateId": 20,
+    "stateId": 21,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Hills",
@@ -4674,8 +4674,8 @@
     "supplyHubLevel": 3,
     "portLevel": 3,
     "infrastructureLevel": 7,
-    "centerX": 180,
-    "centerY": 220,
+    "centerX": 805,
+    "centerY": 555,
     "adjacencies": [
       {
         "targetProvinceId": 202,
@@ -4690,7 +4690,7 @@
   {
     "provinceId": 210,
     "name": "Shenyang Arsenal Hub",
-    "stateId": 21,
+    "stateId": 22,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Urban",
@@ -4698,8 +4698,8 @@
     "supplyHubLevel": 5,
     "portLevel": 0,
     "infrastructureLevel": 8,
-    "centerX": 190,
-    "centerY": 160,
+    "centerX": 935,
+    "centerY": 525,
     "adjacencies": [
       {
         "targetProvinceId": 213,
@@ -4722,7 +4722,7 @@
   {
     "provinceId": 211,
     "name": "Dandong Yalu Crossing",
-    "stateId": 21,
+    "stateId": 22,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Plains",
@@ -4730,8 +4730,8 @@
     "supplyHubLevel": 4,
     "portLevel": 2,
     "infrastructureLevel": 7,
-    "centerX": 230,
-    "centerY": 180,
+    "centerX": 952,
+    "centerY": 595,
     "adjacencies": [
       {
         "targetProvinceId": 215,
@@ -4750,7 +4750,7 @@
   {
     "provinceId": 212,
     "name": "Dalian Lushun Fleet Port",
-    "stateId": 21,
+    "stateId": 22,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Urban",
@@ -4758,8 +4758,8 @@
     "supplyHubLevel": 4,
     "portLevel": 5,
     "infrastructureLevel": 8,
-    "centerX": 210,
-    "centerY": 220,
+    "centerX": 875,
+    "centerY": 660,
     "adjacencies": [
       {
         "targetProvinceId": 215,
@@ -4778,7 +4778,7 @@
   {
     "provinceId": 213,
     "name": "Changchun Rail Center",
-    "stateId": 21,
+    "stateId": 23,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Plains",
@@ -4786,8 +4786,8 @@
     "supplyHubLevel": 4,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 220,
-    "centerY": 120,
+    "centerX": 1010,
+    "centerY": 445,
     "adjacencies": [
       {
         "targetProvinceId": 214,
@@ -4806,7 +4806,7 @@
   {
     "provinceId": 214,
     "name": "Harbin Northern Fortress",
-    "stateId": 21,
+    "stateId": 23,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Urban",
@@ -4814,8 +4814,8 @@
     "supplyHubLevel": 4,
     "portLevel": 1,
     "infrastructureLevel": 8,
-    "centerX": 270,
-    "centerY": 90,
+    "centerX": 1065,
+    "centerY": 355,
     "adjacencies": [
       {
         "targetProvinceId": 213,
@@ -4830,7 +4830,7 @@
   {
     "provinceId": 215,
     "name": "Anshan Steelworks",
-    "stateId": 21,
+    "stateId": 22,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Plains",
@@ -4838,8 +4838,8 @@
     "supplyHubLevel": 3,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 200,
-    "centerY": 190,
+    "centerX": 910,
+    "centerY": 572,
     "adjacencies": [
       {
         "targetProvinceId": 210,
@@ -4858,7 +4858,7 @@
   {
     "provinceId": 220,
     "name": "Jinan Yellow River Gate",
-    "stateId": 22,
+    "stateId": 24,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Urban",
@@ -4866,8 +4866,8 @@
     "supplyHubLevel": 4,
     "portLevel": 0,
     "infrastructureLevel": 8,
-    "centerX": 120,
-    "centerY": 360,
+    "centerX": 545,
+    "centerY": 805,
     "adjacencies": [
       {
         "targetProvinceId": 204,
@@ -4886,7 +4886,7 @@
   {
     "provinceId": 221,
     "name": "Qingdao North Sea Bastion",
-    "stateId": 22,
+    "stateId": 24,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Urban",
@@ -4894,8 +4894,8 @@
     "supplyHubLevel": 5,
     "portLevel": 5,
     "infrastructureLevel": 9,
-    "centerX": 170,
-    "centerY": 380,
+    "centerX": 805,
+    "centerY": 835,
     "adjacencies": [
       {
         "targetProvinceId": 220,
@@ -4914,7 +4914,7 @@
   {
     "provinceId": 222,
     "name": "Yantai Bohai Strait Port",
-    "stateId": 22,
+    "stateId": 24,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Hills",
@@ -4922,8 +4922,8 @@
     "supplyHubLevel": 3,
     "portLevel": 4,
     "infrastructureLevel": 7,
-    "centerX": 190,
-    "centerY": 350,
+    "centerX": 845,
+    "centerY": 765,
     "adjacencies": [
       {
         "targetProvinceId": 221,
@@ -4942,7 +4942,7 @@
   {
     "provinceId": 223,
     "name": "Weihai Fleet Anchorage",
-    "stateId": 22,
+    "stateId": 24,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Hills",
@@ -4950,8 +4950,8 @@
     "supplyHubLevel": 3,
     "portLevel": 3,
     "infrastructureLevel": 7,
-    "centerX": 215,
-    "centerY": 360,
+    "centerX": 895,
+    "centerY": 775,
     "adjacencies": [
       {
         "targetProvinceId": 222,
@@ -4966,7 +4966,7 @@
   {
     "provinceId": 230,
     "name": "Shanghai Huangpu Core",
-    "stateId": 23,
+    "stateId": 25,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Urban",
@@ -4974,8 +4974,8 @@
     "supplyHubLevel": 5,
     "portLevel": 5,
     "infrastructureLevel": 10,
-    "centerX": 190,
-    "centerY": 490,
+    "centerX": 890,
+    "centerY": 1025,
     "adjacencies": [
       {
         "targetProvinceId": 232,
@@ -4994,7 +4994,7 @@
   {
     "provinceId": 231,
     "name": "Nanjing Yangtze Citadel",
-    "stateId": 23,
+    "stateId": 25,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Urban",
@@ -5002,8 +5002,8 @@
     "supplyHubLevel": 4,
     "portLevel": 2,
     "infrastructureLevel": 8,
-    "centerX": 130,
-    "centerY": 460,
+    "centerX": 520,
+    "centerY": 985,
     "adjacencies": [
       {
         "targetProvinceId": 220,
@@ -5018,7 +5018,7 @@
   {
     "provinceId": 232,
     "name": "Suzhou Industrial Park",
-    "stateId": 23,
+    "stateId": 25,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Plains",
@@ -5026,8 +5026,8 @@
     "supplyHubLevel": 3,
     "portLevel": 0,
     "infrastructureLevel": 8,
-    "centerX": 170,
-    "centerY": 480,
+    "centerX": 815,
+    "centerY": 1015,
     "adjacencies": [
       {
         "targetProvinceId": 235,
@@ -5042,7 +5042,7 @@
   {
     "provinceId": 233,
     "name": "Hangzhou Qiantang Hub",
-    "stateId": 23,
+    "stateId": 26,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Urban",
@@ -5050,8 +5050,8 @@
     "supplyHubLevel": 4,
     "portLevel": 2,
     "infrastructureLevel": 8,
-    "centerX": 160,
-    "centerY": 530,
+    "centerX": 745,
+    "centerY": 1085,
     "adjacencies": [
       {
         "targetProvinceId": 230,
@@ -5070,7 +5070,7 @@
   {
     "provinceId": 234,
     "name": "Ningbo Zhoushan Anchorage",
-    "stateId": 23,
+    "stateId": 26,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Hills",
@@ -5078,8 +5078,8 @@
     "supplyHubLevel": 4,
     "portLevel": 5,
     "infrastructureLevel": 8,
-    "centerX": 210,
-    "centerY": 530,
+    "centerX": 870,
+    "centerY": 1100,
     "adjacencies": [
       {
         "targetProvinceId": 233,
@@ -5094,7 +5094,7 @@
   {
     "provinceId": 235,
     "name": "Wuxi Grand Canal Basin",
-    "stateId": 23,
+    "stateId": 25,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Plains",
@@ -5102,8 +5102,8 @@
     "supplyHubLevel": 3,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 150,
-    "centerY": 450,
+    "centerX": 695,
+    "centerY": 995,
     "adjacencies": [
       {
         "targetProvinceId": 231,
@@ -5118,7 +5118,7 @@
   {
     "provinceId": 240,
     "name": "Fuzhou Strait Command",
-    "stateId": 24,
+    "stateId": 27,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Urban",
@@ -5126,8 +5126,8 @@
     "supplyHubLevel": 4,
     "portLevel": 4,
     "infrastructureLevel": 8,
-    "centerX": 170,
-    "centerY": 600,
+    "centerX": 810,
+    "centerY": 1225,
     "adjacencies": [
       {
         "targetProvinceId": 233,
@@ -5154,7 +5154,7 @@
   {
     "provinceId": 241,
     "name": "Xiamen Frontline Redoubt",
-    "stateId": 24,
+    "stateId": 27,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Urban",
@@ -5162,8 +5162,8 @@
     "supplyHubLevel": 4,
     "portLevel": 4,
     "infrastructureLevel": 8,
-    "centerX": 160,
-    "centerY": 650,
+    "centerX": 755,
+    "centerY": 1330,
     "adjacencies": [
       {
         "targetProvinceId": 242,
@@ -5186,7 +5186,7 @@
   {
     "provinceId": 242,
     "name": "Quanzhou Maritime Hub",
-    "stateId": 24,
+    "stateId": 27,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Plains",
@@ -5194,8 +5194,8 @@
     "supplyHubLevel": 3,
     "portLevel": 3,
     "infrastructureLevel": 7,
-    "centerX": 180,
-    "centerY": 625,
+    "centerX": 785,
+    "centerY": 1285,
     "adjacencies": [
       {
         "targetProvinceId": 240,
@@ -5210,7 +5210,7 @@
   {
     "provinceId": 243,
     "name": "Nanping Mountain Arsenal",
-    "stateId": 24,
+    "stateId": 27,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Mountain",
@@ -5218,8 +5218,8 @@
     "supplyHubLevel": 2,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 120,
-    "centerY": 590,
+    "centerX": 565,
+    "centerY": 1185,
     "adjacencies": [
       {
         "targetProvinceId": 240,
@@ -5234,7 +5234,7 @@
   {
     "provinceId": 244,
     "name": "Longyan Southern Highlands",
-    "stateId": 24,
+    "stateId": 27,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Mountain",
@@ -5242,8 +5242,8 @@
     "supplyHubLevel": 2,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 110,
-    "centerY": 640,
+    "centerX": 540,
+    "centerY": 1265,
     "adjacencies": [
       {
         "targetProvinceId": 241,
@@ -5262,7 +5262,7 @@
   {
     "provinceId": 250,
     "name": "Guangzhou Pearl Delta Core",
-    "stateId": 25,
+    "stateId": 28,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Urban",
@@ -5270,8 +5270,8 @@
     "supplyHubLevel": 5,
     "portLevel": 4,
     "infrastructureLevel": 9,
-    "centerX": 90,
-    "centerY": 710,
+    "centerX": 545,
+    "centerY": 1390,
     "adjacencies": [
       {
         "targetProvinceId": 251,
@@ -5294,7 +5294,7 @@
   {
     "provinceId": 251,
     "name": "Shenzhen Reform Corridor",
-    "stateId": 25,
+    "stateId": 28,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Urban",
@@ -5302,8 +5302,8 @@
     "supplyHubLevel": 4,
     "portLevel": 4,
     "infrastructureLevel": 9,
-    "centerX": 120,
-    "centerY": 725,
+    "centerX": 625,
+    "centerY": 1425,
     "adjacencies": [
       {
         "targetProvinceId": 253,
@@ -5318,7 +5318,7 @@
   {
     "provinceId": 252,
     "name": "Zhanjiang South Sea Bastion",
-    "stateId": 25,
+    "stateId": 29,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Plains",
@@ -5326,8 +5326,8 @@
     "supplyHubLevel": 4,
     "portLevel": 5,
     "infrastructureLevel": 8,
-    "centerX": 60,
-    "centerY": 760,
+    "centerX": 475,
+    "centerY": 1480,
     "adjacencies": [
       {
         "targetProvinceId": 250,
@@ -5342,7 +5342,7 @@
   {
     "provinceId": 253,
     "name": "Shantou Eastern Port",
-    "stateId": 25,
+    "stateId": 28,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Plains",
@@ -5350,8 +5350,8 @@
     "supplyHubLevel": 3,
     "portLevel": 3,
     "infrastructureLevel": 7,
-    "centerX": 150,
-    "centerY": 700,
+    "centerX": 705,
+    "centerY": 1380,
     "adjacencies": [
       {
         "targetProvinceId": 241,
@@ -5366,7 +5366,7 @@
   {
     "provinceId": 254,
     "name": "Shaoguan Northern Pass",
-    "stateId": 25,
+    "stateId": 28,
     "ownerTag": "PRC",
     "controllerTag": "PRC",
     "terrain": "Mountain",
@@ -5374,8 +5374,8 @@
     "supplyHubLevel": 3,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 90,
-    "centerY": 665,
+    "centerX": 360,
+    "centerY": 1285,
     "adjacencies": [
       {
         "targetProvinceId": 250,
@@ -5398,8 +5398,8 @@
     "supplyHubLevel": 5,
     "portLevel": 4,
     "infrastructureLevel": 10,
-    "centerX": 920,
-    "centerY": 420,
+    "centerX": 1578,
+    "centerY": 808,
     "adjacencies": [
       {
         "targetProvinceId": 304,
@@ -5434,8 +5434,8 @@
     "supplyHubLevel": 5,
     "portLevel": 5,
     "infrastructureLevel": 10,
-    "centerX": 930,
-    "centerY": 445,
+    "centerX": 1562,
+    "centerY": 835,
     "adjacencies": [
       {
         "targetProvinceId": 300,
@@ -5462,8 +5462,8 @@
     "supplyHubLevel": 4,
     "portLevel": 5,
     "infrastructureLevel": 9,
-    "centerX": 940,
-    "centerY": 465,
+    "centerX": 1574,
+    "centerY": 856,
     "adjacencies": [
       {
         "targetProvinceId": 301,
@@ -5486,8 +5486,8 @@
     "supplyHubLevel": 3,
     "portLevel": 3,
     "infrastructureLevel": 8,
-    "centerX": 965,
-    "centerY": 435,
+    "centerX": 1612,
+    "centerY": 822,
     "adjacencies": [
       {
         "targetProvinceId": 300,
@@ -5510,8 +5510,8 @@
     "supplyHubLevel": 4,
     "portLevel": 0,
     "infrastructureLevel": 8,
-    "centerX": 910,
-    "centerY": 390,
+    "centerX": 1560,
+    "centerY": 778,
     "adjacencies": [
       {
         "targetProvinceId": 305,
@@ -5534,8 +5534,8 @@
     "supplyHubLevel": 3,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 925,
-    "centerY": 360,
+    "centerX": 1575,
+    "centerY": 725,
     "adjacencies": [
       {
         "targetProvinceId": 311,
@@ -5558,8 +5558,8 @@
     "supplyHubLevel": 4,
     "portLevel": 2,
     "infrastructureLevel": 8,
-    "centerX": 910,
-    "centerY": 230,
+    "centerX": 1565,
+    "centerY": 470,
     "adjacencies": [
       {
         "targetProvinceId": 183,
@@ -5594,8 +5594,8 @@
     "supplyHubLevel": 3,
     "portLevel": 4,
     "infrastructureLevel": 7,
-    "centerX": 890,
-    "centerY": 275,
+    "centerX": 1538,
+    "centerY": 528,
     "adjacencies": [
       {
         "targetProvinceId": 310,
@@ -5618,8 +5618,8 @@
     "supplyHubLevel": 3,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 940,
-    "centerY": 205,
+    "centerX": 1602,
+    "centerY": 435,
     "adjacencies": [
       {
         "targetProvinceId": 314,
@@ -5646,8 +5646,8 @@
     "supplyHubLevel": 3,
     "portLevel": 3,
     "infrastructureLevel": 6,
-    "centerX": 980,
-    "centerY": 230,
+    "centerX": 1670,
+    "centerY": 465,
     "adjacencies": [
       {
         "targetProvinceId": 312,
@@ -5670,8 +5670,8 @@
     "supplyHubLevel": 2,
     "portLevel": 3,
     "infrastructureLevel": 6,
-    "centerX": 920,
-    "centerY": 160,
+    "centerX": 1572,
+    "centerY": 380,
     "adjacencies": [
       {
         "targetProvinceId": 310,
@@ -5694,8 +5694,8 @@
     "supplyHubLevel": 5,
     "portLevel": 4,
     "infrastructureLevel": 9,
-    "centerX": 830,
-    "centerY": 490,
+    "centerX": 1412,
+    "centerY": 885,
     "adjacencies": [
       {
         "targetProvinceId": 321,
@@ -5718,8 +5718,8 @@
     "supplyHubLevel": 3,
     "portLevel": 0,
     "infrastructureLevel": 8,
-    "centerX": 840,
-    "centerY": 465,
+    "centerX": 1422,
+    "centerY": 855,
     "adjacencies": [
       {
         "targetProvinceId": 322,
@@ -5742,8 +5742,8 @@
     "supplyHubLevel": 4,
     "portLevel": 3,
     "infrastructureLevel": 9,
-    "centerX": 875,
-    "centerY": 470,
+    "centerX": 1472,
+    "centerY": 858,
     "adjacencies": [
       {
         "targetProvinceId": 324,
@@ -5766,8 +5766,8 @@
     "supplyHubLevel": 4,
     "portLevel": 4,
     "infrastructureLevel": 9,
-    "centerX": 810,
-    "centerY": 495,
+    "centerX": 1375,
+    "centerY": 885,
     "adjacencies": [
       {
         "targetProvinceId": 320,
@@ -5790,8 +5790,8 @@
     "supplyHubLevel": 3,
     "portLevel": 2,
     "infrastructureLevel": 8,
-    "centerX": 895,
-    "centerY": 480,
+    "centerX": 1522,
+    "centerY": 865,
     "adjacencies": [
       {
         "targetProvinceId": 300,
@@ -5814,8 +5814,8 @@
     "supplyHubLevel": 4,
     "portLevel": 4,
     "infrastructureLevel": 9,
-    "centerX": 750,
-    "centerY": 560,
+    "centerX": 1275,
+    "centerY": 975,
     "adjacencies": [
       {
         "targetProvinceId": 331,
@@ -5850,8 +5850,8 @@
     "supplyHubLevel": 4,
     "portLevel": 3,
     "infrastructureLevel": 8,
-    "centerX": 775,
-    "centerY": 540,
+    "centerX": 1300,
+    "centerY": 955,
     "adjacencies": [
       {
         "targetProvinceId": 323,
@@ -5874,8 +5874,8 @@
     "supplyHubLevel": 4,
     "portLevel": 5,
     "infrastructureLevel": 8,
-    "centerX": 730,
-    "centerY": 580,
+    "centerX": 1245,
+    "centerY": 1000,
     "adjacencies": [
       {
         "targetProvinceId": 330,
@@ -5898,8 +5898,8 @@
     "supplyHubLevel": 3,
     "portLevel": 4,
     "infrastructureLevel": 8,
-    "centerX": 740,
-    "centerY": 610,
+    "centerX": 1255,
+    "centerY": 1030,
     "adjacencies": [
       {
         "targetProvinceId": 332,
@@ -5922,8 +5922,8 @@
     "supplyHubLevel": 3,
     "portLevel": 3,
     "infrastructureLevel": 7,
-    "centerX": 765,
-    "centerY": 645,
+    "centerX": 1295,
+    "centerY": 1072,
     "adjacencies": [
       {
         "targetProvinceId": 330,
@@ -5946,8 +5946,8 @@
     "supplyHubLevel": 5,
     "portLevel": 0,
     "infrastructureLevel": 9,
-    "centerX": 280,
-    "centerY": 660,
+    "centerX": 938,
+    "centerY": 1270,
     "adjacencies": [
       {
         "targetProvinceId": 401,
@@ -5978,8 +5978,8 @@
     "supplyHubLevel": 3,
     "portLevel": 4,
     "infrastructureLevel": 8,
-    "centerX": 295,
-    "centerY": 645,
+    "centerX": 955,
+    "centerY": 1255,
     "adjacencies": [
       {
         "targetProvinceId": 400,
@@ -6002,8 +6002,8 @@
     "supplyHubLevel": 4,
     "portLevel": 0,
     "infrastructureLevel": 9,
-    "centerX": 270,
-    "centerY": 680,
+    "centerX": 920,
+    "centerY": 1295,
     "adjacencies": [
       {
         "targetProvinceId": 400,
@@ -6026,8 +6026,8 @@
     "supplyHubLevel": 3,
     "portLevel": 3,
     "infrastructureLevel": 8,
-    "centerX": 260,
-    "centerY": 700,
+    "centerX": 910,
+    "centerY": 1330,
     "adjacencies": [
       {
         "targetProvinceId": 402,
@@ -6054,8 +6054,8 @@
     "supplyHubLevel": 2,
     "portLevel": 2,
     "infrastructureLevel": 6,
-    "centerX": 295,
-    "centerY": 680,
+    "centerX": 958,
+    "centerY": 1300,
     "adjacencies": [
       {
         "targetProvinceId": 400,
@@ -6078,8 +6078,8 @@
     "supplyHubLevel": 5,
     "portLevel": 5,
     "infrastructureLevel": 9,
-    "centerX": 250,
-    "centerY": 750,
+    "centerX": 912,
+    "centerY": 1415,
     "adjacencies": [
       {
         "targetProvinceId": 411,
@@ -6106,8 +6106,8 @@
     "supplyHubLevel": 4,
     "portLevel": 5,
     "infrastructureLevel": 9,
-    "centerX": 240,
-    "centerY": 730,
+    "centerX": 905,
+    "centerY": 1395,
     "adjacencies": [
       {
         "targetProvinceId": 412,
@@ -6130,8 +6130,8 @@
     "supplyHubLevel": 3,
     "portLevel": 2,
     "infrastructureLevel": 8,
-    "centerX": 245,
-    "centerY": 715,
+    "centerX": 902,
+    "centerY": 1370,
     "adjacencies": [
       {
         "targetProvinceId": 403,
@@ -6158,8 +6158,8 @@
     "supplyHubLevel": 3,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 270,
-    "centerY": 760,
+    "centerX": 932,
+    "centerY": 1425,
     "adjacencies": [
       {
         "targetProvinceId": 410,
@@ -6182,8 +6182,8 @@
     "supplyHubLevel": 3,
     "portLevel": 3,
     "infrastructureLevel": 7,
-    "centerX": 200,
-    "centerY": 650,
+    "centerX": 796,
+    "centerY": 1338,
     "adjacencies": [
       {
         "targetProvinceId": 241,
@@ -6206,8 +6206,8 @@
     "supplyHubLevel": 3,
     "portLevel": 4,
     "infrastructureLevel": 7,
-    "centerX": 220,
-    "centerY": 700,
+    "centerX": 856,
+    "centerY": 1355,
     "adjacencies": [
       {
         "targetProvinceId": 412,
@@ -6230,8 +6230,8 @@
     "supplyHubLevel": 4,
     "portLevel": 4,
     "infrastructureLevel": 8,
-    "centerX": 480,
-    "centerY": 680,
+    "centerX": 1150,
+    "centerY": 1235,
     "adjacencies": [
       {
         "targetProvinceId": 501,
@@ -6274,8 +6274,8 @@
     "supplyHubLevel": 5,
     "portLevel": 0,
     "infrastructureLevel": 9,
-    "centerX": 490,
-    "centerY": 660,
+    "centerX": 1162,
+    "centerY": 1208,
     "adjacencies": [
       {
         "targetProvinceId": 500,
@@ -6298,8 +6298,8 @@
     "supplyHubLevel": 3,
     "portLevel": 4,
     "infrastructureLevel": 7,
-    "centerX": 505,
-    "centerY": 670,
+    "centerX": 1172,
+    "centerY": 1220,
     "adjacencies": [
       {
         "targetProvinceId": 500,
@@ -6322,8 +6322,8 @@
     "supplyHubLevel": 5,
     "portLevel": 5,
     "infrastructureLevel": 9,
-    "centerX": 920,
-    "centerY": 830,
+    "centerX": 1765,
+    "centerY": 1585,
     "adjacencies": [
       {
         "targetProvinceId": 511,
@@ -6350,8 +6350,8 @@
     "supplyHubLevel": 4,
     "portLevel": 0,
     "infrastructureLevel": 8,
-    "centerX": 935,
-    "centerY": 810,
+    "centerX": 1785,
+    "centerY": 1555,
     "adjacencies": [
       {
         "targetProvinceId": 510,
@@ -6374,8 +6374,8 @@
     "supplyHubLevel": 4,
     "portLevel": 0,
     "infrastructureLevel": 8,
-    "centerX": 100,
-    "centerY": 780,
+    "centerX": 375,
+    "centerY": 1465,
     "adjacencies": [
       {
         "targetProvinceId": 601,
@@ -6410,8 +6410,8 @@
     "supplyHubLevel": 4,
     "portLevel": 4,
     "infrastructureLevel": 8,
-    "centerX": 125,
-    "centerY": 785,
+    "centerX": 420,
+    "centerY": 1485,
     "adjacencies": [
       {
         "targetProvinceId": 600,
@@ -6426,7 +6426,7 @@
   {
     "provinceId": 602,
     "name": "Da Nang Central Coastal Base",
-    "stateId": 60,
+    "stateId": 68,
     "ownerTag": "VNM",
     "controllerTag": "VNM",
     "terrain": "Hills",
@@ -6434,8 +6434,8 @@
     "supplyHubLevel": 3,
     "portLevel": 4,
     "infrastructureLevel": 7,
-    "centerX": 140,
-    "centerY": 830,
+    "centerX": 475,
+    "centerY": 1635,
     "adjacencies": [
       {
         "targetProvinceId": 600,
@@ -6450,7 +6450,7 @@
   {
     "provinceId": 603,
     "name": "Cam Ranh Bay Deep Anchorage",
-    "stateId": 60,
+    "stateId": 69,
     "ownerTag": "VNM",
     "controllerTag": "VNM",
     "terrain": "Plains",
@@ -6458,8 +6458,8 @@
     "supplyHubLevel": 4,
     "portLevel": 5,
     "infrastructureLevel": 7,
-    "centerX": 160,
-    "centerY": 880,
+    "centerX": 495,
+    "centerY": 1765,
     "adjacencies": [
       {
         "targetProvinceId": 602,
@@ -6486,8 +6486,8 @@
     "supplyHubLevel": 4,
     "portLevel": 4,
     "infrastructureLevel": 8,
-    "centerX": 310,
-    "centerY": 830,
+    "centerX": 975,
+    "centerY": 1680,
     "adjacencies": [
       {
         "targetProvinceId": 612,
@@ -6518,8 +6518,8 @@
     "supplyHubLevel": 5,
     "portLevel": 5,
     "infrastructureLevel": 9,
-    "centerX": 290,
-    "centerY": 815,
+    "centerX": 940,
+    "centerY": 1665,
     "adjacencies": [
       {
         "targetProvinceId": 612,
@@ -6546,8 +6546,8 @@
     "supplyHubLevel": 4,
     "portLevel": 0,
     "infrastructureLevel": 8,
-    "centerX": 300,
-    "centerY": 795,
+    "centerX": 965,
+    "centerY": 1635,
     "adjacencies": [
       {
         "targetProvinceId": 611,
@@ -6562,7 +6562,7 @@
   {
     "provinceId": 613,
     "name": "Batangas Southern Strait",
-    "stateId": 61,
+    "stateId": 70,
     "ownerTag": "PHL",
     "controllerTag": "PHL",
     "terrain": "Hills",
@@ -6570,8 +6570,8 @@
     "supplyHubLevel": 2,
     "portLevel": 3,
     "infrastructureLevel": 7,
-    "centerX": 325,
-    "centerY": 860,
+    "centerX": 985,
+    "centerY": 1725,
     "adjacencies": [
       {
         "targetProvinceId": 610,
@@ -6594,8 +6594,8 @@
     "supplyHubLevel": 3,
     "portLevel": 0,
     "infrastructureLevel": 7,
-    "centerX": 90,
-    "centerY": 140,
+    "centerX": 415,
+    "centerY": 315,
     "adjacencies": [
       {
         "targetProvinceId": 621,
@@ -6618,8 +6618,8 @@
     "supplyHubLevel": 2,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 80,
-    "centerY": 100,
+    "centerX": 210,
+    "centerY": 255,
     "adjacencies": [
       {
         "targetProvinceId": 620,
@@ -6642,8 +6642,8 @@
     "supplyHubLevel": 2,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 130,
-    "centerY": 165,
+    "centerX": 605,
+    "centerY": 405,
     "adjacencies": [
       {
         "targetProvinceId": 620,
@@ -6666,8 +6666,8 @@
     "supplyHubLevel": 4,
     "portLevel": 3,
     "infrastructureLevel": 8,
-    "centerX": 40,
-    "centerY": 880,
+    "centerX": 230,
+    "centerY": 1715,
     "adjacencies": [
       {
         "targetProvinceId": 632,
@@ -6702,8 +6702,8 @@
     "supplyHubLevel": 3,
     "portLevel": 4,
     "infrastructureLevel": 7,
-    "centerX": 55,
-    "centerY": 910,
+    "centerX": 265,
+    "centerY": 1758,
     "adjacencies": [
       {
         "targetProvinceId": 630,
@@ -6718,7 +6718,7 @@
   {
     "provinceId": 632,
     "name": "Nakhon Ratchasima Gateway",
-    "stateId": 63,
+    "stateId": 71,
     "ownerTag": "THA",
     "controllerTag": "THA",
     "terrain": "Plains",
@@ -6726,8 +6726,8 @@
     "supplyHubLevel": 2,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 60,
-    "centerY": 850,
+    "centerX": 285,
+    "centerY": 1665,
     "adjacencies": [
       {
         "targetProvinceId": 630,
@@ -6742,7 +6742,7 @@
   {
     "provinceId": 633,
     "name": "Hat Yai Southern Junction",
-    "stateId": 63,
+    "stateId": 71,
     "ownerTag": "THA",
     "controllerTag": "THA",
     "terrain": "Forest",
@@ -6750,8 +6750,8 @@
     "supplyHubLevel": 2,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 45,
-    "centerY": 950,
+    "centerX": 225,
+    "centerY": 1895,
     "adjacencies": [
       {
         "targetProvinceId": 630,
@@ -6778,8 +6778,8 @@
     "supplyHubLevel": 2,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 45,
-    "centerY": 795,
+    "centerX": 325,
+    "centerY": 1585,
     "adjacencies": [
       {
         "targetProvinceId": 641,
@@ -6806,8 +6806,8 @@
     "supplyHubLevel": 1,
     "portLevel": 0,
     "infrastructureLevel": 5,
-    "centerX": 35,
-    "centerY": 765,
+    "centerX": 285,
+    "centerY": 1510,
     "adjacencies": [
       {
         "targetProvinceId": 640,
@@ -6830,8 +6830,8 @@
     "supplyHubLevel": 2,
     "portLevel": 1,
     "infrastructureLevel": 6,
-    "centerX": 95,
-    "centerY": 895,
+    "centerX": 385,
+    "centerY": 1760,
     "adjacencies": [
       {
         "targetProvinceId": 651,
@@ -6858,8 +6858,8 @@
     "supplyHubLevel": 2,
     "portLevel": 3,
     "infrastructureLevel": 6,
-    "centerX": 80,
-    "centerY": 930,
+    "centerX": 345,
+    "centerY": 1798,
     "adjacencies": [
       {
         "targetProvinceId": 650,
@@ -6886,8 +6886,8 @@
     "supplyHubLevel": 3,
     "portLevel": 3,
     "infrastructureLevel": 7,
-    "centerX": 25,
-    "centerY": 720,
+    "centerX": 95,
+    "centerY": 1615,
     "adjacencies": [
       {
         "targetProvinceId": 661,
@@ -6906,7 +6906,7 @@
   {
     "provinceId": 661,
     "name": "Mandalay Royal Heartland",
-    "stateId": 66,
+    "stateId": 72,
     "ownerTag": "MMR",
     "controllerTag": "MMR",
     "terrain": "Plains",
@@ -6914,8 +6914,8 @@
     "supplyHubLevel": 2,
     "portLevel": 0,
     "infrastructureLevel": 6,
-    "centerX": 20,
-    "centerY": 665,
+    "centerX": 95,
+    "centerY": 1475,
     "adjacencies": [
       {
         "targetProvinceId": 660,
@@ -6938,8 +6938,8 @@
     "supplyHubLevel": 2,
     "portLevel": 2,
     "infrastructureLevel": 6,
-    "centerX": 35,
-    "centerY": 745,
+    "centerX": 155,
+    "centerY": 1665,
     "adjacencies": [
       {
         "targetProvinceId": 661,
@@ -6966,8 +6966,8 @@
     "supplyHubLevel": 4,
     "portLevel": 0,
     "infrastructureLevel": 8,
-    "centerX": 45,
-    "centerY": 990,
+    "centerX": 265,
+    "centerY": 1965,
     "adjacencies": [
       {
         "targetProvinceId": 671,
@@ -6994,8 +6994,8 @@
     "supplyHubLevel": 3,
     "portLevel": 4,
     "infrastructureLevel": 8,
-    "centerX": 30,
-    "centerY": 1005,
+    "centerX": 238,
+    "centerY": 1975,
     "adjacencies": [
       {
         "targetProvinceId": 670,
@@ -7018,8 +7018,8 @@
     "supplyHubLevel": 3,
     "portLevel": 3,
     "infrastructureLevel": 8,
-    "centerX": 65,
-    "centerY": 1010,
+    "centerX": 305,
+    "centerY": 2005,
     "adjacencies": [
       {
         "targetProvinceId": 670,

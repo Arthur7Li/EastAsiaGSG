@@ -32,19 +32,25 @@ public static class JsonFocusTreeLoader
 {
     private static readonly Dictionary<string, ushort> SymbolicStateAliases = new(StringComparer.OrdinalIgnoreCase)
     {
-        // Korean Peninsula (States 0..9 in Korean Micro-Sandbox & Theatre Dataset)
+        // Korean Peninsula (Consolidated into 6 states: 0, 1, 2, 5, 6, 7)
         ["STATE_SEOUL"] = 0,
         ["STATE_GYEONGGI"] = 0,
-        ["STATE_GANGWON_SOUTH"] = 1,
+        ["STATE_GANGWON_SOUTH"] = 0,
+        ["STATE_YEONGNAM"] = 1,
+        ["STATE_GYEONGSANG"] = 1,
+        ["STATE_BUSAN"] = 1,
         ["STATE_CHUNGCHEONG"] = 2,
-        ["STATE_JEOLLA"] = 3,
-        ["STATE_GYEONGSANG"] = 4,
-        ["STATE_BUSAN"] = 4,
+        ["STATE_JEOLLA"] = 2,
+        ["STATE_HOSEO"] = 2,
+        ["STATE_HONAM"] = 2,
         ["STATE_PYONGYANG"] = 5,
+        ["STATE_HWANGHAE"] = 5,
+        ["STATE_KAESONG"] = 5,
         ["STATE_PYONGAN"] = 6,
-        ["STATE_HWANGHAE"] = 7,
-        ["STATE_GANGWON_NORTH"] = 8,
-        ["STATE_HAMGYONG"] = 9,
+        ["STATE_CHAGANG"] = 6,
+        ["STATE_GANGWON_NORTH"] = 7,
+        ["STATE_HAMGYONG"] = 7,
+        ["STATE_WONSAN"] = 7,
 
         // Soviet Far East & Trans-Siberian Artery
         ["STATE_IRKUTSK"] = 10,
@@ -54,17 +60,24 @@ public static class JsonFocusTreeLoader
         ["STATE_PRIMORYE"] = 11,
         ["STATE_SAKHALIN"] = 12,
 
-        // People's Republic of China
+        // People's Republic of China (10 Geo-Specific Administrative Provinces)
         ["STATE_BEIJING"] = 20,
-        ["STATE_HEBEI"] = 20,
-        ["STATE_MANCHURIA"] = 21,
-        ["STATE_SHENYANG"] = 21,
-        ["STATE_SHANDONG"] = 22,
-        ["STATE_SHANGHAI"] = 23,
-        ["STATE_JIANGSU"] = 23,
-        ["STATE_FUJIAN"] = 24,
-        ["STATE_GUANGDONG"] = 25,
-        ["STATE_SHENZHEN"] = 25,
+        ["STATE_TIANJIN"] = 20,
+        ["STATE_HEBEI"] = 21,
+        ["STATE_LIAONING"] = 22,
+        ["STATE_MANCHURIA"] = 22,
+        ["STATE_SHENYANG"] = 22,
+        ["STATE_JILIN"] = 23,
+        ["STATE_HEILONGJIANG"] = 23,
+        ["STATE_SHANDONG"] = 24,
+        ["STATE_JIANGSU"] = 25,
+        ["STATE_SHANGHAI"] = 25,
+        ["STATE_ZHEJIANG"] = 26,
+        ["STATE_FUJIAN"] = 27,
+        ["STATE_GUANGDONG"] = 28,
+        ["STATE_SHENZHEN"] = 28,
+        ["STATE_HAINAN"] = 29,
+        ["STATE_LEIZHOU"] = 29,
 
         // Japan
         ["STATE_KANTO"] = 30,
@@ -79,11 +92,32 @@ public static class JsonFocusTreeLoader
         ["STATE_HSINCHU"] = 40,
         ["STATE_KAOHSIUNG"] = 41,
         ["STATE_KINMEN"] = 42,
+        ["STATE_PENGHU"] = 42,
 
         // United States Pacific Command (USPACOM)
         ["STATE_OKINAWA"] = 50,
         ["STATE_GUAM"] = 51,
-        ["STATE_SUBIC"] = 61
+        ["STATE_SUBIC"] = 61,
+
+        // Southeast Asia Regional Minors
+        ["STATE_TONKIN"] = 60,
+        ["STATE_HANOI"] = 60,
+        ["STATE_LUZON"] = 61,
+        ["STATE_MANILA"] = 61,
+        ["STATE_MONGOLIA"] = 62,
+        ["STATE_BANGKOK"] = 63,
+        ["STATE_THAILAND"] = 63,
+        ["STATE_LAOS"] = 64,
+        ["STATE_CAMBODIA"] = 65,
+        ["STATE_MYANMAR"] = 66,
+        ["STATE_MALAYSIA"] = 67,
+        ["STATE_ANNAM"] = 68,
+        ["STATE_DANANG"] = 68,
+        ["STATE_COCHINCHINA"] = 69,
+        ["STATE_CAMRANH"] = 69,
+        ["STATE_VISAYAS"] = 70,
+        ["STATE_KHORAT"] = 71,
+        ["STATE_MANDALAY"] = 72
     };
 
     /// <summary>
@@ -203,7 +237,7 @@ public static class JsonFocusTreeLoader
         for (int i = 0; i < dto.Focuses.Count; i++)
         {
             FocusNodeDto nodeDto = dto.Focuses[i];
-            long coordKey = ((long)nodeDto.GridX << 32) | (uint)nodeDto.GridY;
+            long coordKey = ((long)nodeDto.GridX << 32) | ((long)nodeDto.GridY & 0xFFFFFFFFL);
             if (!gridCoords.Add(coordKey))
             {
                 throw new MapValidationException(

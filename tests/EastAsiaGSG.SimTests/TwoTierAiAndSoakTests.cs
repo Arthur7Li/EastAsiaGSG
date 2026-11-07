@@ -443,7 +443,7 @@ public sealed class TwoTierAiAndSoakTests
     }
 
     [Fact]
-    public void FullEastAsiaTheatreMap_232Provinces36States15Nations_BijectiveLoadAndAllOobDivisionsSupplied()
+    public void FullEastAsiaTheatreMap_232Provinces41States15Nations_BijectiveLoadAndAllOobDivisionsSupplied()
     {
         using SimulationWorld world = new();
         string repoRoot = FindRepoRoot();
@@ -460,6 +460,13 @@ public sealed class TwoTierAiAndSoakTests
             if (world.Provinces[i].OwnerTag != CountryTag.None) provCount++;
         }
         Assert.Equal(232, provCount);
+
+        int stateCount = 0;
+        for (int i = 0; i < SimulationWorld.MaxStates; i++)
+        {
+            if (world.States[i].OwnerTag != CountryTag.None) stateCount++;
+        }
+        Assert.Equal(41, stateCount);
 
         // Load all 15 OOBs
         for (byte tag = 0; tag < CountryTag.ActiveCount; tag++)

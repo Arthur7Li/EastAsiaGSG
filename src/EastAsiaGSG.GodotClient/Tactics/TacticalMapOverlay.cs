@@ -86,6 +86,43 @@ public partial class TacticalMapOverlay : Node2D
         }
     }
 
+    private static readonly (ushort ProvinceId, string Label, bool IsCapital)[] StrategicLandmarks =
+    [
+        (0, "★ SEOUL", true),
+        (60, "★ PYONGYANG", true),
+        (56, "Busan", false),
+        (102, "Wonsan", false),
+        (119, "Chongjin", false),
+        (200, "★ BEIJING", true),
+        (210, "Shenyang", false),
+        (212, "Dalian", false),
+        (221, "Qingdao", false),
+        (230, "Shanghai", false),
+        (240, "Fuzhou", false),
+        (250, "Guangzhou", false),
+        (171, "★ VLADIVOSTOK", true),
+        (163, "Khabarovsk", false),
+        (150, "Irkutsk Gate", false),
+        (180, "Sakhalin", false),
+        (300, "★ TOKYO", true),
+        (310, "Sapporo", false),
+        (320, "Osaka", false),
+        (330, "Fukuoka", false),
+        (400, "★ TAIPEI", true),
+        (410, "Kaohsiung", false),
+        (500, "★ OKINAWA", true),
+        (510, "Guam", false),
+        (600, "★ HANOI", true),
+        (603, "Cam Ranh", false),
+        (610, "★ MANILA", true),
+        (620, "★ ULAANBAATAR", true),
+        (630, "★ BANGKOK", true),
+        (640, "★ VIENTIANE", true),
+        (650, "★ PHNOM PENH", true),
+        (660, "★ YANGON", true),
+        (670, "★ KUALA LUMPUR", true)
+    ];
+
     public override void _Draw()
     {
         if (_world == null)
@@ -100,6 +137,9 @@ public partial class TacticalMapOverlay : Node2D
 
         CollectDynamicEntities();
 
+        // 0. Draw Strategic Landmarks & Capital Labels
+        DrawStrategicLandmarks(zoom, font);
+
         // 1. Draw Movement & Attack Arrows
         DrawMovementAndAttackArrows(lineScale);
 
@@ -108,6 +148,45 @@ public partial class TacticalMapOverlay : Node2D
 
         // 3. Draw HOI4-style 0..100 Battle Bubbles
         DrawBattleBubbles(counterScale, font);
+    }
+
+    private void DrawStrategicLandmarks(float zoom, Font font)
+    {
+        if (_world == null || font == null)
+        {
+            return;
+        }
+
+        int fontSize = zoom >= 1.2f ? 12 : 11;
+        for (int i = 0; i < StrategicLandmarks.Length; i++)
+        {
+            var (provId, label, isCapital) = StrategicLandmarks[i];
+            if (!isCapital && zoom < 0.55f)
+            {
+                continue;
+            }
+            if (provId >= SimulationWorld.MaxProvinces)
+            {
+                continue;
+            }
+
+            ref readonly ProvinceData prov = ref _world.Provinces[provId];
+            if (prov.CenterX == 0 && prov.CenterY == 0)
+            {
+                continue;
+            }
+
+            Vector2 pos = new(prov.CenterX, prov.CenterY);
+            Color dotColor = isCapital ? new Color(1.0f, 0.85f, 0.20f, 0.95f) : new Color(0.92f, 0.95f, 1.0f, 0.85f);
+            float dotRadius = isCapital ? 4.0f : 2.8f;
+
+            DrawCircle(pos, dotRadius + 1.2f, new Color(0f, 0f, 0f, 0.85f));
+            DrawCircle(pos, dotRadius, dotColor);
+
+            Vector2 textPos = pos + new Vector2(6f, -6f);
+            DrawStringOutline(font, textPos, label, HorizontalAlignment.Left, -1, fontSize, 3, new Color(0.02f, 0.04f, 0.08f, 0.92f));
+            DrawString(font, textPos, label, HorizontalAlignment.Left, -1, fontSize, isCapital ? new Color(1.0f, 0.94f, 0.68f, 0.98f) : new Color(0.90f, 0.94f, 0.98f, 0.90f));
+        }
     }
 
     private void CollectDynamicEntities()

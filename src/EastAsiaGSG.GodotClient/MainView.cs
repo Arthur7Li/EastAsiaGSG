@@ -85,12 +85,17 @@ public partial class MainView : Node2D
         }
         _camera.MakeCurrent();
 
-        int mapWidth = _mapRenderer.ProvinceBuffer?.Width ?? 1024;
-        int mapHeight = _mapRenderer.ProvinceBuffer?.Height ?? 1024;
+        int mapWidth = _mapRenderer.ProvinceBuffer?.Width ?? 2048;
+        int mapHeight = _mapRenderer.ProvinceBuffer?.Height ?? 2048;
+        _camera.MinZoom = 0.35f;
         _camera.SetMapBounds(new Rect2(0, 0, mapWidth, mapHeight), margin: 250f);
 
-        // Focus camera on Korean Peninsula central theater (Seoul / DMZ sector ~ 450, 600)
-        _camera.FocusOnPosition(new Vector2(450, 600), 1.0f);
+        // Focus camera dynamically on Seoul / Northeast Asian theater
+        ref readonly ProvinceData seoulProv = ref _world.Provinces[0];
+        Vector2 startFocus = (seoulProv.CenterX > 0 || seoulProv.CenterY > 0)
+            ? new Vector2(seoulProv.CenterX, seoulProv.CenterY)
+            : new Vector2(mapWidth * 0.5f, mapHeight * 0.5f);
+        _camera.FocusOnPosition(startFocus, 0.75f);
 
         // 4. Setup TacticalMapOverlay (On-map Division Counters, Movement Arrows, Battle Bubbles)
         _tacticalOverlay = GetNodeOrNull<TacticalMapOverlay>("TacticalMapOverlay");
