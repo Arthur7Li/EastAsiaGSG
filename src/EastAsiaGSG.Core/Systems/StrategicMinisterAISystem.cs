@@ -55,6 +55,8 @@ public static class StrategicMinisterAISystem
         EvaluateAndSelectFocus(world, countryTag);
         EvaluateAndQueueConstruction(world, countryTag);
         EvaluateAndAllocateProduction(world, countryTag);
+        EvaluateAndRecruitDivisions(world, countryTag);
+        EvaluateAndExecuteWargoals(world, countryTag);
     }
 
     /// <summary>
@@ -410,6 +412,131 @@ public static class StrategicMinisterAISystem
                 priority: 140,
                 initialEfficiency: 0.50f,
                 efficiencyCap: 0.85f));
+        }
+    }
+
+    /// <summary>
+    /// Evaluates manpower and equipment stockpiles to recruit new field divisions autonomously.
+    /// </summary>
+    public static void EvaluateAndRecruitDivisions(SimulationWorld world, byte countryTag)
+    {
+        if (countryTag >= CountryTag.ActiveCount)
+        {
+            return;
+        }
+
+        ref readonly CountryState country = ref world.Countries[countryTag];
+        if (country.Manpower < 15_000)
+        {
+            return;
+        }
+
+        int infStockpile = country.GetTotalArchetypeStockpile(EquipmentType.InfantryKit);
+        if (infStockpile < 400)
+        {
+            return;
+        }
+
+        // Determine template: check if armored/mechanized equipment is plentiful
+        int mbtStockpile = country.GetTotalArchetypeStockpile(EquipmentType.MBT);
+        int ifvStockpile = country.GetTotalArchetypeStockpile(EquipmentType.IFV);
+        ushort chosenTemplateId = DivisionTemplateRecord.DefaultInfantryTemplateId;
+
+        if (mbtStockpile >= 40 && ifvStockpile >= 50)
+        {
+            for (ushort t = 0; t < SimulationWorld.MaxDivisionTemplates; t++)
+            {
+                ref readonly DivisionTemplateRecord tpl = ref world.Templates[t];
+                if (tpl.IsConfigured != 0 && (tpl.GetRequired(EquipmentType.MBT) > 0 || tpl.GetRequired(EquipmentType.IFV) > 0))
+                {
+                    chosenTemplateId = t;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            for (ushort t = 0; t < SimulationWorld.MaxDivisionTemplates; t++)
+            {
+                ref readonly DivisionTemplateRecord tpl = ref world.Templates[t];
+                if (tpl.IsConfigured != 0 && tpl.GetRequired(EquipmentType.InfantryKit) > 0)
+                {
+                    chosenTemplateId = t;
+                    break;
+                }
+            }
+        }
+
+        ushort spawnProv = world.GetCapitalProvince(countryTag);
+        if (spawnProv >= SimulationWorld.MaxProvinces || world.Provinces[spawnProv].ControllerTag != countryTag)
+        {
+            for (ushort p = 0; p < SimulationWorld.MaxProvinces; p++)
+            {
+                if (world.Provinces[p].ControllerTag == countryTag && world.Provinces[p].Terrain != TerrainType.Ocean)
+                {
+                    spawnProv = p;
+                    break;
+                }
+            }
+        }
+
+        if (spawnProv < SimulationWorld.MaxProvinces)
+        {
+            world.EnqueueCommand(SimulationCommand.CreateRecruitDivision(countryTag, chosenTemplateId, spawnProv));
+        }
+    }
+
+    /// <summary>
+    /// Evaluates outstanding wargoals, military readiness, and geopolitical tension to execute declarations of war.
+    /// In Cold War deterrence doctrine, nations only pull the trigger on offensive wargoals if DEFCON has escalated
+    /// to DEFCON 1 (general war authorization) or if they hold overwhelming conventional superiority (>= 2x divisions)
+    /// with high war support (>= 0.80).
+    /// </summary>
+    public static void EvaluateAndExecuteWargoals(SimulationWorld world, byte countryTag)
+    {
+        if (countryTag >= CountryTag.ActiveCount || world.CountryWargoalMasks[countryTag] == 0)
+        {
+            return;
+        }
+
+        ref readonly CountryState country = ref world.Countries[countryTag];
+        ReadOnlySpan<SpatialDivisionItem> allDivs = world.SpatialIndex.GetAllActiveDivisions();
+        int ourDivisionCount = 0;
+        for (int i = 0; i < allDivs.Length; i++)
+        {
+            if (allDivs[i].CountryTag == countryTag && allDivs[i].State != DivisionState.Shattered)
+            {
+                ourDivisionCount++;
+            }
+        }
+
+        for (byte targetTag = 0; targetTag < CountryTag.ActiveCount; targetTag++)
+        {
+            if (targetTag == countryTag || !world.HasWargoal(countryTag, targetTag) || world.IsAtWarWith(countryTag, targetTag))
+            {
+                continue;
+            }
+
+            int targetDivisionCount = 0;
+            for (int i = 0; i < allDivs.Length; i++)
+            {
+                if (allDivs[i].CountryTag == targetTag && allDivs[i].State != DivisionState.Shattered)
+                {
+                    targetDivisionCount++;
+                }
+            }
+
+            bool generalWarAuthorization = country.Defcon == 1;
+            bool overwhelmingSuperiority = ourDivisionCount >= (targetDivisionCount * 2) && country.WarSupport >= 0.80f;
+            bool targetDefenseless = targetDivisionCount == 0 && country.WarSupport >= 0.60f;
+
+            bool readinessOk = generalWarAuthorization || overwhelmingSuperiority || targetDefenseless;
+
+            if (readinessOk)
+            {
+                world.EnqueueCommand(SimulationCommand.CreateDeclareWar(countryTag, targetTag));
+                world.CountryWargoalMasks[countryTag] &= (ushort)~(1 << targetTag);
+            }
         }
     }
 }

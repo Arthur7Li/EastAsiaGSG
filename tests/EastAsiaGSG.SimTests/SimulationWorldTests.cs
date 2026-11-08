@@ -30,6 +30,26 @@ public sealed class SimulationWorldTests
         Assert.True(RuntimeHelpers.IsReferenceOrContainsReferences<DivisionComponent>() == false);
         Assert.True(RuntimeHelpers.IsReferenceOrContainsReferences<ActiveCombatComponent>() == false);
 
+        // Verify DivisionComponent layout and repurposed operational stance fields
+        DivisionComponent div = DivisionComponent.Create(
+            divisionId: 1,
+            countryTag: CountryTag.ROK,
+            startingProvinceId: 10);
+        Assert.Equal(DivisionComponent.NoProvince, div.ObjectiveProvinceId);
+        Assert.Equal(0, div.ArmyGroupId);
+        Assert.Equal(OperationalOrderStance.Balanced, div.OperationalStance);
+        Assert.False(div.IsSchwerpunkt);
+
+        div.SetOperationalPlan(objectiveProvinceId: 20, stance: OperationalOrderStance.Schwerpunkt, armyGroupId: 1);
+        Assert.Equal((ushort)20, div.ObjectiveProvinceId);
+        Assert.Equal(OperationalOrderStance.Schwerpunkt, div.OperationalStance);
+        Assert.Equal(1, div.ArmyGroupId);
+        Assert.True(div.IsSchwerpunkt);
+
+        div.ClearOperationalPlan();
+        Assert.Equal(DivisionComponent.NoProvince, div.ObjectiveProvinceId);
+        Assert.Equal(OperationalOrderStance.Balanced, div.OperationalStance);
+
         // Verify CountryTag roster (7 majors + 8 regional minors)
         Assert.Equal(0, CountryTag.PRC);
         Assert.Equal(1, CountryTag.USA);

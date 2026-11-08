@@ -41,9 +41,9 @@
 - [x] **Task 7.3:** Optimize `MainView` (active-drawer-only refresh on tick), `MapRenderer` (revision-gated GPU LUT uploads), and `TacticalMapOverlay` (tick-gated ECS collection decoupled from 144Hz camera pan/zoom, viewport frustum culling, and HOI4-style `xN` unit stack counter aggregation).
 
 ## Phase 8: $O(1)$ Spatial Index & Three-Tier Operational AI
-- [ ] **Task 8.1:** Implement zero-allocation `ProvinceSpatialIndex` in `EastAsiaGSG.Core/ECS` rebuilt in a single $O(D)$ pass per tick, replacing all nested $O(P \times D)$ ECS queries in `DivisionMovementSystem` and `TacticalFrontlineAISystem`.
-- [ ] **Task 8.2:** Repurpose `DivisionComponent` reserved bytes (`FieldOffset 116..127`, preserving 128-byte size) for `ObjectiveProvinceId`, `ArmyGroupId`, and `OperationalOrderStance`, and implement daily `OperationalPlanSystem` to concentrate armored/mechanized *Schwerpunkt* spearheads on enemy capitals and supply hubs.
-- [ ] **Task 8.3:** Upgrade `TacticalFrontlineAISystem` with multi-province coordinated pincer attacks (+20 combat width bonus) and entrenchment hysteresis, and expand `StrategicMinisterAISystem` to autonomously recruit new divisions (`CommandType.RecruitDivision`) and execute wargoals (`CommandType.DeclareWar`).
+- [x] **Task 8.1:** Implement zero-allocation `ProvinceSpatialIndex` in `EastAsiaGSG.Core/ECS` rebuilt in a single $O(D)$ pass per tick, replacing all nested $O(P \times D)$ ECS queries in `DivisionMovementSystem` and `TacticalFrontlineAISystem`.
+- [x] **Task 8.2:** Repurpose `DivisionComponent` reserved bytes (`FieldOffset 116..127`, preserving 128-byte size) for `ObjectiveProvinceId`, `ArmyGroupId`, and `OperationalOrderStance`, and implement daily `OperationalPlanSystem` to concentrate armored/mechanized *Schwerpunkt* spearheads on enemy capitals and supply hubs.
+- [x] **Task 8.3:** Upgrade `TacticalFrontlineAISystem` with multi-province coordinated pincer attacks (+20 combat width bonus) and entrenchment hysteresis, and expand `StrategicMinisterAISystem` to autonomously recruit new divisions (`CommandType.RecruitDivision`) and execute wargoals (`CommandType.DeclareWar`).
 
 ## Phase 9: Discrete Pacific Air/Naval Task Forces & Combat Doctrines
 - [ ] **Task 9.1:** Implement 64-byte `NavalTaskForceComponent` (`CarrierStrikeGroup`, `SurfaceActionGroup`, `SubmarineWolfpack`, `AmphibiousReadyGroup`) and 32-byte `AirWingComponent` in `EastAsiaGSG.Core/Components`.

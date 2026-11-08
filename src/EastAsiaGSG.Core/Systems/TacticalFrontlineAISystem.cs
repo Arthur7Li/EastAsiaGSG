@@ -13,17 +13,23 @@ namespace EastAsiaGSG.Core.Systems;
 /// deterministic <see cref="CommandType.MoveDivision"/> and <see cref="CommandType.TogglePgm"/> commands
 /// for AI-controlled countries to:
 /// 1. Garrison undefended or high-threat border provinces during peacetime and wartime.
-/// 2. Launch coordinated offensives into vulnerable hostile provinces when at war.
-/// Zero heap allocations in hot loop.
+/// 2. Launch coordinated multi-province pincer offensives (+20 combat width bonus) into vulnerable hostile provinces.
+/// 3. Vector <see cref="OperationalOrderStance.Schwerpunkt"/> spearheads toward strategic objectives.
+/// 4. Respect entrenchment hysteresis to preserve heavily dug-in defensive redoubts.
+/// Utilizes <see cref="ProvinceSpatialIndex"/> for O(1) spatial queries with zero heap allocations in hot loop.
 /// </summary>
 public static class TacticalFrontlineAISystem
 {
     private const int MaxFrontlineProvincesPerCountry = 64;
     private const int MaxDivisionsPerCountry = 64;
+    private const int MaxOffensiveTargets = 32;
     private const float ReadyOrgRatioForGarrison = 0.55f;
     private const float ReadyOrgRatioForAttack = 0.70f;
     private const float ReadyStrengthForAttack = 0.60f;
     private const float RequiredAttackForceRatio = 1.10f;
+    private const float PincerAttackForceRatio = 0.95f;
+    private const float EntrenchedHoldForceRatio = 2.50f;
+    private const float MinEntrenchmentToHold = 0.25f;
 
     private static readonly QueryDescription DivisionQuery = new QueryDescription().WithAll<DivisionComponent>();
 
@@ -39,24 +45,15 @@ public static class TacticalFrontlineAISystem
             return;
         }
 
-        // Fast-path: check if any AI country has field divisions
-        Query divQuery = world.EcsWorld.Query(in DivisionQuery);
+        // Fast-path: check if any AI country has active divisions in spatial index
+        ReadOnlySpan<SpatialDivisionItem> allDivs = world.SpatialIndex.GetAllActiveDivisions();
         bool anyAiDivision = false;
-        foreach (ref Chunk chunk in divQuery)
+        for (int i = 0; i < allDivs.Length; i++)
         {
-            Span<DivisionComponent> divs = chunk.GetSpan<DivisionComponent>();
-            int count = chunk.Count;
-            for (int i = 0; i < count; i++)
+            byte tag = allDivs[i].CountryTag;
+            if (tag < CountryTag.ActiveCount && (aiMask & (1 << tag)) != 0)
             {
-                byte tag = divs[i].CountryTag;
-                if (tag < CountryTag.ActiveCount && (aiMask & (1 << tag)) != 0)
-                {
-                    anyAiDivision = true;
-                    break;
-                }
-            }
-            if (anyAiDivision)
-            {
+                anyAiDivision = true;
                 break;
             }
         }
@@ -78,7 +75,7 @@ public static class TacticalFrontlineAISystem
     }
 
     /// <summary>
-    /// Evaluates frontline garrisoning and offensive opportunities for a single AI country tag.
+    /// Evaluates frontline garrisoning, multi-province pincer offensives, and operational movement for a single AI country tag.
     /// Can be invoked directly by tests even if <see cref="SimulationWorld.AiControlledCountryMask"/> is not set.
     /// </summary>
     public static void EvaluateCountryFrontline(SimulationWorld world, byte countryTag)
@@ -93,43 +90,45 @@ public static class TacticalFrontlineAISystem
         Span<float> idleDivAttackScores = stackalloc float[MaxDivisionsPerCountry];
         Span<byte> idleDivReadyForAttack = stackalloc byte[MaxDivisionsPerCountry];
         Span<byte> idleDivPgm = stackalloc byte[MaxDivisionsPerCountry];
+        Span<OperationalOrderStance> idleDivStances = stackalloc OperationalOrderStance[MaxDivisionsPerCountry];
+        Span<ushort> idleDivObjectives = stackalloc ushort[MaxDivisionsPerCountry];
+        Span<float> idleDivEntrenchment = stackalloc float[MaxDivisionsPerCountry];
         int idleDivCount = 0;
 
         bool atWar = world.IsAtWar(countryTag);
 
-        // 1. Gather all combat-capable Idle divisions belonging to countryTag
-        Query query = world.EcsWorld.Query(in DivisionQuery);
-        foreach (ref Chunk chunk in query)
+        // 1. Gather all combat-capable Idle divisions belonging to countryTag using SpatialIndex
+        ReadOnlySpan<SpatialDivisionItem> allDivs = world.SpatialIndex.GetAllActiveDivisions();
+        for (int i = 0; i < allDivs.Length; i++)
         {
-            Span<DivisionComponent> divs = chunk.GetSpan<DivisionComponent>();
-            int count = chunk.Count;
-            for (int i = 0; i < count; i++)
+            ref readonly SpatialDivisionItem div = ref allDivs[i];
+            if (div.CountryTag != countryTag ||
+                div.State != DivisionState.Idle ||
+                div.Organization <= 0.0f ||
+                div.Strength <= 0.0f ||
+                div.CurrentProvinceId >= SimulationWorld.MaxProvinces)
             {
-                ref readonly DivisionComponent div = ref divs[i];
-                if (div.CountryTag != countryTag ||
-                    !div.IsCombatCapable ||
-                    div.State != DivisionState.Idle ||
-                    div.CurrentProvinceId >= SimulationWorld.MaxProvinces)
-                {
-                    continue;
-                }
+                continue;
+            }
 
-                float orgRatio = div.MaxOrganization > 0.0f ? div.Organization / div.MaxOrganization : 0.0f;
-                if (orgRatio < ReadyOrgRatioForGarrison)
-                {
-                    continue;
-                }
+            float orgRatio = div.MaxOrganization > 0.0f ? div.Organization / div.MaxOrganization : 0.0f;
+            if (orgRatio < ReadyOrgRatioForGarrison)
+            {
+                continue;
+            }
 
-                if (idleDivCount < MaxDivisionsPerCountry)
-                {
-                    idleDivIds[idleDivCount] = div.DivisionId;
-                    idleDivProvs[idleDivCount] = div.CurrentProvinceId;
-                    idleDivAttackScores[idleDivCount] = (div.SoftAttack + div.HardAttack + div.Breakthrough) * div.Strength;
-                    idleDivReadyForAttack[idleDivCount] =
-                        (orgRatio >= ReadyOrgRatioForAttack && div.Strength >= ReadyStrengthForAttack) ? (byte)1 : (byte)0;
-                    idleDivPgm[idleDivCount] = div.PgmAuthorized;
-                    idleDivCount++;
-                }
+            if (idleDivCount < MaxDivisionsPerCountry)
+            {
+                idleDivIds[idleDivCount] = div.DivisionId;
+                idleDivProvs[idleDivCount] = div.CurrentProvinceId;
+                idleDivAttackScores[idleDivCount] = (div.SoftAttack + div.HardAttack + div.Breakthrough) * div.Strength;
+                idleDivReadyForAttack[idleDivCount] =
+                    (orgRatio >= ReadyOrgRatioForAttack && div.Strength >= ReadyStrengthForAttack) ? (byte)1 : (byte)0;
+                idleDivPgm[idleDivCount] = div.PgmAuthorized;
+                idleDivStances[idleDivCount] = div.OperationalStance;
+                idleDivObjectives[idleDivCount] = div.ObjectiveProvinceId;
+                idleDivEntrenchment[idleDivCount] = div.Entrenchment;
+                idleDivCount++;
             }
         }
 
@@ -201,48 +200,229 @@ public static class TacticalFrontlineAISystem
         int pgmStockpile = world.Countries[countryTag].GetTotalArchetypeStockpile(EquipmentType.PGM);
         bool authorizePgm = atWar && pgmStockpile >= 20;
 
-        // 3. Wartime Offensive Evaluation: Launch attacks from frontline provinces into weak hostile neighbors
+        // 3. Wartime Offensive Evaluation: Multi-Province Coordinated Pincers & Schwerpunkt Spearheads
         Span<byte> divisionOrderIssued = stackalloc byte[MaxDivisionsPerCountry];
-        if (atWar)
-        {
-            for (int d = 0; d < idleDivCount; d++)
-            {
-                if (idleDivReadyForAttack[d] == 0)
-                {
-                    continue;
-                }
 
-                ushort fromProvId = idleDivProvs[d];
+        if (atWar && frontlineCount > 0)
+        {
+            // Discover all candidate hostile target provinces adjacent to our frontline
+            Span<ushort> targetProvinces = stackalloc ushort[MaxOffensiveTargets];
+            Span<float> targetDesirability = stackalloc float[MaxOffensiveTargets];
+            Span<byte> targetPincerFlanks = stackalloc byte[MaxOffensiveTargets];
+            Span<float> targetCombinedAttack = stackalloc float[MaxOffensiveTargets];
+            Span<float> targetDefensePower = stackalloc float[MaxOffensiveTargets];
+            int targetCount = 0;
+
+            for (int f = 0; f < frontlineCount; f++)
+            {
+                ushort fromProvId = frontlineProvs[f];
                 ref readonly ProvinceData fromProv = ref provinces[fromProvId];
 
-                // Ensure minimum supply before launching offensive
                 if (fromProv.SupplyRatio < 0.35f)
                 {
                     continue;
                 }
 
-                ushort bestTargetProv = FindBestHostileTargetNeighbor(
-                    world,
-                    countryTag,
-                    in fromProv,
-                    idleDivAttackScores[d]);
-
-                if (bestTargetProv < SimulationWorld.MaxProvinces)
+                // Check how much ready attack power is stationed in fromProv
+                float fromAttackPower = 0.0f;
+                for (int d = 0; d < idleDivCount; d++)
                 {
-                    byte desiredPgmByte = authorizePgm ? (byte)1 : (byte)0;
+                    if (idleDivProvs[d] == fromProvId && idleDivReadyForAttack[d] != 0)
+                    {
+                        fromAttackPower += idleDivAttackScores[d];
+                    }
+                }
+
+                if (fromAttackPower <= 0.0f)
+                {
+                    continue;
+                }
+
+                ReadOnlySpan<ushort> neighbors = world.Graph.GetNeighbors(in fromProv);
+                ReadOnlySpan<byte> edgeFlags = world.Graph.GetEdgeFlags(in fromProv);
+
+                for (int n = 0; n < neighbors.Length; n++)
+                {
+                    ushort targetProvId = neighbors[n];
+                    if (targetProvId >= SimulationWorld.MaxProvinces)
+                    {
+                        continue;
+                    }
+
+                    ref readonly ProvinceData targetProv = ref provinces[targetProvId];
+                    if (targetProv.Terrain == TerrainType.Ocean || !world.IsAtWarWith(countryTag, targetProv.ControllerTag))
+                    {
+                        continue;
+                    }
+
+                    AdjacencyEdgeFlags flags = (AdjacencyEdgeFlags)edgeFlags[n];
+                    if ((flags & AdjacencyEdgeFlags.Strait) != 0)
+                    {
+                        byte regionId = targetProv.StrategicRegionId;
+                        FactionId attackerFaction = world.Countries[countryTag].Faction;
+                        if (regionId < SimulationWorld.MaxStrategicRegions &&
+                            !world.Regions[regionId].CanCrossStraitOrInvade(attackerFaction))
+                        {
+                            continue;
+                        }
+                    }
+
+                    // Find or insert into candidate targets list
+                    int targetSlot = -1;
+                    for (int t = 0; t < targetCount; t++)
+                    {
+                        if (targetProvinces[t] == targetProvId)
+                        {
+                            targetSlot = t;
+                            break;
+                        }
+                    }
+
+                    if (targetSlot == -1)
+                    {
+                        if (targetCount < MaxOffensiveTargets)
+                        {
+                            targetSlot = targetCount++;
+                            targetProvinces[targetSlot] = targetProvId;
+                            targetPincerFlanks[targetSlot] = 1;
+                            targetCombinedAttack[targetSlot] = fromAttackPower;
+                            targetDefensePower[targetSlot] = SumEnemyDefensePowerInProvince(world, countryTag, targetProvId, targetProv.Terrain, flags);
+                        }
+                    }
+                    else
+                    {
+                        targetPincerFlanks[targetSlot]++;
+                        targetCombinedAttack[targetSlot] += fromAttackPower;
+                    }
+                }
+            }
+
+            // Score candidate offensive targets
+            for (int t = 0; t < targetCount; t++)
+            {
+                ushort targetProvId = targetProvinces[t];
+                ref readonly ProvinceData targetProv = ref provinces[targetProvId];
+                float totalAtt = targetCombinedAttack[t];
+                float def = targetDefensePower[t];
+                float forceRatio = def <= 1.0f ? 10.0f : totalAtt / def;
+
+                byte flanks = targetPincerFlanks[t];
+                bool isPincer = flanks >= 2;
+                float requiredRatio = isPincer ? PincerAttackForceRatio : RequiredAttackForceRatio;
+
+                if (forceRatio < requiredRatio)
+                {
+                    targetDesirability[t] = float.MinValue;
+                    continue;
+                }
+
+                float desirability = (forceRatio * 35.0f)
+                                   + (isPincer ? 35.0f : 0.0f)
+                                   + (targetProv.SupplyHubLevel * 20.0f)
+                                   + (targetProv.PortLevel * 15.0f)
+                                   + (targetProv.VictoryPoints * 5.0f)
+                                   + (targetProv.Terrain == TerrainType.Urban ? 30.0f : 0.0f);
+
+                targetDesirability[t] = desirability;
+            }
+
+            // Launch offensives against valid targets
+            for (int t = 0; t < targetCount; t++)
+            {
+                if (targetDesirability[t] <= float.MinValue)
+                {
+                    continue;
+                }
+
+                ushort targetProvId = targetProvinces[t];
+                float def = targetDefensePower[t];
+
+                // Coordinate all ready divisions in all adjacent friendly provinces
+                for (int d = 0; d < idleDivCount; d++)
+                {
+                    if (divisionOrderIssued[d] != 0 || idleDivReadyForAttack[d] == 0)
+                    {
+                        continue;
+                    }
+
+                    ushort fromProvId = idleDivProvs[d];
+                    ref readonly ProvinceData fromProv = ref provinces[fromProvId];
+
+                    if (!world.Graph.TryGetEdgeFlags(in fromProv, targetProvId, out _))
+                    {
+                        continue;
+                    }
+
+                    // Entrenchment Hysteresis:
+                    // If heavily entrenched and not a designated Schwerpunkt spearhead, do not abandon redoubt
+                    // unless force ratio is overwhelmingly high (>= 2.5) or province has surplus defenders (> 2)
+                    if (idleDivEntrenchment[d] >= MinEntrenchmentToHold &&
+                        idleDivStances[d] != OperationalOrderStance.Schwerpunkt)
+                    {
+                        int defendersHere = world.SpatialIndex.GetDivisionCountInProvince(fromProvId);
+                        float singleForceRatio = def <= 1.0f ? 10.0f : targetCombinedAttack[t] / def;
+                        if (singleForceRatio < EntrenchedHoldForceRatio && defendersHere <= 2)
+                        {
+                            continue; // Hold fortified defensive line
+                        }
+                    }
+
+                    // Enqueue attack move command
+                    world.EnqueueCommand(SimulationCommand.CreateMoveDivision(
+                        countryTag,
+                        idleDivIds[d],
+                        targetProvId));
+                    divisionOrderIssued[d] = 1;
+
+                    // Authorize PGM for offensive strikes or Schwerpunkt spearheads
+                    bool authPgm = authorizePgm || (idleDivStances[d] == OperationalOrderStance.Schwerpunkt && pgmStockpile > 0);
+                    byte desiredPgmByte = authPgm ? (byte)1 : (byte)0;
                     if (idleDivPgm[d] != desiredPgmByte)
                     {
                         world.EnqueueCommand(SimulationCommand.CreateTogglePgm(
                             countryTag,
                             idleDivIds[d],
-                            authorizePgm));
+                            authPgm));
                     }
+                }
+            }
 
+            // Vector any remaining Schwerpunkt spearheads along axis towards deep objective
+            Span<ushort> pathBuffer = stackalloc ushort[16];
+            for (int d = 0; d < idleDivCount; d++)
+            {
+                if (divisionOrderIssued[d] != 0 ||
+                    idleDivStances[d] != OperationalOrderStance.Schwerpunkt ||
+                    idleDivObjectives[d] >= SimulationWorld.MaxProvinces ||
+                    idleDivObjectives[d] == idleDivProvs[d])
+                {
+                    continue;
+                }
+
+                ushort objProv = idleDivObjectives[d];
+                PathQuery pq = new(
+                    idleDivProvs[d],
+                    objProv,
+                    countryTag,
+                    PathfindingFlags.AllowHostileTerritory | PathfindingFlags.AllowStraits);
+
+                PathResult pr = world.FindPath(in pq, pathBuffer);
+                if (pr.Success && pr.PathLength > 0)
+                {
+                    ushort nextHop = pathBuffer[0];
                     world.EnqueueCommand(SimulationCommand.CreateMoveDivision(
                         countryTag,
                         idleDivIds[d],
-                        bestTargetProv));
+                        nextHop));
                     divisionOrderIssued[d] = 1;
+
+                    if (pgmStockpile > 0 && idleDivPgm[d] == 0)
+                    {
+                        world.EnqueueCommand(SimulationCommand.CreateTogglePgm(
+                            countryTag,
+                            idleDivIds[d],
+                            true));
+                    }
                 }
             }
         }
@@ -271,179 +451,92 @@ public static class TacticalFrontlineAISystem
                 }
             }
 
-            // If division is already the sole or pair defender of a frontline province, keep it entrenched unless another sector is empty
-            bool isRearDivision = currentFrontlineSlot < 0;
-            bool isOverStackedFrontline = currentFrontlineSlot >= 0 && frontlineFriendlyCount[currentFrontlineSlot] >= 2;
-
-            if (!isRearDivision && !isOverStackedFrontline)
+            // Entrenchment protection: do not redeploy well-entrenched garrison unless current sector is heavily over-defended
+            if (idleDivEntrenchment[d] >= MinEntrenchmentToHold &&
+                currentFrontlineSlot != -1 &&
+                frontlineFriendlyCount[currentFrontlineSlot] <= 2)
             {
                 continue;
             }
 
-            // Find the highest-priority frontline province that needs defenders
-            int bestFrontSlot = -1;
-            float bestPriority = float.MinValue;
+            // If already on a frontline province with <= 2 friendly divisions, stay to maintain garrison
+            if (currentFrontlineSlot != -1 && frontlineFriendlyCount[currentFrontlineSlot] <= 2)
+            {
+                continue;
+            }
+
+            // Find the most vulnerable / under-defended frontline province
+            int bestFrontlineSlot = -1;
+            float maxNeed = 0.0f;
 
             for (int f = 0; f < frontlineCount; f++)
             {
-                if (f == currentFrontlineSlot)
+                byte assigned = frontlineFriendlyCount[f];
+                if (assigned >= 3)
                 {
                     continue;
                 }
 
-                // If moving from an already-garrisoned frontline province, only redeploy to an empty (0-division) frontline sector
-                if (!isRearDivision && frontlineFriendlyCount[f] > 0)
+                float need = frontlineThreatScores[f] / (assigned + 1.0f);
+                if (need > maxNeed)
                 {
-                    continue;
-                }
-
-                float priority = frontlineThreatScores[f] - (frontlineFriendlyCount[f] * 45.0f);
-                if (priority > bestPriority)
-                {
-                    bestPriority = priority;
-                    bestFrontSlot = f;
+                    maxNeed = need;
+                    bestFrontlineSlot = f;
                 }
             }
 
-            if (bestFrontSlot >= 0)
+            if (bestFrontlineSlot != -1)
             {
-                ushort destProv = frontlineProvs[bestFrontSlot];
-                world.EnqueueCommand(SimulationCommand.CreateMoveDivision(
-                    countryTag,
-                    idleDivIds[d],
-                    destProv));
+                ushort destProv = frontlineProvs[bestFrontlineSlot];
+                if (destProv != currentProv)
+                {
+                    world.EnqueueCommand(SimulationCommand.CreateMoveDivision(
+                        countryTag,
+                        idleDivIds[d],
+                        destProv));
+                    divisionOrderIssued[d] = 1;
 
-                if (frontlineFriendlyCount[bestFrontSlot] < byte.MaxValue)
-                {
-                    frontlineFriendlyCount[bestFrontSlot]++;
+                    if (currentFrontlineSlot != -1 && frontlineFriendlyCount[currentFrontlineSlot] > 0)
+                    {
+                        frontlineFriendlyCount[currentFrontlineSlot]--;
+                    }
+                    frontlineFriendlyCount[bestFrontlineSlot]++;
                 }
-                if (currentFrontlineSlot >= 0 && frontlineFriendlyCount[currentFrontlineSlot] > 0)
-                {
-                    frontlineFriendlyCount[currentFrontlineSlot]--;
-                }
-                divisionOrderIssued[d] = 1;
             }
         }
     }
 
-    private static byte CountFriendlyDivisionsAssignedToProvince(
-        SimulationWorld world,
-        byte countryTag,
-        ushort provinceId)
+    private static byte CountFriendlyDivisionsAssignedToProvince(SimulationWorld world, byte countryTag, ushort provinceId)
     {
         int total = 0;
-        Query query = world.EcsWorld.Query(in DivisionQuery);
-        foreach (ref Chunk chunk in query)
+        ReadOnlySpan<SpatialDivisionItem> divs = world.SpatialIndex.GetDivisionsInProvince(provinceId);
+        for (int i = 0; i < divs.Length; i++)
         {
-            Span<DivisionComponent> divs = chunk.GetSpan<DivisionComponent>();
-            int count = chunk.Count;
-            for (int i = 0; i < count; i++)
+            if (divs[i].CountryTag == countryTag && divs[i].State != DivisionState.Shattered)
             {
-                ref readonly DivisionComponent div = ref divs[i];
-                if (div.CountryTag != countryTag || !div.IsCombatCapable)
-                {
-                    continue;
-                }
+                total++;
+            }
+        }
 
-                if (div.CurrentProvinceId == provinceId ||
-                    (div.State == DivisionState.Moving && div.DestinationProvinceId == provinceId))
+        // Also account for in-transit divisions moving toward provinceId
+        ReadOnlySpan<SpatialDivisionItem> allDivs = world.SpatialIndex.GetAllActiveDivisions();
+        for (int i = 0; i < allDivs.Length; i++)
+        {
+            ref readonly SpatialDivisionItem div = ref allDivs[i];
+            if (div.CountryTag == countryTag &&
+                div.State == DivisionState.Moving &&
+                div.CurrentProvinceId != provinceId)
+            {
+                // Verify destination via ECS component
+                ref readonly DivisionComponent comp = ref world.EcsWorld.Get<DivisionComponent>(div.Entity);
+                if (comp.DestinationProvinceId == provinceId)
                 {
                     total++;
                 }
             }
         }
+
         return (byte)(total > byte.MaxValue ? byte.MaxValue : total);
-    }
-
-    private static ushort FindBestHostileTargetNeighbor(
-        SimulationWorld world,
-        byte attackerTag,
-        in ProvinceData fromProv,
-        float singleDivAttackScore)
-    {
-        ReadOnlySpan<ushort> neighbors = world.Graph.GetNeighbors(in fromProv);
-        ReadOnlySpan<byte> edgeFlags = world.Graph.GetEdgeFlags(in fromProv);
-        ReadOnlySpan<ProvinceData> provinces = world.Provinces.AsSpan();
-
-        // Sum total ready friendly attack power in fromProv
-        float totalFriendlyAttack = SumFriendlyAttackPowerInProvince(world, attackerTag, fromProv.ProvinceId);
-        if (totalFriendlyAttack <= 0.0f)
-        {
-            totalFriendlyAttack = singleDivAttackScore;
-        }
-
-        ushort bestTarget = ushort.MaxValue;
-        float bestDesirability = float.MinValue;
-
-        for (int i = 0; i < neighbors.Length; i++)
-        {
-            ushort targetProvId = neighbors[i];
-            if (targetProvId >= SimulationWorld.MaxProvinces)
-            {
-                continue;
-            }
-
-            ref readonly ProvinceData targetProv = ref provinces[targetProvId];
-            if (targetProv.Terrain == TerrainType.Ocean || !world.IsAtWarWith(attackerTag, targetProv.ControllerTag))
-            {
-                continue;
-            }
-
-            AdjacencyEdgeFlags flags = (AdjacencyEdgeFlags)edgeFlags[i];
-            if ((flags & AdjacencyEdgeFlags.Strait) != 0)
-            {
-                byte regionId = targetProv.StrategicRegionId;
-                FactionId attackerFaction = world.Countries[attackerTag].Faction;
-                if (regionId < SimulationWorld.MaxStrategicRegions &&
-                    !world.Regions[regionId].CanCrossStraitOrInvade(attackerFaction))
-                {
-                    continue;
-                }
-            }
-
-            float enemyDefense = SumEnemyDefensePowerInProvince(world, attackerTag, targetProvId, targetProv.Terrain, flags);
-            float forceRatio = enemyDefense <= 1.0f ? 10.0f : totalFriendlyAttack / enemyDefense;
-
-            if (forceRatio < RequiredAttackForceRatio)
-            {
-                continue;
-            }
-
-            float desirability = (forceRatio * 35.0f)
-                               + (targetProv.SupplyHubLevel * 20.0f)
-                               + (targetProv.PortLevel * 15.0f)
-                               + (targetProv.Terrain == TerrainType.Urban ? 30.0f : 0.0f);
-
-            if (desirability > bestDesirability)
-            {
-                bestDesirability = desirability;
-                bestTarget = targetProvId;
-            }
-        }
-
-        return bestTarget;
-    }
-
-    private static float SumFriendlyAttackPowerInProvince(SimulationWorld world, byte countryTag, ushort provinceId)
-    {
-        float sum = 0.0f;
-        Query query = world.EcsWorld.Query(in DivisionQuery);
-        foreach (ref Chunk chunk in query)
-        {
-            Span<DivisionComponent> divs = chunk.GetSpan<DivisionComponent>();
-            int count = chunk.Count;
-            for (int i = 0; i < count; i++)
-            {
-                ref readonly DivisionComponent div = ref divs[i];
-                if (div.CountryTag == countryTag &&
-                    div.IsCombatCapable &&
-                    div.CurrentProvinceId == provinceId)
-                {
-                    sum += (div.SoftAttack + div.HardAttack + div.Breakthrough) * div.Strength;
-                }
-            }
-        }
-        return sum;
     }
 
     private static float SumEnemyDefensePowerInProvince(
@@ -454,20 +547,17 @@ public static class TacticalFrontlineAISystem
         AdjacencyEdgeFlags edgeFlags)
     {
         float sum = 0.0f;
-        Query query = world.EcsWorld.Query(in DivisionQuery);
-        foreach (ref Chunk chunk in query)
+        ReadOnlySpan<SpatialDivisionItem> divs = world.SpatialIndex.GetDivisionsInProvince(targetProvinceId);
+        for (int i = 0; i < divs.Length; i++)
         {
-            Span<DivisionComponent> divs = chunk.GetSpan<DivisionComponent>();
-            int count = chunk.Count;
-            for (int i = 0; i < count; i++)
+            ref readonly SpatialDivisionItem div = ref divs[i];
+            if (div.Organization > 0.0f &&
+                div.Strength > 0.0f &&
+                div.State != DivisionState.Retreating &&
+                div.State != DivisionState.Shattered &&
+                !DivisionMovementSystem.IsFriendlyOrAllied(world, attackerTag, div.CountryTag))
             {
-                ref readonly DivisionComponent div = ref divs[i];
-                if (div.CurrentProvinceId == targetProvinceId &&
-                    div.IsCombatCapable &&
-                    !DivisionMovementSystem.IsFriendlyOrAllied(world, attackerTag, div.CountryTag))
-                {
-                    sum += (div.SoftAttack + div.HardAttack + div.Defense) * div.Strength * (1.0f + div.Entrenchment);
-                }
+                sum += (div.SoftAttack + div.HardAttack + div.Defense) * div.Strength * (1.0f + div.Entrenchment);
             }
         }
 

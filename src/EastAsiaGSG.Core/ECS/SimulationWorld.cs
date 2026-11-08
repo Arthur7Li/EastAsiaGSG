@@ -64,6 +64,9 @@ public sealed class SimulationWorld : IDisposable
     // Arch ECS World for Dynamic Entities (Divisions, ActiveCombats, ProductionLines)
     public readonly World EcsWorld = World.Create();
 
+    // High-Performance Zero-Allocation CSR Spatial Index for Division Entities (O(1) province lookups)
+    public readonly ProvinceSpatialIndex SpatialIndex = new();
+
     // Timestamp & Stratified Tick Telemetry (Starts 1985-01-01 00:00)
     public int TotalSixHourTicks { get; private set; }
     public int DailyTicksExecuted { get; private set; }
@@ -768,13 +771,16 @@ public sealed class SimulationWorld : IDisposable
         // 1. CommandProcessorSystem: Drain player and AI queued commands
         DrainCommandQueue();
 
-        // 2. DivisionMovementSystem: Advance movement along CSR edges & trigger combats
+        // 2. Spatial Index: Rebuild zero-allocation CSR division index across provinces in O(D) time
+        SpatialIndex.Rebuild(this);
+
+        // 3. DivisionMovementSystem: Advance movement along CSR edges & trigger combats
         DivisionMovementSystem.Execute(this);
 
-        // 3. CombatResolutionSystem: Resolve 6-hour HOI4 land combat math
+        // 4. CombatResolutionSystem: Resolve 6-hour HOI4 land combat math
         CombatResolutionSystem.Execute(this);
 
-        // 4. AirAndNavalRegionSystem (Phase 4.2): Update air superiority, naval control & A2/AD
+        // 5. AirAndNavalRegionSystem (Phase 4.2): Update air superiority, naval control & A2/AD
         AirAndNavalRegionSystem.Execute(this);
     }
 
@@ -953,7 +959,10 @@ public sealed class SimulationWorld : IDisposable
         // 4. FocusTreeSystem (Phase 5.1 - daily Political Power, Focus countdown & FocusEffectExecutor):
         FocusTreeSystem.Execute(this);
 
-        // 5. TacticalFrontlineAISystem (Phase 6.1 - daily frontline assignment & attack execution):
+        // 5. OperationalPlanSystem (Phase 8.2 - Schwerpunkt spearheads & operational objectives):
+        OperationalPlanSystem.Execute(this);
+
+        // 6. TacticalFrontlineAISystem (Phase 6.1 / Phase 8.3 - multi-province pincer attacks & entrenchment):
         TacticalFrontlineAISystem.Execute(this);
     }
 

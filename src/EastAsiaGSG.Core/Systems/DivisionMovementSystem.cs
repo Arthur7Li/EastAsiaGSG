@@ -325,27 +325,23 @@ public static class DivisionMovementSystem
     {
         defenderTag = world.Provinces[targetProvinceId].ControllerTag;
 
-        Query query = world.EcsWorld.Query(in DivisionQuery);
-        foreach (ref Chunk chunk in query)
+        ReadOnlySpan<SpatialDivisionItem> divisions = world.SpatialIndex.GetDivisionsInProvince(targetProvinceId);
+        for (int i = 0; i < divisions.Length; i++)
         {
-            Span<DivisionComponent> divisions = chunk.GetSpan<DivisionComponent>();
-            int chunkSize = chunk.Count;
-
-            for (int i = 0; i < chunkSize; i++)
+            ref readonly SpatialDivisionItem candidate = ref divisions[i];
+            if (candidate.Organization > 0.0f
+                && candidate.Strength > 0.0f
+                && candidate.State != DivisionState.Retreating
+                && candidate.State != DivisionState.Shattered
+                && !IsFriendlyOrAllied(world, attackerTag, candidate.CountryTag))
             {
-                ref DivisionComponent candidate = ref divisions[i];
-                if (candidate.CurrentProvinceId == targetProvinceId
-                    && candidate.IsCombatCapable
-                    && candidate.State != DivisionState.Retreating
-                    && !IsFriendlyOrAllied(world, attackerTag, candidate.CountryTag))
+                defenderTag = candidate.CountryTag;
+                if (candidate.State == DivisionState.Idle || candidate.State == DivisionState.Moving)
                 {
-                    defenderTag = candidate.CountryTag;
-                    if (candidate.State == DivisionState.Idle || candidate.State == DivisionState.Moving)
-                    {
-                        candidate.State = DivisionState.Defending;
-                    }
-                    return true;
+                    ref DivisionComponent divComp = ref world.EcsWorld.Get<DivisionComponent>(candidate.Entity);
+                    divComp.State = DivisionState.Defending;
                 }
+                return true;
             }
         }
 

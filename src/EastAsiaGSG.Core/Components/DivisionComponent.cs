@@ -17,6 +17,17 @@ public enum DivisionState : byte
 }
 
 /// <summary>
+/// Operational order posture and doctrine assigned by operational planning systems.
+/// </summary>
+public enum OperationalOrderStance : byte
+{
+    Balanced = 0,         // Standard flexible line-holding / local tactical response
+    Schwerpunkt = 1,      // Armored/mechanized spearhead concentrated on breakthrough & deep objectives
+    DefensiveScreen = 2,  // Fortified holding force with high entrenchment priority
+    OperationalReserve = 3 // Stationed in rear supply hubs to reinforce breakthroughs or plug gaps
+}
+
+/// <summary>
 /// Explicit 128-byte unmanaged ECS component representing a field division/brigade in Arch.Core.World.
 /// </summary>
 [StructLayout(LayoutKind.Explicit, Size = 128)]
@@ -59,15 +70,48 @@ public unsafe struct DivisionComponent
     [FieldOffset(76)] public float Hardness;
     [FieldOffset(80)] public float Entrenchment;
 
-    [FieldOffset(84)] public fixed ushort Waypoints[MaxWaypoints];
-    [FieldOffset(116)] public int Reserved0;
-    [FieldOffset(120)] public int Reserved1;
+    [FieldOffset(84)]  public fixed ushort Waypoints[MaxWaypoints];
+    [FieldOffset(116)] public ushort ObjectiveProvinceId;
+    [FieldOffset(118)] public byte ArmyGroupId;
+    [FieldOffset(119)] public OperationalOrderStance OperationalStance;
+    [FieldOffset(120)] public ushort StagingProvinceId;
+    [FieldOffset(122)] public byte PlanExecutionProgress;
+    [FieldOffset(123)] public byte ReservedByte;
     [FieldOffset(124)] public int Reserved2;
 
     public readonly bool IsPgmAuthorized
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => PgmAuthorized != 0;
+    }
+
+    public readonly bool IsSchwerpunkt
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => OperationalStance == OperationalOrderStance.Schwerpunkt;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetOperationalPlan(
+        ushort objectiveProvinceId,
+        OperationalOrderStance stance,
+        byte armyGroupId = 0,
+        ushort stagingProvinceId = NoProvince)
+    {
+        ObjectiveProvinceId = objectiveProvinceId;
+        OperationalStance = stance;
+        ArmyGroupId = armyGroupId;
+        StagingProvinceId = stagingProvinceId;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void ClearOperationalPlan()
+    {
+        ObjectiveProvinceId = NoProvince;
+        OperationalStance = OperationalOrderStance.Balanced;
+        ArmyGroupId = 0;
+        StagingProvinceId = NoProvince;
+        PlanExecutionProgress = 0;
     }
 
     public readonly bool IsCombatCapable
@@ -157,7 +201,14 @@ public unsafe struct DivisionComponent
             Armor = armor,
             Piercing = piercing,
             Hardness = System.Math.Clamp(hardness, 0.0f, 1.0f),
-            Entrenchment = 0.0f
+            Entrenchment = 0.0f,
+            ObjectiveProvinceId = NoProvince,
+            ArmyGroupId = 0,
+            OperationalStance = OperationalOrderStance.Balanced,
+            StagingProvinceId = NoProvince,
+            PlanExecutionProgress = 0,
+            ReservedByte = 0,
+            Reserved2 = 0
         };
     }
 }
