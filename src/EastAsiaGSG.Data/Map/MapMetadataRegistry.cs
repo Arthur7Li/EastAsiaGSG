@@ -1,4 +1,6 @@
+using EastAsiaGSG.Core.Components;
 using EastAsiaGSG.Core.ECS;
+using EastAsiaGSG.Core.Systems;
 
 namespace EastAsiaGSG.Data.Map;
 
@@ -55,7 +57,36 @@ public sealed class MapMetadataRegistry
         StrategicRegionNames[15] = "Philippine Archipelago";
         StrategicRegionNames[16] = "Mongolian Plateau";
         StrategicRegionNames[17] = "Western Pacific Sea Lanes";
+
+        // Default historical news flashpoint headlines
+        RegisterNewsEventTitle(CapitulationSystem.GetCapitulationNewsHash(CountryTag.PRC), "Fall of Beijing: People's Republic of China Capitulates!");
+        RegisterNewsEventTitle(CapitulationSystem.GetCapitulationNewsHash(CountryTag.USA), "PACOM Evacuated: United States Forced from the Western Pacific!");
+        RegisterNewsEventTitle(CapitulationSystem.GetCapitulationNewsHash(CountryTag.SOV), "Far Eastern Collapse: Soviet Forces Surrender!");
+        RegisterNewsEventTitle(CapitulationSystem.GetCapitulationNewsHash(CountryTag.JPN), "Tokyo Surrenders: Japan Sues for Peace!");
+        RegisterNewsEventTitle(CapitulationSystem.GetCapitulationNewsHash(CountryTag.ROK), "Fall of Seoul: Republic of Korea Capitulates!");
+        RegisterNewsEventTitle(CapitulationSystem.GetCapitulationNewsHash(CountryTag.PRK), "Pyongyang Overrun: North Korean Regime Collapses!");
+        RegisterNewsEventTitle(CapitulationSystem.GetCapitulationNewsHash(CountryTag.TWN), "Taipei Subdued: Republic of China (Taiwan) Capitulates!");
+        RegisterNewsEventTitle(CapitulationSystem.GetCapitulationNewsHash(CountryTag.VNM), "Fall of Hanoi: Socialist Republic of Vietnam Capitulates!");
+        RegisterNewsEventTitle(CapitulationSystem.GetCapitulationNewsHash(CountryTag.PHL), "Manila Accord: Republic of the Philippines Capitulates!");
+        RegisterNewsEventTitle(CapitulationSystem.GetCapitulationNewsHash(CountryTag.MNG), "Ulaanbaatar Captured: Mongolian People's Republic Capitulates!");
+        RegisterNewsEventTitle(CapitulationSystem.GetCapitulationNewsHash(CountryTag.THA), "Bangkok Surrenders: Kingdom of Thailand Capitulates!");
+        RegisterNewsEventTitle(CapitulationSystem.GetCapitulationNewsHash(CountryTag.LAO), "Vientiane Falls: Lao People's Democratic Republic Capitulates!");
+        RegisterNewsEventTitle(CapitulationSystem.GetCapitulationNewsHash(CountryTag.KHM), "Phnom Penh Falls: People's Republic of Kampuchea Capitulates!");
+        RegisterNewsEventTitle(CapitulationSystem.GetCapitulationNewsHash(CountryTag.MMR), "Yangon Secured: Socialist Republic of Myanmar Capitulates!");
+        RegisterNewsEventTitle(CapitulationSystem.GetCapitulationNewsHash(CountryTag.MYS), "Kuala Lumpur Falls: Federation of Malaysia Capitulates!");
+
+        RegisterNewsEventTitle("NEWS_JPN_BREAKS_1PCT_CAP".GetHashCode(), "Tokyo Policy Shift: Japan Lifts 1% Defense Budget Ceiling");
+        RegisterNewsEventTitle("NEWS_PRC_863_PROGRAM".GetHashCode(), "Beijing Launches High-Tech State Development (Project 863)");
+        RegisterNewsEventTitle("NEWS_PRC_MILLION_TROOP_CUT".GetHashCode(), "PLA Modernization: Deng Xiaoping Announces One-Million Troop Demobilization");
+        RegisterNewsEventTitle("NEWS_USA_TRA_PACKAGE".GetHashCode(), "Washington Passes Taiwan Relations Act Defense Package");
+        RegisterNewsEventTitle("NEWS_1988_SEOUL_OLYMPICS".GetHashCode(), "World Gathers in Seoul: XXIV Summer Olympic Games Inaugurated");
+        RegisterNewsEventTitle("NEWS_SOV_VLADIVOSTOK_SPEECH".GetHashCode(), "Gorbachev's Vladivostok Initiative Proposes Asia-Pacific Security Architecture");
+        RegisterNewsEventTitle("NEWS_TWN_TSMC_FOUNDED".GetHashCode(), "Silicon Shield: Taiwan Semiconductor Manufacturing Company (TSMC) Founded");
+        RegisterNewsEventTitle("NEWS_TWN_MARTIAL_LAW_LIFTED".GetHashCode(), "Democratization Era: Taiwan Lifts 38-Year Martial Law");
+        RegisterNewsEventTitle("NEWS_MITI_VLSI_BREAKTHROUGH".GetHashCode(), "MITI VLSI Project Breakthrough: Japanese Microelectronics Lead the World");
     }
+
+    public static int GetCapitulationNewsHash(byte countryTag) => CapitulationSystem.GetCapitulationNewsHash(countryTag);
 
     public string GetProvinceName(ushort provinceId)
     {

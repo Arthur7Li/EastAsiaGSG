@@ -18,7 +18,10 @@ public enum CommandType : byte
     QueueConstruction = 6,
     AssignProductionFactories = 7,
     DeclareWar = 8,
-    RecruitDivision = 9
+    RecruitDivision = 9,
+    SwitchProductionEquipment = 10,
+    CreateProductionLine = 11,
+    AssignNavalMission = 12
 }
 
 /// <summary>
@@ -123,5 +126,46 @@ public struct SimulationCommand
         CountryTag = countryTag,
         TargetId = templateId,
         IntParam0 = spawnProvinceId
+    };
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static SimulationCommand CreateSwitchProductionEquipment(
+        byte countryTag,
+        int lineId,
+        EquipmentType type,
+        TechGeneration generation) => new()
+    {
+        Type = CommandType.SwitchProductionEquipment,
+        CountryTag = countryTag,
+        EntityId = lineId,
+        IntParam0 = (int)type,
+        IntParam1 = (int)generation
+    };
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static SimulationCommand CreateCreateProductionLine(
+        byte countryTag,
+        EquipmentType type,
+        TechGeneration generation,
+        ushort assignedFactories = 1) => new()
+    {
+        Type = CommandType.CreateProductionLine,
+        CountryTag = countryTag,
+        IntParam0 = (int)type,
+        IntParam1 = ((int)generation & 0xFF) | ((assignedFactories & 0xFFFF) << 8)
+    };
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static SimulationCommand CreateAssignNavalMission(
+        byte countryTag,
+        int taskForceId,
+        byte targetRegionId,
+        NavalMission mission) => new()
+    {
+        Type = CommandType.AssignNavalMission,
+        CountryTag = countryTag,
+        EntityId = taskForceId,
+        TargetId = targetRegionId,
+        IntParam0 = (int)mission
     };
 }

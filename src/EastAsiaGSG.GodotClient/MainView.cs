@@ -45,6 +45,7 @@ public partial class MainView : Node2D
     private FocusTreeViewer? _focusTreeViewer;
     private ConstructionQueuePanel? _constructionPanel;
     private ProductionLinePanel? _productionPanel;
+    private DiplomacyAndNewsModal? _diplomacyModal;
 
     public override void _Ready()
     {
@@ -134,7 +135,7 @@ public partial class MainView : Node2D
         _stockpileTopBar.OffsetTop = 12;
         _stockpileTopBar.OffsetRight = 620;
         _stockpileTopBar.OffsetBottom = 58;
-        _stockpileTopBar.Initialize(_world, CountryTag.ROK);
+        _stockpileTopBar.Initialize(_world, CountryTag.ROK, _metadata);
 
         // Setup Persistent HOI4 Left Tab Strip below TopBar (X = 16..356, Y = 64..100)
         BuildLeftTabBar(hudLayer);
@@ -254,6 +255,22 @@ public partial class MainView : Node2D
         _combatPopup.OffsetRight = -16;
         _combatPopup.OffsetBottom = 140;
 
+        // Setup DiplomacyAndNewsModal at center (860x580)
+        _diplomacyModal = hudLayer.GetNodeOrNull<DiplomacyAndNewsModal>("DiplomacyAndNewsModal");
+        if (_diplomacyModal == null)
+        {
+            _diplomacyModal = new DiplomacyAndNewsModal { Name = "DiplomacyAndNewsModal" };
+            hudLayer.AddChild(_diplomacyModal);
+        }
+        _diplomacyModal.SetAnchorsPreset(Control.LayoutPreset.Center);
+        _diplomacyModal.GrowHorizontal = Control.GrowDirection.Both;
+        _diplomacyModal.GrowVertical = Control.GrowDirection.Both;
+        _diplomacyModal.OffsetLeft = -430;
+        _diplomacyModal.OffsetTop = -290;
+        _diplomacyModal.OffsetRight = 430;
+        _diplomacyModal.OffsetBottom = 290;
+        _diplomacyModal.Initialize(_world, CountryTag.ROK, _metadata);
+
         // Wire HOI4 Side-Drawer Tab State Machine (Mutually exclusive Map Info / Focus Tree / Construction / Production tabs)
         SetActiveDrawerTab(SideDrawerTab.None);
 
@@ -263,6 +280,7 @@ public partial class MainView : Node2D
             _focusTreeViewer.SetActiveCountry(tag);
             _constructionPanel.SetActiveCountry(tag);
             _productionPanel.SetActiveCountry(tag);
+            _diplomacyModal?.SetActiveCountry(tag);
             if (_tacticalOverlay != null)
             {
                 _tacticalOverlay.ActivePlayerCountryTag = tag;
@@ -293,6 +311,8 @@ public partial class MainView : Node2D
                 ? SideDrawerTab.None
                 : SideDrawerTab.Production);
         };
+        _stockpileTopBar.ToggleDiplomacyRequested += () => _diplomacyModal?.ToggleModal();
+        _stockpileTopBar.ToggleNewsRequested += () => _diplomacyModal?.OpenToTab(1);
 
         _focusTreeViewer.CloseRequested += () => SetActiveDrawerTab(SideDrawerTab.None);
         _focusTreeViewer.CommandEnqueued += () => _stockpileTopBar.Refresh();
@@ -333,6 +353,10 @@ public partial class MainView : Node2D
             _combatPopup?.RefreshIfActive();
             _tacticalOverlay?.OnTick();
             _stockpileTopBar?.Refresh();
+            if (_diplomacyModal?.Visible == true)
+            {
+                _diplomacyModal.Refresh();
+            }
 
             // Only refresh the active drawer tab, saving substantial UI rebuild cost
             switch (_activeDrawerTab)

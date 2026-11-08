@@ -23,6 +23,7 @@ public partial class ProductionLinePanel : PanelContainer
         public Label OutputLabel = null!;
         public ProgressBar EfficiencyBar = null!;
         public Label EfficiencyLabel = null!;
+        public Button UpgradeGenButton = null!;
     }
 
     private SimulationWorld? _world;
@@ -137,6 +138,72 @@ public partial class ProductionLinePanel : PanelContainer
         };
         _linesContainer.AddThemeConstantOverride("separation", 8);
         scroll.AddChild(_linesContainer);
+
+        // New Production Line Creator Section
+        var newCard = new PanelContainer();
+        var newCardStyle = new StyleBoxFlat
+        {
+            BgColor = new Color(0.10f, 0.13f, 0.18f, 0.95f),
+            BorderColor = new Color(0.24f, 0.35f, 0.48f, 0.85f),
+            BorderWidthLeft = 1,
+            BorderWidthTop = 1,
+            BorderWidthRight = 1,
+            BorderWidthBottom = 1,
+            CornerRadiusBottomLeft = 4,
+            CornerRadiusBottomRight = 4,
+            CornerRadiusTopLeft = 4,
+            CornerRadiusTopRight = 4,
+            ContentMarginLeft = 8,
+            ContentMarginRight = 8,
+            ContentMarginTop = 6,
+            ContentMarginBottom = 6
+        };
+        newCard.AddThemeStyleboxOverride("panel", newCardStyle);
+
+        var newVBox = new VBoxContainer();
+        newVBox.AddThemeConstantOverride("separation", 4);
+        newCard.AddChild(newVBox);
+
+        var newTitle = new Label { Text = "+ Add Production Line" };
+        newTitle.AddThemeFontSizeOverride("font_size", 11);
+        newTitle.AddThemeColorOverride("font_color", new Color(0.96f, 0.88f, 0.50f));
+        newVBox.AddChild(newTitle);
+
+        var newButtonsRow = new HBoxContainer();
+        newButtonsRow.AddThemeConstantOverride("separation", 4);
+        newVBox.AddChild(newButtonsRow);
+
+        EquipmentType[] quickArchetypes =
+        [
+            EquipmentType.InfantryKit,
+            EquipmentType.SupportVehicles,
+            EquipmentType.IFV,
+            EquipmentType.MBT,
+            EquipmentType.Artillery,
+            EquipmentType.AttackHeli,
+            EquipmentType.TacticalAir,
+            EquipmentType.PGM
+        ];
+
+        string[] archetypeShortNames = ["Inf", "Sup", "IFV", "MBT", "Art", "Heli", "Air", "PGM"];
+
+        for (int i = 0; i < quickArchetypes.Length; i++)
+        {
+            EquipmentType arch = quickArchetypes[i];
+            string shortName = archetypeShortNames[i];
+            var addBtn = new Button
+            {
+                Text = $"+{shortName}",
+                FocusMode = FocusModeEnum.None,
+                CustomMinimumSize = new Vector2(44, 24),
+                TooltipText = $"Create new production line for {arch}"
+            };
+            addBtn.AddThemeFontSizeOverride("font_size", 10);
+            addBtn.Pressed += () => CreateNewLine(arch);
+            newButtonsRow.AddChild(addBtn);
+        }
+
+        rootVBox.AddChild(newCard);
     }
 
     private void RebuildLineRows()
@@ -258,6 +325,17 @@ public partial class ProductionLinePanel : PanelContainer
         plus5Btn.Pressed += () => AdjustLineFactories(capturedLineId, +5);
         topRow.AddChild(plus5Btn);
 
+        var upgradeGenBtn = new Button
+        {
+            Text = "⬆ Gen",
+            FocusMode = FocusModeEnum.None,
+            CustomMinimumSize = new Vector2(54, 24),
+            Visible = false
+        };
+        upgradeGenBtn.AddThemeFontSizeOverride("font_size", 10);
+        upgradeGenBtn.Pressed += () => UpgradeLineGeneration(capturedLineId);
+        topRow.AddChild(upgradeGenBtn);
+
         var outputLabel = new Label
         {
             Text = "Factories: 0/0 | Output: 0.0 IC/d (0.0 units/d)"
@@ -297,8 +375,40 @@ public partial class ProductionLinePanel : PanelContainer
             TitleLabel = titleLabel,
             OutputLabel = outputLabel,
             EfficiencyBar = effBar,
-            EfficiencyLabel = effLabel
+            EfficiencyLabel = effLabel,
+            UpgradeGenButton = upgradeGenBtn
         };
+    }
+
+    private void UpgradeLineGeneration(int lineId)
+    {
+        if (_world == null || !_world.TryFindProductionLineById(lineId, out Entity lineEntity))
+        {
+            return;
+        }
+
+        ref readonly ProductionLineComponent line = ref _world.EcsWorld.Get<ProductionLineComponent>(lineEntity);
+        TechGeneration unlocked = _world.GetUnlockedTechGeneration(_activeCountryTag, line.Archetype);
+        if (unlocked > line.Generation)
+        {
+            _world.EnqueueCommand(SimulationCommand.CreateSwitchProductionEquipment(
+                _activeCountryTag,
+                lineId,
+                line.Archetype,
+                unlocked));
+            CommandEnqueued?.Invoke();
+            Refresh();
+        }
+    }
+
+    private void CreateNewLine(EquipmentType archetype)
+    {
+        if (_world == null) return;
+        TechGeneration unlocked = _world.GetUnlockedTechGeneration(_activeCountryTag, archetype);
+        _world.EnqueueCommand(SimulationCommand.CreateCreateProductionLine(_activeCountryTag, archetype, unlocked, 1));
+        CommandEnqueued?.Invoke();
+        RebuildLineRows();
+        Refresh();
     }
 
     private void AdjustLineFactories(int lineId, int delta)
@@ -416,6 +526,18 @@ public partial class ProductionLinePanel : PanelContainer
 
             row.EfficiencyLabel.Text = $"Efficiency: {line.Efficiency:P1} / {line.EfficiencyCap:P0}";
             row.EfficiencyBar.Value = Mathf.Clamp(line.Efficiency * 100.0f, 0.0f, 100.0f);
+
+            TechGeneration unlocked = _world.GetUnlockedTechGeneration(_activeCountryTag, line.Archetype);
+            if (unlocked > line.Generation)
+            {
+                row.UpgradeGenButton.Visible = true;
+                row.UpgradeGenButton.Text = $"⬆ Gen {(int)unlocked}";
+                row.UpgradeGenButton.TooltipText = $"Upgrade {line.Archetype} to Gen {(int)unlocked}. Retains 70% efficiency.";
+            }
+            else
+            {
+                row.UpgradeGenButton.Visible = false;
+            }
         }
 
         _summaryLabel.Text =

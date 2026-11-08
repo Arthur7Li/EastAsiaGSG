@@ -169,7 +169,8 @@ public static class JsonOobLoader
                 tplDto.TemplateId,
                 tplDto.CombatWidth,
                 battalionSpan[..bCount],
-                supportSpan[..sCount]);
+                supportSpan[..sCount],
+                countryTag);
 
             world.RegisterDivisionTemplate(in record);
             metadata?.RegisterTemplateName(tplDto.TemplateId, tplDto.Name);

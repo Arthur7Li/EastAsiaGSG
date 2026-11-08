@@ -31,6 +31,7 @@ public sealed class SimulationWorld : IDisposable
     private static readonly QueryDescription DivisionQuery = new QueryDescription().WithAll<DivisionComponent>();
     private static readonly QueryDescription CombatQuery = new QueryDescription().WithAll<ActiveCombatComponent>();
     private static readonly QueryDescription ProductionLineQuery = new QueryDescription().WithAll<ProductionLineComponent>();
+    private static readonly QueryDescription TaskForceQuery = new QueryDescription().WithAll<NavalTaskForceComponent>();
     private static readonly FocusNodeData EmptyFocusNode = default;
 
     // Flat Contiguous State Arrays (Index == ID)
@@ -45,6 +46,7 @@ public sealed class SimulationWorld : IDisposable
     public readonly float[] CountryHomelandEscalation = new float[MaxCountries];
     public readonly ushort[] CountryWarMasks = new ushort[MaxCountries];
     public readonly ushort[] CountryWargoalMasks = new ushort[MaxCountries];
+    public ushort CountryCapitulatedMask;
     public readonly TacticalDoctrine[] CountryDoctrines = new TacticalDoctrine[MaxCountries];
     public readonly float[] SeaZoneInterdictionPenalty = new float[MaxStrategicRegions];
     public readonly byte[] CountryUnlockedTechGen = new byte[MaxCountries * CountryState.ArchetypeCount];
@@ -107,6 +109,7 @@ public sealed class SimulationWorld : IDisposable
 
     private int _nextCombatId = 1;
     private int _nextDivisionId = 10_000;
+    private int _nextProductionLineId = 1_000;
     private bool _disposed;
 
     public SimulationWorld()
@@ -116,6 +119,8 @@ public sealed class SimulationWorld : IDisposable
 
     private void InitializeDefaultArrays()
     {
+        CountryCapitulatedMask = 0;
+
         for (ushort i = 0; i < MaxProvinces; i++)
         {
             Provinces[i].ProvinceId = i;
@@ -162,6 +167,7 @@ public sealed class SimulationWorld : IDisposable
             Templates[i].TemplateId = i;
             Templates[i].CombatWidth = 20;
             Templates[i].IsConfigured = 0;
+            Templates[i].CountryTag = CountryTag.None;
         }
 
         for (byte i = 0; i < MaxStrategicRegions; i++)
@@ -243,6 +249,34 @@ public sealed class SimulationWorld : IDisposable
     public int AllocateNextDivisionId()
     {
         return _nextDivisionId++;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int AllocateNextProductionLineId()
+    {
+        return _nextProductionLineId++;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool HasCapitulated(byte countryTag)
+    {
+        return countryTag < MaxCountries && (CountryCapitulatedMask & (1 << countryTag)) != 0;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void SetCapitulated(byte countryTag, bool capitulated)
+    {
+        if (countryTag < MaxCountries)
+        {
+            if (capitulated)
+            {
+                CountryCapitulatedMask |= (ushort)(1 << countryTag);
+            }
+            else
+            {
+                CountryCapitulatedMask &= (ushort)~(1 << countryTag);
+            }
+        }
     }
 
     /// <summary>
@@ -614,6 +648,48 @@ public sealed class SimulationWorld : IDisposable
     }
 
     /// <summary>
+    /// Finds a naval task force entity by prioritizing TaskForceId first, falling back to ECS Entity.Id with zero heap allocations.
+    /// </summary>
+    public bool TryFindNavalTaskForceById(int taskForceOrEntityId, out Entity foundEntity)
+    {
+        Query query1 = EcsWorld.Query(in TaskForceQuery);
+        foreach (ref Chunk chunk in query1)
+        {
+            Span<NavalTaskForceComponent> tfs = chunk.GetSpan<NavalTaskForceComponent>();
+            ReadOnlySpan<Entity> entities = chunk.Entities;
+            int chunkSize = chunk.Count;
+
+            for (int i = 0; i < chunkSize; i++)
+            {
+                if (tfs[i].TaskForceId == taskForceOrEntityId)
+                {
+                    foundEntity = entities[i];
+                    return true;
+                }
+            }
+        }
+
+        Query query2 = EcsWorld.Query(in TaskForceQuery);
+        foreach (ref Chunk chunk in query2)
+        {
+            ReadOnlySpan<Entity> entities = chunk.Entities;
+            int chunkSize = chunk.Count;
+
+            for (int i = 0; i < chunkSize; i++)
+            {
+                if (entities[i].Id == taskForceOrEntityId)
+                {
+                    foundEntity = entities[i];
+                    return true;
+                }
+            }
+        }
+
+        foundEntity = default;
+        return false;
+    }
+
+    /// <summary>
     /// Recalculates and updates States[stateId].ControllerTag based on the majority controller of provinces in stateId.
     /// Urban and SupplyHub provinces carry higher strategic weight. Zero heap allocations.
     /// </summary>
@@ -942,6 +1018,55 @@ public sealed class SimulationWorld : IDisposable
                     }
                     break;
                 }
+                case CommandType.SwitchProductionEquipment:
+                {
+                    if (TryFindProductionLineById(cmd.EntityId, out Entity lineEntity))
+                    {
+                        ref ProductionLineComponent line = ref EcsWorld.Get<ProductionLineComponent>(lineEntity);
+                        if (line.CountryTag == cmd.CountryTag)
+                        {
+                            EquipmentType newType = (EquipmentType)cmd.IntParam0;
+                            TechGeneration newGen = (TechGeneration)cmd.IntParam1;
+                            ProductionSystem.SwitchLineEquipment(ref line, newType, newGen);
+                            InvalidateEconomy();
+                        }
+                    }
+                    break;
+                }
+                case CommandType.CreateProductionLine:
+                {
+                    EquipmentType type = (EquipmentType)cmd.IntParam0;
+                    TechGeneration gen = (TechGeneration)(cmd.IntParam1 & 0xFF);
+                    ushort assignedFactories = (ushort)((cmd.IntParam1 >> 8) & 0xFFFF);
+                    int lineId = AllocateNextProductionLineId();
+                    ProductionLineComponent line = ProductionLineComponent.Create(
+                        lineId: lineId,
+                        countryTag: cmd.CountryTag,
+                        archetype: type,
+                        generation: gen,
+                        assignedMilitaryFactories: assignedFactories,
+                        initialEfficiency: ProductionLineComponent.MinEfficiency);
+                    SpawnProductionLine(line);
+                    InvalidateEconomy();
+                    break;
+                }
+                case CommandType.AssignNavalMission:
+                {
+                    if (TryFindNavalTaskForceById(cmd.EntityId, out Entity tfEntity))
+                    {
+                        ref NavalTaskForceComponent tf = ref EcsWorld.Get<NavalTaskForceComponent>(tfEntity);
+                        if (tf.CountryTag == cmd.CountryTag)
+                        {
+                            if (cmd.TargetId < MaxStrategicRegions)
+                            {
+                                tf.AssignedRegionId = (byte)cmd.TargetId;
+                            }
+                            tf.Mission = (NavalMission)cmd.IntParam0;
+                            InvalidateAirNaval();
+                        }
+                    }
+                    break;
+                }
                 case CommandType.None:
                 default:
                     break;
@@ -1003,7 +1128,10 @@ public sealed class SimulationWorld : IDisposable
         // 4. FocusTreeSystem (Phase 5.1 - daily Political Power, Focus countdown & FocusEffectExecutor):
         FocusTreeSystem.Execute(this);
 
-        // 5. OperationalPlanSystem (Phase 8.2 - Schwerpunkt spearheads & operational objectives):
+        // 5. CapitulationSystem (Phase 10.1 - Victory Points, stability surrender gate & territorial transfer):
+        CapitulationSystem.Execute(this);
+
+        // 6. OperationalPlanSystem (Phase 8.2 - Schwerpunkt spearheads & operational objectives):
         OperationalPlanSystem.Execute(this);
 
         // 6. TacticalFrontlineAISystem (Phase 6.1 / Phase 8.3 - multi-province pincer attacks & entrenchment):

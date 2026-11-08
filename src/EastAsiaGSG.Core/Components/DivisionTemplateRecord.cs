@@ -22,7 +22,9 @@ public unsafe struct DivisionTemplateRecord
     [FieldOffset(3)]  public byte IsConfigured;
     [FieldOffset(4)]  public int TotalManpower;
     [FieldOffset(8)]  public fixed ushort RequiredEquipment[LandArchetypeCount];
-    [FieldOffset(20)] public int Reserved;
+    [FieldOffset(20)] public byte CountryTag;
+    [FieldOffset(21)] public byte Reserved0;
+    [FieldOffset(22)] public short Reserved1;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public readonly ushort GetRequired(EquipmentType type)
@@ -148,13 +150,15 @@ public unsafe struct DivisionTemplateRecord
         ushort templateId,
         byte combatWidth,
         ReadOnlySpan<EquipmentType> battalions,
-        ReadOnlySpan<EquipmentType> supportCompanies)
+        ReadOnlySpan<EquipmentType> supportCompanies,
+        byte countryTag = EastAsiaGSG.Core.Components.CountryTag.None)
     {
         DivisionTemplateRecord tpl = new()
         {
             TemplateId = templateId,
             CombatWidth = combatWidth == 0 ? (byte)20 : combatWidth,
             IsConfigured = 1,
+            CountryTag = countryTag,
             TotalManpower = 0
         };
 
