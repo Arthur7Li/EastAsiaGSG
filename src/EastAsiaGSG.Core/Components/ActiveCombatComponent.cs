@@ -14,6 +14,18 @@ public enum CombatOutcome : byte
 }
 
 /// <summary>
+/// Cold War operational combat doctrine deployed by participating national armed forces.
+/// </summary>
+public enum TacticalDoctrine : byte
+{
+    Standard = 0,         // Baseline doctrine (no specific modifier)
+    AirLandBattle = 1,    // US / NATO doctrine (deep air interdiction, CAS integration, high breakthrough)
+    DeepOperations = 2,   // Soviet doctrine (echeloned armored exploitation, artillery prep)
+    MassAssault = 3,      // PRC / PRK doctrine (infantry morale, entrenched mass, defensive resilience)
+    ElasticDefense = 4    // ROK / TWN / JPN doctrine (mobile defense, tactical withdrawal, counter-attack)
+}
+
+/// <summary>
 /// Explicit 64-byte unmanaged ECS component tracking an active land battle at a contested province.
 /// </summary>
 [StructLayout(LayoutKind.Explicit, Size = 64)]
@@ -45,7 +57,10 @@ public unsafe struct ActiveCombatComponent
     [FieldOffset(40)] public float LastTickDefenderStrengthDamage;
 
     [FieldOffset(44)] public fixed ushort AttackOriginProvinces[MaxAttackDirections];
-    [FieldOffset(60)] public int Reserved;
+    [FieldOffset(60)] public TacticalDoctrine AttackerDoctrine;
+    [FieldOffset(61)] public TacticalDoctrine DefenderDoctrine;
+    [FieldOffset(62)] public byte TacticalAdvantageSide; // 0 = None, 1 = Attacker, 2 = Defender
+    [FieldOffset(63)] public byte ReservedDoctrine;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ushort CalculateCombatWidth(int attackDirectionCount)

@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using Arch.Core;
 using EastAsiaGSG.Core.Components;
 using EastAsiaGSG.Core.ECS;
 
@@ -7,10 +8,12 @@ namespace EastAsiaGSG.Core.Systems;
 /// <summary>
 /// Tier 1 (Every 6 Hours: 00:00, 06:00, 12:00, 18:00) system that updates Air Superiority
 /// and Naval Control ratios across the 18 Strategic Regions, resolves coastal A2/AD missile suppression,
-/// and enforces the Strait &amp; Amphibious Control Gate (> 60% Naval Control and > 50% Air Superiority).
+/// discrete Naval Task Force and Air Wing missions, and enforces the Strait &amp; Amphibious Control Gate (> 60% Naval Control and > 50% Air Superiority).
 /// </summary>
 public static class AirAndNavalRegionSystem
 {
+    private static readonly QueryDescription NavalTaskForceQuery = new QueryDescription().WithAll<NavalTaskForceComponent>();
+    private static readonly QueryDescription AirWingQuery = new QueryDescription().WithAll<AirWingComponent>();
     public const float StraitNavalControlThreshold = StrategicRegionData.StraitNavalControlThreshold; // 0.60f
     public const float StraitAirSuperiorityThreshold = StrategicRegionData.StraitAirSuperiorityThreshold; // 0.50f
 
@@ -171,6 +174,112 @@ public static class AirAndNavalRegionSystem
                             }
                         }
                     }
+                }
+            }
+        }
+
+        Array.Clear(world.SeaZoneInterdictionPenalty, 0, world.SeaZoneInterdictionPenalty.Length);
+
+        // Process discrete Naval Task Forces across strategic regions
+        Query taskForceQuery = world.EcsWorld.Query(in NavalTaskForceQuery);
+        foreach (ref Chunk chunk in taskForceQuery)
+        {
+            Span<NavalTaskForceComponent> taskForces = chunk.GetSpan<NavalTaskForceComponent>();
+            int count = chunk.Count;
+            for (int i = 0; i < count; i++)
+            {
+                ref readonly NavalTaskForceComponent tf = ref taskForces[i];
+                if (!tf.IsCombatReady || tf.AssignedRegionId >= regionCount || tf.CountryTag >= SimulationWorld.MaxCountries)
+                {
+                    continue;
+                }
+
+                FactionId faction = world.Countries[tf.CountryTag].Faction;
+                if (faction == FactionId.Neutral)
+                {
+                    continue;
+                }
+
+                int fIdx = (int)faction & 0x3;
+                int navalOffset = (tf.AssignedRegionId * factionCount) + fIdx;
+                int airOffset = (tf.AssignedRegionId * factionCount) + fIdx;
+
+                float str = System.Math.Clamp(tf.Strength, 0.10f, 1.0f);
+                float pgmMod = tf.PgmAuthorized != 0 ? 1.30f : 1.0f;
+
+                switch (tf.Type)
+                {
+                    case NavalTaskForceType.CarrierStrikeGroup:
+                        navalPower[navalOffset] += tf.SurfaceCombatPower * str * pgmMod;
+                        airPower[airOffset] += tf.AntiAirPower * str * 1.5f;
+                        break;
+                    case NavalTaskForceType.SurfaceActionGroup:
+                        navalPower[navalOffset] += tf.SurfaceCombatPower * str * pgmMod;
+                        airPower[airOffset] += tf.AntiAirPower * str * 0.5f;
+                        break;
+                    case NavalTaskForceType.SubmarineWolfpack:
+                        navalPower[navalOffset] += tf.SubsurfacePower * str * 0.5f;
+                        if (tf.Mission == NavalMission.ConvoyInterdiction)
+                        {
+                            float penalty = tf.ConvoyInterdictionEfficiency * str * 0.35f;
+                            world.SeaZoneInterdictionPenalty[tf.AssignedRegionId] =
+                                System.Math.Min(0.70f, world.SeaZoneInterdictionPenalty[tf.AssignedRegionId] + penalty);
+                        }
+                        break;
+                    case NavalTaskForceType.AmphibiousReadyGroup:
+                        navalPower[navalOffset] += tf.SurfaceCombatPower * str;
+                        break;
+                }
+
+                if (tf.Mission == NavalMission.ConvoyEscort)
+                {
+                    world.SeaZoneInterdictionPenalty[tf.AssignedRegionId] =
+                        System.Math.Max(0.0f, world.SeaZoneInterdictionPenalty[tf.AssignedRegionId] - (0.25f * str));
+                }
+            }
+        }
+
+        // Process discrete Air Wings across strategic regions
+        Query airWingQuery = world.EcsWorld.Query(in AirWingQuery);
+        foreach (ref Chunk chunk in airWingQuery)
+        {
+            Span<AirWingComponent> wings = chunk.GetSpan<AirWingComponent>();
+            int count = chunk.Count;
+            for (int i = 0; i < count; i++)
+            {
+                ref readonly AirWingComponent wing = ref wings[i];
+                if (!wing.IsCombatReady || wing.AssignedRegionId >= regionCount || wing.CountryTag >= SimulationWorld.MaxCountries)
+                {
+                    continue;
+                }
+
+                FactionId faction = world.Countries[wing.CountryTag].Faction;
+                if (faction == FactionId.Neutral)
+                {
+                    continue;
+                }
+
+                int fIdx = (int)faction & 0x3;
+                int airOffset = (wing.AssignedRegionId * factionCount) + fIdx;
+                int navalOffset = (wing.AssignedRegionId * factionCount) + fIdx;
+
+                float readiness = wing.Readiness / 100.0f;
+                float pgmMod = wing.PgmAuthorized != 0 ? 1.35f : 1.0f;
+
+                switch (wing.Mission)
+                {
+                    case AirMission.AirSuperiority:
+                        airPower[airOffset] += wing.AirSuperiorityPower * readiness * pgmMod;
+                        break;
+                    case AirMission.CloseAirSupport:
+                        airPower[airOffset] += wing.GroundAttackPower * readiness * 0.5f;
+                        break;
+                    case AirMission.NavalStrike:
+                        navalPower[navalOffset] += wing.NavalAttackPower * readiness * pgmMod * 0.5f;
+                        break;
+                    case AirMission.StrategicInterdiction:
+                        airPower[airOffset] += wing.AirSuperiorityPower * readiness * 0.4f;
+                        break;
                 }
             }
         }

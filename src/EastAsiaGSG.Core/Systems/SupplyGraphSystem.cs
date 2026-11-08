@@ -340,6 +340,19 @@ public static class SupplyGraphSystem
                     {
                         // Overseas import port
                         float convoyCap = System.Math.Min(maxExportPortLevel, prov.PortLevel) * BasePortCapacityMultiplier;
+
+                        // Phase 9: Attenuate convoy throughput by submarine interdiction in destination sea zone
+                        byte portRegion = prov.StrategicRegionId;
+                        if (portRegion < SimulationWorld.MaxStrategicRegions)
+                        {
+                            float interdiction = world.SeaZoneInterdictionPenalty[portRegion];
+                            if (interdiction > 0.001f)
+                            {
+                                float penaltyFactor = System.Math.Clamp(1.0f - interdiction, 0.20f, 1.0f);
+                                convoyCap *= penaltyFactor;
+                            }
+                        }
+
                         ctx.HubCapacity[p] = System.Math.Max(ctx.HubCapacity[p], convoyCap);
 
                         // Feed the island/regional rail network from the import port

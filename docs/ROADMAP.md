@@ -46,9 +46,9 @@
 - [x] **Task 8.3:** Upgrade `TacticalFrontlineAISystem` with multi-province coordinated pincer attacks (+20 combat width bonus) and entrenchment hysteresis, and expand `StrategicMinisterAISystem` to autonomously recruit new divisions (`CommandType.RecruitDivision`) and execute wargoals (`CommandType.DeclareWar`).
 
 ## Phase 9: Discrete Pacific Air/Naval Task Forces & Combat Doctrines
-- [ ] **Task 9.1:** Implement 64-byte `NavalTaskForceComponent` (`CarrierStrikeGroup`, `SurfaceActionGroup`, `SubmarineWolfpack`, `AmphibiousReadyGroup`) and 32-byte `AirWingComponent` in `EastAsiaGSG.Core/Components`.
-- [ ] **Task 9.2:** Upgrade `AirAndNavalRegionSystem` and `SupplyGraphSystem` to integrate task force missions, physical US PACOM / Soviet Pacific Fleet spawns, and submarine sea-lane convoy interdiction reducing overseas port supply capacity.
-- [ ] **Task 9.3:** Enhance `CombatResolutionSystem` with a $+15\%$ Combined Arms synergy modifier and 24-hour tactical doctrine counter-play rolls (*AirLand Battle*, *Deep Operations*, *Mass Assault*, *Elastic Defense*).
+- [x] **Task 9.1:** Implement 64-byte `NavalTaskForceComponent` (`CarrierStrikeGroup`, `SurfaceActionGroup`, `SubmarineWolfpack`, `AmphibiousReadyGroup`) and 32-byte `AirWingComponent` in `EastAsiaGSG.Core/Components`.
+- [x] **Task 9.2:** Upgrade `AirAndNavalRegionSystem` and `SupplyGraphSystem` to integrate task force missions, physical US PACOM / Soviet Pacific Fleet spawns, and submarine sea-lane convoy interdiction reducing overseas port supply capacity.
+- [x] **Task 9.3:** Enhance `CombatResolutionSystem` with a $+15\%$ Combined Arms synergy modifier and 24-hour tactical doctrine counter-play rolls (*AirLand Battle*, *Deep Operations*, *Mass Assault*, *Elastic Defense*).
 
 ## Phase 10: Victory Points, Capitulation, Interactive Diplomacy & Force Designer UI
 - [ ] **Task 10.1:** Implement daily `CapitulationSystem` in `EastAsiaGSG.Core/Systems` evaluating province `VictoryPoints` and national `Stability` to trigger surrender, province control transfer, 50% stockpile capture, and global capitulation news events.

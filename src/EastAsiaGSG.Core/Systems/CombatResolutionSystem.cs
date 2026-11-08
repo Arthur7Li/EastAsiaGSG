@@ -57,25 +57,30 @@ public static class CombatResolutionSystem
         float airModifier = 1.0f,
         bool pgmActiveForAttacker = false,
         bool pgmActiveForTarget = false,
-        bool targetIsAttackingSide = false)
+        bool targetIsAttackingSide = false,
+        bool attackerCombinedArms = false,
+        bool targetCombinedArms = false,
+        float doctrineAdvantageModifier = 1.0f)
     {
         float clampedHardness = System.Math.Clamp(targetHardness, 0.0f, 1.0f);
 
         // 1. Hardness Blend: A_base = A_s * (1 - H_t) + A_h * H_t
         float baseAttack = softAttack * (1.0f - clampedHardness) + hardAttack * clampedHardness;
 
-        // 2. Modifiers & PGM Multiplier
+        // 2. Modifiers, PGM Multiplier, Combined Arms Synergy (+15%), and Tactical Doctrine Advantage (+15%)
         float pgmMod = pgmActiveForAttacker ? PgmAttackMultiplier : 1.00f;
         bool piercedTarget = attackerPiercing >= targetArmor;
         float armorMod = piercedTarget ? 1.00f : UnpiercedArmorAttackPenalty;
+        float combinedArmsMod = attackerCombinedArms ? 1.15f : 1.00f;
 
-        float effectiveAttack = baseAttack * terrainModifier * supplyModifier * airModifier * pgmMod * armorMod;
+        float effectiveAttack = baseAttack * terrainModifier * supplyModifier * airModifier * pgmMod * armorMod * combinedArmsMod * doctrineAdvantageModifier;
 
         // 3. Defense / Breakthrough Mitigation (D_eff)
         float targetPgmBreakthroughMod = (targetIsAttackingSide && pgmActiveForTarget)
             ? PgmBreakthroughMultiplier
             : 1.00f;
-        float effectiveDefense = targetDefenseOrBreakthrough * targetPgmBreakthroughMod;
+        float targetCaMod = targetCombinedArms ? 1.15f : 1.00f;
+        float effectiveDefense = targetDefenseOrBreakthrough * targetPgmBreakthroughMod * targetCaMod;
 
         float blockedAttacks = System.MathF.Min(effectiveAttack, effectiveDefense);
         float unblockedAttacks = System.MathF.Max(0.0f, effectiveAttack - effectiveDefense);
@@ -98,6 +103,51 @@ public static class CombatResolutionSystem
             PgmUsed: pgmActiveForAttacker,
             AttackerPiercedTarget: piercedTarget,
             AttackerArmorUnpiercedByTarget: attackerArmorUnpierced);
+    }
+
+    /// <summary>
+    /// Determines whether a division template/component qualifies for the +15% Combined Arms synergy modifier.
+    /// Balanced mechanized/motorized infantry with armor/support or mixed hardness (0.20 to 0.65) qualify.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool HasCombinedArms(in DivisionComponent div)
+    {
+        if (div.Hardness is >= 0.20f and <= 0.65f)
+        {
+            return true;
+        }
+        return div.SoftAttack >= 30.0f && div.HardAttack >= 15.0f && div.Armor >= 15.0f;
+    }
+
+    /// <summary>
+    /// Evaluates 24-hour tactical doctrine counter-play rolls (AirLand Battle, Deep Operations, Mass Assault, Elastic Defense).
+    /// Returns 1 if attacker holds advantage, 2 if defender holds advantage, 0 if neutral.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static byte ResolveTacticalDoctrineAdvantage(TacticalDoctrine attDoc, TacticalDoctrine defDoc)
+    {
+        if (attDoc == defDoc || attDoc == TacticalDoctrine.Standard || defDoc == TacticalDoctrine.Standard)
+        {
+            return 0;
+        }
+
+        // AirLandBattle counters MassAssault
+        if (attDoc == TacticalDoctrine.AirLandBattle && defDoc == TacticalDoctrine.MassAssault) return 1;
+        if (defDoc == TacticalDoctrine.AirLandBattle && attDoc == TacticalDoctrine.MassAssault) return 2;
+
+        // DeepOperations counters ElasticDefense
+        if (attDoc == TacticalDoctrine.DeepOperations && defDoc == TacticalDoctrine.ElasticDefense) return 1;
+        if (defDoc == TacticalDoctrine.DeepOperations && attDoc == TacticalDoctrine.ElasticDefense) return 2;
+
+        // ElasticDefense counters AirLandBattle
+        if (attDoc == TacticalDoctrine.ElasticDefense && defDoc == TacticalDoctrine.AirLandBattle) return 1;
+        if (defDoc == TacticalDoctrine.ElasticDefense && attDoc == TacticalDoctrine.AirLandBattle) return 2;
+
+        // MassAssault counters DeepOperations
+        if (attDoc == TacticalDoctrine.MassAssault && defDoc == TacticalDoctrine.DeepOperations) return 1;
+        if (defDoc == TacticalDoctrine.MassAssault && attDoc == TacticalDoctrine.DeepOperations) return 2;
+
+        return 0;
     }
 
     /// <summary>
@@ -272,6 +322,23 @@ public static class CombatResolutionSystem
         combat.EngagedAttackerCount = (byte)engagedAttackerCount;
         combat.EngagedDefenderCount = (byte)engagedDefenderCount;
 
+        // Evaluate or roll 24-hour tactical doctrine counter-play every 4 ticks (24 hours)
+        if (combat.ElapsedSixHourTicks % 4 == 0)
+        {
+            TacticalDoctrine attDoc = combat.AttackerTag < SimulationWorld.MaxCountries
+                ? world.CountryDoctrines[combat.AttackerTag]
+                : TacticalDoctrine.Standard;
+            TacticalDoctrine defDoc = combat.DefenderTag < SimulationWorld.MaxCountries
+                ? world.CountryDoctrines[combat.DefenderTag]
+                : TacticalDoctrine.Standard;
+            combat.AttackerDoctrine = attDoc;
+            combat.DefenderDoctrine = defDoc;
+            combat.TacticalAdvantageSide = ResolveTacticalDoctrineAdvantage(attDoc, defDoc);
+        }
+
+        float attackerDoctrineAdvMod = combat.TacticalAdvantageSide == 1 ? 1.15f : 1.00f;
+        float defenderDoctrineAdvMod = combat.TacticalAdvantageSide == 2 ? 1.15f : 1.00f;
+
         // Determine PGM availability and consume national PGM stockpile for authorized engaged divisions
         Span<bool> attackerPgmActive = stackalloc bool[engagedAttackerCount];
         Span<bool> defenderPgmActive = stackalloc bool[engagedDefenderCount];
@@ -322,6 +389,9 @@ public static class CombatResolutionSystem
             float defStrFactor = System.Math.Clamp(def.Strength, 0.10f, 1.0f) * (0.90f + (0.20f * System.Math.Clamp(def.Experience, 0.0f, 1.0f)));
             float defEntrenchmentMod = 1.0f + def.Entrenchment;
 
+            bool attHasCa = HasCombinedArms(in att);
+            bool defHasCa = HasCombinedArms(in def);
+
             CombatExchangeResult exchange = CalculateExchange(
                 softAttack: att.SoftAttack * strFactor,
                 hardAttack: att.HardAttack * strFactor,
@@ -336,7 +406,10 @@ public static class CombatResolutionSystem
                 airModifier: airMod,
                 pgmActiveForAttacker: attackerPgmActive[i],
                 pgmActiveForTarget: defenderPgmActive[targetIdx],
-                targetIsAttackingSide: false);
+                targetIsAttackingSide: false,
+                attackerCombinedArms: attHasCa,
+                targetCombinedArms: defHasCa,
+                doctrineAdvantageModifier: attackerDoctrineAdvMod);
 
             defenderOrgDamageTaken[targetIdx] += exchange.OrgDamage;
             defenderStrDamageTaken[targetIdx] += exchange.StrengthDamage;
@@ -351,6 +424,9 @@ public static class CombatResolutionSystem
             ref DivisionComponent def = ref world.EcsWorld.Get<DivisionComponent>(defenders[i]);
             int targetIdx = i % engagedAttackerCount;
             ref DivisionComponent att = ref world.EcsWorld.Get<DivisionComponent>(attackers[targetIdx]);
+
+            bool defHasCa = HasCombinedArms(in def);
+            bool attHasCa = HasCombinedArms(in att);
 
             float airMod = ComputeAirModifier(world, targetProv.StrategicRegionId, def.CountryTag, att.CountryTag);
             float defStrFactor = System.Math.Clamp(def.Strength, 0.10f, 1.0f) * (0.90f + (0.20f * System.Math.Clamp(def.Experience, 0.0f, 1.0f)));
@@ -371,7 +447,10 @@ public static class CombatResolutionSystem
                 airModifier: airMod,
                 pgmActiveForAttacker: defenderPgmActive[i],
                 pgmActiveForTarget: attackerPgmActive[targetIdx],
-                targetIsAttackingSide: true);
+                targetIsAttackingSide: true,
+                attackerCombinedArms: defHasCa,
+                targetCombinedArms: attHasCa,
+                doctrineAdvantageModifier: defenderDoctrineAdvMod);
 
             attackerOrgDamageTaken[targetIdx] += exchange.OrgDamage;
             attackerStrDamageTaken[targetIdx] += exchange.StrengthDamage;

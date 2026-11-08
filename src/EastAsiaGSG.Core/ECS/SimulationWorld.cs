@@ -45,6 +45,8 @@ public sealed class SimulationWorld : IDisposable
     public readonly float[] CountryHomelandEscalation = new float[MaxCountries];
     public readonly ushort[] CountryWarMasks = new ushort[MaxCountries];
     public readonly ushort[] CountryWargoalMasks = new ushort[MaxCountries];
+    public readonly TacticalDoctrine[] CountryDoctrines = new TacticalDoctrine[MaxCountries];
+    public readonly float[] SeaZoneInterdictionPenalty = new float[MaxStrategicRegions];
     public readonly byte[] CountryUnlockedTechGen = new byte[MaxCountries * CountryState.ArchetypeCount];
     public readonly byte[] CountryTechBonuses = new byte[MaxCountries * CountryState.ArchetypeCount];
     public readonly int[] TriggeredNewsEventHashes = new int[MaxTriggeredNewsEvents];
@@ -132,6 +134,7 @@ public sealed class SimulationWorld : IDisposable
         for (byte i = 0; i < MaxCountries; i++)
         {
             Countries[i].TagId = i;
+            Countries[i].Faction = FactionId.Neutral;
             Countries[i].Defcon = 5;
             Countries[i].HomelandEscalation = i == CountryTag.USA ? (byte)15 : (byte)0;
             CountryHomelandEscalation[i] = i == CountryTag.USA ? 15.0f : 0.0f;
@@ -142,6 +145,17 @@ public sealed class SimulationWorld : IDisposable
             Countries[i].ActiveFocusId = -1;
             Countries[i].FocusDaysRemaining = 0;
         }
+
+        Countries[CountryTag.USA].Faction = FactionId.BlueforPacom;
+        Countries[CountryTag.ROK].Faction = FactionId.BlueforPacom;
+        Countries[CountryTag.JPN].Faction = FactionId.BlueforPacom;
+        Countries[CountryTag.TWN].Faction = FactionId.BlueforPacom;
+        Countries[CountryTag.PHL].Faction = FactionId.BlueforPacom;
+        Countries[CountryTag.SOV].Faction = FactionId.RedforSocialist;
+        Countries[CountryTag.PRK].Faction = FactionId.RedforSocialist;
+        Countries[CountryTag.VNM].Faction = FactionId.RedforSocialist;
+        Countries[CountryTag.LAO].Faction = FactionId.RedforSocialist;
+        Countries[CountryTag.PRC].Faction = FactionId.PrcSphere;
 
         for (ushort i = 0; i < MaxDivisionTemplates; i++)
         {
@@ -160,6 +174,18 @@ public sealed class SimulationWorld : IDisposable
         {
             CountryUnlockedTechGen[i] = (byte)TechGeneration.Gen1_1980Baseline;
         }
+
+        for (byte i = 0; i < MaxCountries; i++)
+        {
+            CountryDoctrines[i] = TacticalDoctrine.Standard;
+        }
+        CountryDoctrines[CountryTag.USA] = TacticalDoctrine.AirLandBattle;
+        CountryDoctrines[CountryTag.SOV] = TacticalDoctrine.DeepOperations;
+        CountryDoctrines[CountryTag.PRC] = TacticalDoctrine.MassAssault;
+        CountryDoctrines[CountryTag.PRK] = TacticalDoctrine.MassAssault;
+        CountryDoctrines[CountryTag.ROK] = TacticalDoctrine.ElasticDefense;
+        CountryDoctrines[CountryTag.TWN] = TacticalDoctrine.ElasticDefense;
+        CountryDoctrines[CountryTag.JPN] = TacticalDoctrine.ElasticDefense;
 
         for (byte i = 0; i < MaxCountries; i++)
         {
@@ -514,6 +540,24 @@ public sealed class SimulationWorld : IDisposable
 
         combatEntity = default;
         return false;
+    }
+
+    /// <summary>
+    /// Spawns a discrete NavalTaskForceComponent entity in EcsWorld.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Entity SpawnNavalTaskForce(in NavalTaskForceComponent taskForce)
+    {
+        return EcsWorld.Create(taskForce);
+    }
+
+    /// <summary>
+    /// Spawns a discrete AirWingComponent entity in EcsWorld.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Entity SpawnAirWing(in AirWingComponent wing)
+    {
+        return EcsWorld.Create(wing);
     }
 
     /// <summary>

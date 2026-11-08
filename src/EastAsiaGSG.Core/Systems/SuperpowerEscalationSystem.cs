@@ -44,6 +44,7 @@ public static class SuperpowerEscalationSystem
     public const float CsgAirPower = 80.0f;
 
     private static readonly QueryDescription CombatQuery = new QueryDescription().WithAll<ActiveCombatComponent>();
+    private static readonly QueryDescription NavalTaskForceQuery = new QueryDescription().WithAll<NavalTaskForceComponent>();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static byte GetDefconForEscalation(byte escalation)
@@ -213,6 +214,30 @@ public static class SuperpowerEscalationSystem
             ShipHomelandStockpileConvoys(ref usa);
         }
 
+        // 7b. Physical US PACOM Carrier Strike Groups surge into Western Pacific as escalation crosses thresholds
+        int neededCsgs = GetActiveCsgCount(finalEsc);
+        int existingCsgs = CountUsCarrierStrikeGroups(world);
+        if (neededCsgs > existingCsgs)
+        {
+            for (int i = existingCsgs; i < neededCsgs; i++)
+            {
+                int csgId = 7000 + i + 1;
+                byte regionId = (byte)(i == 0 ? 8 : (i == 1 ? 5 : 7)); // Philippine Sea, Sea of Japan, East China Sea
+                ushort baseProv = world.GetCapitalProvince(CountryTag.USA);
+                TechGeneration csgGen = finalDefcon <= 2
+                    ? TechGeneration.Gen3_1995DigitalStealth
+                    : TechGeneration.Gen2_1988LateColdWar;
+
+                world.SpawnNavalTaskForce(NavalTaskForceComponent.CreateCarrierStrikeGroup(
+                    csgId,
+                    CountryTag.USA,
+                    regionId,
+                    baseProv,
+                    csgGen,
+                    pgmAuthorized: true));
+            }
+        }
+
         // 8. Synchronize coalition partner alert posture
         if (finalDefcon < 5)
         {
@@ -260,5 +285,24 @@ public static class SuperpowerEscalationSystem
             usa.AddStockpile(EquipmentType.InfantryKit, gen, 75);
             usa.AddStockpile(EquipmentType.PGM, gen, 30);
         }
+    }
+
+    private static int CountUsCarrierStrikeGroups(SimulationWorld world)
+    {
+        int count = 0;
+        Query query = world.EcsWorld.Query(in NavalTaskForceQuery);
+        foreach (ref Chunk chunk in query)
+        {
+            Span<NavalTaskForceComponent> tfs = chunk.GetSpan<NavalTaskForceComponent>();
+            int chunkSize = chunk.Count;
+            for (int i = 0; i < chunkSize; i++)
+            {
+                if (tfs[i].CountryTag == CountryTag.USA && tfs[i].Type == NavalTaskForceType.CarrierStrikeGroup)
+                {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 }

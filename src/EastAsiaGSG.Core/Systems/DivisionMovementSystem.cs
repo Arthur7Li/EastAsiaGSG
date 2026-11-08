@@ -31,6 +31,11 @@ public static class DivisionMovementSystem
             return false;
         }
 
+        if (world.IsAtWarWith(tagA, tagB))
+        {
+            return false;
+        }
+
         FactionId factionA = world.Countries[tagA].Faction;
         FactionId factionB = world.Countries[tagB].Faction;
         return factionA != FactionId.Neutral && factionA == factionB;

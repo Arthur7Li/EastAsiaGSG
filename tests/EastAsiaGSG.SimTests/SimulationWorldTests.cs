@@ -21,6 +21,8 @@ public sealed class SimulationWorldTests
         Assert.Equal(16, sizeof(SimulationCommand));
         Assert.Equal(128, sizeof(DivisionComponent));
         Assert.Equal(64, sizeof(ActiveCombatComponent));
+        Assert.Equal(64, sizeof(NavalTaskForceComponent));
+        Assert.Equal(32, sizeof(AirWingComponent));
 
         Assert.True(RuntimeHelpers.IsReferenceOrContainsReferences<ProvinceData>() == false);
         Assert.True(RuntimeHelpers.IsReferenceOrContainsReferences<StateData>() == false);
@@ -29,6 +31,8 @@ public sealed class SimulationWorldTests
         Assert.True(RuntimeHelpers.IsReferenceOrContainsReferences<SimulationCommand>() == false);
         Assert.True(RuntimeHelpers.IsReferenceOrContainsReferences<DivisionComponent>() == false);
         Assert.True(RuntimeHelpers.IsReferenceOrContainsReferences<ActiveCombatComponent>() == false);
+        Assert.True(RuntimeHelpers.IsReferenceOrContainsReferences<NavalTaskForceComponent>() == false);
+        Assert.True(RuntimeHelpers.IsReferenceOrContainsReferences<AirWingComponent>() == false);
 
         // Verify DivisionComponent layout and repurposed operational stance fields
         DivisionComponent div = DivisionComponent.Create(

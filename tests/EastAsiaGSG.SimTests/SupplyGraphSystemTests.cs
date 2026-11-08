@@ -190,7 +190,7 @@ public sealed class SupplyGraphSystemTests
         Assert.Equal(1.0f, world.Provinces[2].SupplyRatio);
 
         // 2. Sever the Trans-Siberian corridor at Prov 1 (occupied by hostile forces)
-        world.Provinces[1].ControllerTag = CountryTag.PRK;
+        world.Provinces[1].ControllerTag = CountryTag.USA;
 
         SupplyGraphSystem.Execute(world);
 
