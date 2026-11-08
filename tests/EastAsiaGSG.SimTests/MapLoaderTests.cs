@@ -464,7 +464,7 @@ public sealed class MapLoaderTests
         Assert.NotEmpty(metadata.GetTemplateName(1));
 
         // Verify fallback formatting
-        Assert.Equal("Province #999", metadata.GetProvinceName(999));
+        Assert.Equal("Province #1499", metadata.GetProvinceName(1499));
         Assert.Equal("State #99", metadata.GetStateName(99));
         Assert.Equal("Global Flashpoint #1234ABCD", metadata.GetNewsEventTitle(0x1234ABCD));
     }

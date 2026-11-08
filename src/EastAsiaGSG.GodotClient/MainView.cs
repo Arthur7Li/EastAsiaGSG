@@ -182,7 +182,7 @@ public partial class MainView : Node2D
         _timeToolbar.SetAnchorsPreset(Control.LayoutPreset.TopRight);
         _timeToolbar.GrowHorizontal = Control.GrowDirection.Begin;
         _timeToolbar.GrowVertical = Control.GrowDirection.End;
-        _timeToolbar.OffsetLeft = -546;
+        _timeToolbar.OffsetLeft = -650;
         _timeToolbar.OffsetTop = 12;
         _timeToolbar.OffsetRight = -16;
         _timeToolbar.OffsetBottom = 58;
@@ -378,6 +378,9 @@ public partial class MainView : Node2D
                     break;
             }
         };
+
+        _timeToolbar.QuickSaveRequested += HandleQuickSave;
+        _timeToolbar.QuickLoadRequested += HandleQuickLoad;
     }
 
     private void LoadAvailableFocusTrees()
@@ -811,6 +814,81 @@ public partial class MainView : Node2D
         }
 
         return null;
+    }
+
+    private string GetSaveFilePath()
+    {
+        string? root = ResolvePath("EastAsiaGSG.sln");
+        if (root != null)
+        {
+            string? dir = Path.GetDirectoryName(root);
+            if (dir != null)
+            {
+                return Path.Combine(dir, "data", "saves", "quicksave.eagsav");
+            }
+        }
+        return Path.Combine(OS.GetUserDataDir(), "quicksave.eagsav");
+    }
+
+    private void HandleQuickSave()
+    {
+        if (_world == null)
+        {
+            return;
+        }
+
+        try
+        {
+            string savePath = GetSaveFilePath();
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            EastAsiaGSG.Data.Serialization.WorldSnapshotSerializer.SaveToFile(_world, savePath);
+            sw.Stop();
+            long fileBytes = new FileInfo(savePath).Length;
+            GD.Print($"[QuickSave] Successfully saved snapshot to '{savePath}' ({fileBytes / 1024.0:F1} KB) in {sw.Elapsed.TotalMilliseconds:F2} ms");
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"[QuickSave] Failed to save snapshot: {ex.Message}");
+        }
+    }
+
+    private void HandleQuickLoad()
+    {
+        if (_world == null)
+        {
+            return;
+        }
+
+        try
+        {
+            string savePath = GetSaveFilePath();
+            if (!File.Exists(savePath))
+            {
+                GD.PrintErr($"[QuickLoad] No quicksave file found at '{savePath}'");
+                return;
+            }
+
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            EastAsiaGSG.Data.Serialization.WorldSnapshotSerializer.LoadFromFile(_world, savePath);
+            sw.Stop();
+
+            _timeToolbar?.Initialize(_world);
+            _mapRenderer?.RefreshMapLut();
+            _combatPopup?.RefreshIfActive();
+            _tacticalOverlay?.OnTick();
+            _stockpileTopBar?.Refresh();
+            _infoPanel?.RefreshCurrent();
+            if (_diplomacyModal?.Visible == true)
+            {
+                _diplomacyModal.Refresh();
+            }
+
+            GD.Print($"[QuickLoad] Successfully restored snapshot from '{savePath}' in {sw.Elapsed.TotalMilliseconds:F2} ms");
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"[QuickLoad] Failed to restore snapshot: {ex.Message}");
+        }
     }
 
     public override void _ExitTree()

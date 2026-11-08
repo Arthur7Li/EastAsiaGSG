@@ -160,7 +160,7 @@ public sealed class MapRendererTests
     }
 
     [Fact]
-    public void EastAsiaTheatrePng_232Provinces_ContiguousLandmassesAnd100PercentMousePicking()
+    public void EastAsiaTheatrePng_618Provinces_ContiguousLandmassesAnd100PercentMousePicking()
     {
         string root = FindRepositoryRoot();
         string statesPath = Path.Combine(root, "data", "map", "east_asia_1985_states.json");
@@ -210,7 +210,7 @@ public sealed class MapRendererTests
             }
         }
 
-        Assert.Equal(232, verifiedProvinces);
+        Assert.Equal(618, verifiedProvinces);
 
         // Verify Okinawa (500) is in the Ryukyu chain south of Kyushu and outside Korea
         ref readonly ProvinceData naha = ref world.Provinces[500];

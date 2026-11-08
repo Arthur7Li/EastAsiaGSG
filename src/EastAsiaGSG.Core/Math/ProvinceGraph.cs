@@ -22,6 +22,15 @@ public sealed class ProvinceGraph
 
     public int EdgeCount => AdjacencyTargets.Length;
 
+    /// <summary>
+    /// Directly populates CSR arrays without sorting, used during fast binary snapshot deserialization.
+    /// </summary>
+    public void LoadCsrDirect(ushort[] targets, byte[] edgeFlags)
+    {
+        AdjacencyTargets = targets ?? [];
+        AdjacencyEdgeFlags = edgeFlags ?? [];
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReadOnlySpan<ushort> GetNeighbors(in ProvinceData province)
     {

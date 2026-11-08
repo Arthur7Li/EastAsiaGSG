@@ -4,13 +4,11 @@
     {
       "templateId": 39,
       "name": "KPRAF Infantry Division",
-      "combatWidth": 18,
+      "combatWidth": 16,
       "battalions": [
         "InfantryKit",
         "InfantryKit",
         "InfantryKit",
-        "Artillery",
-        "SupportVehicles",
         "SupportVehicles"
       ],
       "supportCompanies": [
@@ -20,10 +18,10 @@
   ],
   "startingDivisions": [
     {
-      "name": "179th Infantry Division",
+      "name": "196th Infantry Division",
       "templateId": 39,
       "startingProvinceId": 650,
-      "startingExperience": 0.4,
+      "startingExperience": 0.35,
       "startingStrength": 1.0,
       "pgmAuthorized": false
     },

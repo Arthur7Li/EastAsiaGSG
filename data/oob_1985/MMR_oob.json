@@ -3,15 +3,15 @@
   "templates": [
     {
       "templateId": 40,
-      "name": "Tatmadaw Light Infantry Division",
-      "combatWidth": 18,
+      "name": "Myanmar Tatmadaw Light Infantry Division",
+      "combatWidth": 20,
       "battalions": [
         "InfantryKit",
         "InfantryKit",
         "InfantryKit",
         "InfantryKit",
-        "SupportVehicles",
-        "Artillery"
+        "Artillery",
+        "SupportVehicles"
       ],
       "supportCompanies": [
         "SupportVehicles"
@@ -19,13 +19,13 @@
     },
     {
       "templateId": 41,
-      "name": "Tatmadaw Armored Regiment",
+      "name": "Myanmar Armored Brigade",
       "combatWidth": 16,
       "battalions": [
         "MBT",
         "IFV",
-        "SupportVehicles",
-        "Artillery"
+        "InfantryKit",
+        "SupportVehicles"
       ],
       "supportCompanies": [
         "SupportVehicles"
@@ -45,15 +45,15 @@
       "name": "88th Light Infantry Division",
       "templateId": 40,
       "startingProvinceId": 661,
-      "startingExperience": 0.45,
+      "startingExperience": 0.5,
       "startingStrength": 1.0,
       "pgmAuthorized": false
     },
     {
-      "name": "1st Armored Regiment",
+      "name": "99th Armored Brigade",
       "templateId": 41,
       "startingProvinceId": 662,
-      "startingExperience": 0.4,
+      "startingExperience": 0.45,
       "startingStrength": 1.0,
       "pgmAuthorized": false
     }

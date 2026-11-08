@@ -56,6 +56,7 @@
 - [x] **Task 10.3:** Build `DiplomacyAndNewsModal.cs` (15-nation faction/war ledger, targetable war declarations, and interactive Cold War News Event popups), upgrade `NationalStockpileTopBar` with a historical OOB Template Recruitment selector, and add equipment generation upgrade/creation controls to `ProductionLinePanel`.
 
 ## Phase 11: High-Density Theatre Scaling (600+ Provinces) & Binary Save/Load
-- [ ] **Task 11.1:** Implement `WorldSnapshotSerializer` in `EastAsiaGSG.Data/Serialization` using `MemoryMarshal.AsBytes` and `ZLibStream` for $< 5\ \text{ms}$ `.eagsav` binary save/load roundtripping, wired to `Save` / `Load` buttons in `TimeControlsToolbar`.
-- [ ] **Task 11.2:** Upgrade `scripts/generate_east_asia_theatre.py` with bounded Lloyd-relaxed Voronoi tessellation to subdivide the 41 states into 650+ operational provinces while preserving river, strait, and railway arteries and city Victory Points.
-- [ ] **Task 11.3:** Execute full-scale 15-year soak benchmarks and headless balance verification across the expanded theatre.
+- [x] **Task 11.1:** Implement `WorldSnapshotSerializer` in `EastAsiaGSG.Data/Serialization` using `MemoryMarshal.AsBytes` and `ZLibStream` for $< 5\ \text{ms}$ `.eagsav` binary save/load roundtripping, wired to `Save` / `Load` buttons in `TimeControlsToolbar`.
+- [x] **Task 11.2:** Upgrade `scripts/generate_east_asia_theatre.py` with bounded Lloyd-relaxed Voronoi tessellation to subdivide the 41 states into 650+ operational provinces while preserving river, strait, and railway arteries and city Victory Points.
+- [x] **Task 11.3:** Execute full-scale 15-year soak benchmarks and headless balance verification across the expanded theatre.
+

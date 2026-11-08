@@ -3,7 +3,7 @@
   "templates": [
     {
       "templateId": 42,
-      "name": "Royal Malay Infantry Division",
+      "name": "Malaysian Army Royal Malay Regiment",
       "combatWidth": 20,
       "battalions": [
         "InfantryKit",
@@ -25,8 +25,8 @@
       "battalions": [
         "IFV",
         "IFV",
-        "MBT",
-        "SupportVehicles"
+        "SupportVehicles",
+        "Artillery"
       ],
       "supportCompanies": [
         "SupportVehicles"
@@ -35,7 +35,7 @@
   ],
   "startingDivisions": [
     {
-      "name": "1st Royal Malay Division",
+      "name": "1st Infantry Division",
       "templateId": 42,
       "startingProvinceId": 670,
       "startingExperience": 0.5,
@@ -43,15 +43,15 @@
       "pgmAuthorized": false
     },
     {
-      "name": "2nd Armored Brigade",
+      "name": "2nd Mechanized Brigade",
       "templateId": 43,
       "startingProvinceId": 671,
-      "startingExperience": 0.55,
+      "startingExperience": 0.5,
       "startingStrength": 1.0,
       "pgmAuthorized": true
     },
     {
-      "name": "3rd Infantry Brigade",
+      "name": "3rd Infantry Division ('Southern')",
       "templateId": 42,
       "startingProvinceId": 672,
       "startingExperience": 0.45,

@@ -32,6 +32,7 @@ public sealed class SimulationWorld : IDisposable
     private static readonly QueryDescription CombatQuery = new QueryDescription().WithAll<ActiveCombatComponent>();
     private static readonly QueryDescription ProductionLineQuery = new QueryDescription().WithAll<ProductionLineComponent>();
     private static readonly QueryDescription TaskForceQuery = new QueryDescription().WithAll<NavalTaskForceComponent>();
+    private static readonly QueryDescription AirWingQuery = new QueryDescription().WithAll<AirWingComponent>();
     private static readonly FocusNodeData EmptyFocusNode = default;
 
     // Flat Contiguous State Arrays (Index == ID)
@@ -1195,6 +1196,123 @@ public sealed class SimulationWorld : IDisposable
     public static bool IsLeapYear(int year)
     {
         return (year & 3) == 0 && (year % 100 != 0 || year % 400 == 0);
+    }
+
+    /// <summary>
+    /// Restores sequential entity ID counters from snapshot deserialization.
+    /// </summary>
+    public void GetIdCounters(out int nextCombatId, out int nextDivisionId, out int nextProductionLineId)
+    {
+        nextCombatId = _nextCombatId;
+        nextDivisionId = _nextDivisionId;
+        nextProductionLineId = _nextProductionLineId;
+    }
+
+    /// <summary>
+    /// Updates sequential entity ID counters from snapshot deserialization.
+    /// </summary>
+    public void SetIdCounters(int nextCombatId, int nextDivisionId, int nextProductionLineId)
+    {
+        _nextCombatId = nextCombatId;
+        _nextDivisionId = nextDivisionId;
+        _nextProductionLineId = nextProductionLineId;
+    }
+
+    /// <summary>
+    /// Restores calendar timestamp, execution counters, and cache revisions during snapshot deserialization.
+    /// </summary>
+    public void RestoreTimeAndTelemetry(
+        int totalSixHourTicks,
+        int dailyTicksExecuted,
+        int monthlyTicksExecuted,
+        int commandsProcessedCount,
+        int triggeredNewsEventCount,
+        int currentYear,
+        int currentMonth,
+        int currentDay,
+        int currentHour,
+        uint ownershipRevision,
+        uint supplyRevision,
+        uint economyRevision,
+        uint airNavalRevision)
+    {
+        TotalSixHourTicks = totalSixHourTicks;
+        DailyTicksExecuted = dailyTicksExecuted;
+        MonthlyTicksExecuted = monthlyTicksExecuted;
+        CommandsProcessedCount = commandsProcessedCount;
+        TriggeredNewsEventCount = triggeredNewsEventCount;
+        CurrentYear = currentYear;
+        CurrentMonth = currentMonth;
+        CurrentDay = currentDay;
+        CurrentHour = currentHour;
+        OwnershipRevision = ownershipRevision;
+        SupplyRevision = supplyRevision;
+        EconomyRevision = economyRevision;
+        AirNavalRevision = airNavalRevision;
+    }
+
+    /// <summary>
+    /// Destroys all active dynamic ECS entities (Divisions, Combats, ProductionLines, TaskForces, AirWings).
+    /// Used prior to restoring dynamic entities during snapshot loading.
+    /// </summary>
+    public void ClearAllDynamicEntities()
+    {
+        List<Entity> toDestroy = new(512);
+
+        Query divQuery = EcsWorld.Query(in DivisionQuery);
+        foreach (ref Chunk chunk in divQuery)
+        {
+            ReadOnlySpan<Entity> entities = chunk.Entities;
+            for (int i = 0; i < chunk.Count; i++)
+            {
+                toDestroy.Add(entities[i]);
+            }
+        }
+
+        Query combatQuery = EcsWorld.Query(in CombatQuery);
+        foreach (ref Chunk chunk in combatQuery)
+        {
+            ReadOnlySpan<Entity> entities = chunk.Entities;
+            for (int i = 0; i < chunk.Count; i++)
+            {
+                toDestroy.Add(entities[i]);
+            }
+        }
+
+        Query lineQuery = EcsWorld.Query(in ProductionLineQuery);
+        foreach (ref Chunk chunk in lineQuery)
+        {
+            ReadOnlySpan<Entity> entities = chunk.Entities;
+            for (int i = 0; i < chunk.Count; i++)
+            {
+                toDestroy.Add(entities[i]);
+            }
+        }
+
+        Query taskForceQuery = EcsWorld.Query(in TaskForceQuery);
+        foreach (ref Chunk chunk in taskForceQuery)
+        {
+            ReadOnlySpan<Entity> entities = chunk.Entities;
+            for (int i = 0; i < chunk.Count; i++)
+            {
+                toDestroy.Add(entities[i]);
+            }
+        }
+
+        Query airWingQuery = EcsWorld.Query(in AirWingQuery);
+        foreach (ref Chunk chunk in airWingQuery)
+        {
+            ReadOnlySpan<Entity> entities = chunk.Entities;
+            for (int i = 0; i < chunk.Count; i++)
+            {
+                toDestroy.Add(entities[i]);
+            }
+        }
+
+        for (int i = 0; i < toDestroy.Count; i++)
+        {
+            EcsWorld.Destroy(toDestroy[i]);
+        }
     }
 
     public void Dispose()

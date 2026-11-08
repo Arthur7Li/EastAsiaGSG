@@ -204,7 +204,7 @@ public sealed class TwoTierAiAndSoakTests
         using SimulationWorld world = new();
         string repoRoot = FindRepoRoot();
 
-        // 1. Load Full 232-Province East Asian Theatre Map & States
+        // 1. Load Full 618-Province East Asian Theatre Map & States
         JsonMapLoader.LoadMap(
             world,
             Path.Combine(repoRoot, "data", "map", "east_asia_1985_states.json"),
@@ -443,7 +443,7 @@ public sealed class TwoTierAiAndSoakTests
     }
 
     [Fact]
-    public void FullEastAsiaTheatreMap_232Provinces41States15Nations_BijectiveLoadAndAllOobDivisionsSupplied()
+    public void FullEastAsiaTheatreMap_618Provinces41States15Nations_BijectiveLoadAndAllOobDivisionsSupplied()
     {
         using SimulationWorld world = new();
         string repoRoot = FindRepoRoot();
@@ -459,7 +459,7 @@ public sealed class TwoTierAiAndSoakTests
         {
             if (world.Provinces[i].OwnerTag != CountryTag.None) provCount++;
         }
-        Assert.Equal(232, provCount);
+        Assert.Equal(618, provCount);
 
         int stateCount = 0;
         for (int i = 0; i < SimulationWorld.MaxStates; i++)

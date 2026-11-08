@@ -17,6 +17,8 @@ public partial class TimeControlsToolbar : PanelContainer
     private Button? _speed1Button;
     private Button? _speed2Button;
     private Button? _speed5Button;
+    private Button? _quickSaveButton;
+    private Button? _quickLoadButton;
 
     private SimulationWorld? _world;
     private bool _isPaused = false;
@@ -29,6 +31,8 @@ public partial class TimeControlsToolbar : PanelContainer
     public event Action? Ticked;
     public event Action<bool>? PauseStateChanged;
     public event Action<int>? SpeedMultiplierChanged;
+    public event Action? QuickSaveRequested;
+    public event Action? QuickLoadRequested;
 
     public void Initialize(SimulationWorld world)
     {
@@ -39,7 +43,7 @@ public partial class TimeControlsToolbar : PanelContainer
 
     public override void _Ready()
     {
-        CustomMinimumSize = new Vector2(490, 46);
+        CustomMinimumSize = new Vector2(635, 46);
 
         var style = new StyleBoxFlat
         {
@@ -144,6 +148,33 @@ public partial class TimeControlsToolbar : PanelContainer
         hbox.AddChild(_speed2Button);
         hbox.AddChild(_speed5Button);
 
+        // Separator
+        hbox.AddChild(new VSeparator());
+
+        // QuickSave Button
+        _quickSaveButton = new Button
+        {
+            Text = "💾 Save",
+            FocusMode = FocusModeEnum.None,
+            CustomMinimumSize = new Vector2(58, 30),
+            TooltipText = "QuickSave state to .eagsav binary snapshot [Hotkey: F5]"
+        };
+        _quickSaveButton.AddThemeFontSizeOverride("font_size", 12);
+        _quickSaveButton.Pressed += () => QuickSaveRequested?.Invoke();
+        hbox.AddChild(_quickSaveButton);
+
+        // QuickLoad Button
+        _quickLoadButton = new Button
+        {
+            Text = "📂 Load",
+            FocusMode = FocusModeEnum.None,
+            CustomMinimumSize = new Vector2(58, 30),
+            TooltipText = "QuickLoad state from .eagsav binary snapshot [Hotkey: F9]"
+        };
+        _quickLoadButton.AddThemeFontSizeOverride("font_size", 12);
+        _quickLoadButton.Pressed += () => QuickLoadRequested?.Invoke();
+        hbox.AddChild(_quickLoadButton);
+
         UpdateCalendarLabel();
         UpdateDefconBadge();
     }
@@ -197,6 +228,16 @@ public partial class TimeControlsToolbar : PanelContainer
             else if (keyEvent.Keycode == Key.Key3)
             {
                 SetSpeed(5);
+                GetViewport().SetInputAsHandled();
+            }
+            else if (keyEvent.Keycode == Key.F5)
+            {
+                QuickSaveRequested?.Invoke();
+                GetViewport().SetInputAsHandled();
+            }
+            else if (keyEvent.Keycode == Key.F9)
+            {
+                QuickLoadRequested?.Invoke();
                 GetViewport().SetInputAsHandled();
             }
         }

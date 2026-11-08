@@ -48,7 +48,7 @@
       "startingProvinceId": 621,
       "startingExperience": 0.5,
       "startingStrength": 1.0,
-      "pgmAuthorized": false
+      "pgmAuthorized": true
     },
     {
       "name": "3rd Frontier Division",

@@ -3,15 +3,13 @@
   "templates": [
     {
       "templateId": 38,
-      "name": "LPAF Infantry Division",
-      "combatWidth": 18,
+      "name": "Lao People's Armed Forces Brigade",
+      "combatWidth": 16,
       "battalions": [
         "InfantryKit",
         "InfantryKit",
         "InfantryKit",
-        "Artillery",
-        "SupportVehicles",
-        "SupportVehicles"
+        "Artillery"
       ],
       "supportCompanies": [
         "SupportVehicles"
@@ -20,7 +18,7 @@
   ],
   "startingDivisions": [
     {
-      "name": "1st Vientiane Division",
+      "name": "1st Division ('Vientiane')",
       "templateId": 38,
       "startingProvinceId": 640,
       "startingExperience": 0.4,
@@ -31,7 +29,7 @@
       "name": "2nd Mountain Brigade",
       "templateId": 38,
       "startingProvinceId": 641,
-      "startingExperience": 0.35,
+      "startingExperience": 0.45,
       "startingStrength": 1.0,
       "pgmAuthorized": false
     }

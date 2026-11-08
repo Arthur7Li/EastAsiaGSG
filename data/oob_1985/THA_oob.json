@@ -3,15 +3,15 @@
   "templates": [
     {
       "templateId": 36,
-      "name": "RTA Infantry Division",
+      "name": "Royal Thai Infantry Division",
       "combatWidth": 20,
       "battalions": [
         "InfantryKit",
         "InfantryKit",
         "InfantryKit",
-        "SupportVehicles",
+        "IFV",
         "Artillery",
-        "IFV"
+        "SupportVehicles"
       ],
       "supportCompanies": [
         "SupportVehicles",
@@ -20,14 +20,13 @@
     },
     {
       "templateId": 37,
-      "name": "RTA Cavalry Division",
-      "combatWidth": 18,
+      "name": "Royal Thai Cavalry Division",
+      "combatWidth": 16,
       "battalions": [
         "MBT",
+        "MBT",
         "IFV",
-        "SupportVehicles",
-        "InfantryKit",
-        "Artillery"
+        "SupportVehicles"
       ],
       "supportCompanies": [
         "SupportVehicles"
@@ -36,7 +35,7 @@
   ],
   "startingDivisions": [
     {
-      "name": "1st Division ('King's Guard')",
+      "name": "1st Division, King's Guard",
       "templateId": 36,
       "startingProvinceId": 630,
       "startingExperience": 0.55,
@@ -44,15 +43,15 @@
       "pgmAuthorized": true
     },
     {
-      "name": "2nd Cavalry Division",
+      "name": "2nd Cavalry Division ('Royal Guard')",
       "templateId": 37,
       "startingProvinceId": 631,
       "startingExperience": 0.5,
       "startingStrength": 1.0,
-      "pgmAuthorized": false
+      "pgmAuthorized": true
     },
     {
-      "name": "6th Infantry Division",
+      "name": "3rd Infantry Division",
       "templateId": 36,
       "startingProvinceId": 632,
       "startingExperience": 0.45,
